@@ -2,7 +2,6 @@ package com.krp.whoknows.Appui.userInfo
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
@@ -54,29 +53,23 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.LocalTextStyle
 import androidx.xr.compose.testing.toDp
-import com.google.android.gms.maps.model.LatLng
-import com.krp.whoknows.Navigation.LatLong
 import com.krp.whoknows.Navigation.MapScreen
 import com.krp.whoknows.R
-import com.krp.whoknows.Utils.DropDownMenu
 import com.krp.whoknows.Utils.checkForPermission
 import com.krp.whoknows.Utils.getLocationName
 import com.krp.whoknows.model.LatLongs
 import com.krp.whoknows.model.User
+import com.krp.whoknows.model.UserResponse
 import com.krp.whoknows.roomdb.JWTViewModel
+import com.krp.whoknows.roomdb.entity.InterUserDetail
 import com.krp.whoknows.ui.theme.ordColor
 import kotlinx.coroutines.flow.StateFlow
-import org.koin.core.component.inject
-import org.koin.java.KoinJavaComponent.inject
-import kotlin.math.log
 
 /**
  * Created by KUSHAL RAJ PAREEK on 10,February,2025
@@ -119,9 +112,31 @@ fun LatLong(viewModel: InfoViewModel,
 
         }
     }
-LaunchedEffect(state.isSuccess) {
-//    Log.d("afkmaskfsmasfsa", state.isSuccess.toString())
-    navController.navigate(com.krp.whoknows.Navigation.HomeScreen)
+
+LaunchedEffect(state.isLoading) {
+    Log.d("afkmaskfsmasfsa", state.isSuccess.toString())
+    if(state.isSuccess){
+        val details = state.successMessage
+        val user = InterUserDetail(
+            id = details?.id!!,
+            ageGap = details.ageGap!!,
+            username = details.username!!,
+            posts = details.posts!!,
+            interests = details.interests!!,
+            gender = details.gender!!,
+            preferredGender = details.preferredGender!!,
+            geoRadiusRange = details.geoRadiusRange.toString(),
+            dob = details.dob!!,
+            bio = details.bio!!,
+            latitude = details.latitude!!,
+            longitude = details.longitude!!,
+            pnumber = details.pnumber!!
+        )
+        jwtViewModel.saveUser(user)
+        navController.popBackStack()
+        navController.navigate(com.krp.whoknows.Navigation.HomeScreen)
+    }
+
 
 }
     LaunchedEffect(Unit) {
@@ -189,8 +204,11 @@ LaunchedEffect(state.isSuccess) {
                         imageVector = Icons.Filled.LocationOn,
                         contentDescription = "",
                         modifier = Modifier.clickable {
+                            Log.d("GIVENORNOT", hasLocationPermission.toString())
                             if (hasLocationPermission) {
                                 navController.navigate(MapScreen)
+                                Log.d("iscomingthere", "LatLong:")
+
                             } else {
                                 locationPermissionLauncher.launch(
                                     arrayOf(

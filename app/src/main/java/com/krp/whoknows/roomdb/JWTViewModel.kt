@@ -4,6 +4,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.krp.whoknows.roomdb.entity.InterUserDetail
 import com.krp.whoknows.roomdb.entity.JWTToken
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,9 +25,13 @@ class JWTViewModel(application: Application) : AndroidViewModel(application) {
     private val _phoneNumber = MutableStateFlow<String?>(null)
     val phoneNumber: StateFlow<String?> get() = _phoneNumber
 
+    private val _userDetails = MutableStateFlow<InterUserDetail?>(null)
+    val userDetail: StateFlow<InterUserDetail?> get() = _userDetails
+
     init {
         loadToken()
         loadPhoneNumber()
+        loadUserDetails()
     }
 
     private fun loadToken() {
@@ -40,6 +45,15 @@ class JWTViewModel(application: Application) : AndroidViewModel(application) {
             _phoneNumber.value = dataStore.phoneNumber.first()
         }
     }
+
+    private fun loadUserDetails() {
+        viewModelScope.launch {
+            dataStore.userDetails.collect { user ->
+                _userDetails.value = user
+            }
+        }
+    }
+
 
     fun saveToken(token: String) {
         viewModelScope.launch {
@@ -68,4 +82,28 @@ class JWTViewModel(application: Application) : AndroidViewModel(application) {
             _phoneNumber.value = null
         }
     }
+
+    fun saveUser(user: InterUserDetail) {
+        viewModelScope.launch {
+            dataStore.saveUser(user)
+            _userDetails.value = user
+        }
+    }
+
+
+    fun updateUser(user: InterUserDetail) {
+        viewModelScope.launch {
+            dataStore.updateUser(user)
+            _userDetails.value = user
+        }
+    }
+
+
+    fun deleteUser() {
+        viewModelScope.launch {
+            dataStore.deleteUser()
+            _userDetails.value = null
+        }
+    }
+
 }

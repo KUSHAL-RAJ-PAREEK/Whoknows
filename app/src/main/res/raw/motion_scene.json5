@@ -1,0 +1,79 @@
+{
+  ConstraintSets: {
+    start : {
+      profile_pic: {
+        width: 'spread',
+        height: 450,
+        start: ['parent', 'start'],
+        end: ['parent','end'],
+        top : ['parent','top'],
+        custom: {
+          background: null,
+          box_background1: '#A3C9E2',
+          box_background2: '#9618F7',
+          shape_r : 0
+        }
+      },
+      username: {
+        top : ['profile_pic','bottom',-48],
+        end : ['parent','end'],
+        start: ['parent','start']
+      },
+      box: {
+        width: 'spread',
+        height: 450,
+        start: ['parent', 'start'],
+        end: ['parent', 'end'],
+        top: ['parent', 'top'],
+        bottom: ['parent', 'bottom']
+      }
+    },
+    end : {
+      profile_pic: {
+        width: 40,
+        height: 40,
+        start: ['parent','start', 16],
+        top : ['parent','top',16],
+        custom: {
+          background: '#FFFFFF',
+          box_background1: '#C973FF',
+          box_background2: '#AEBAF8',
+          shape_r : 2
+        }
+      },
+      username: {
+        top : ['profile_pic','top'],
+        bottom : ['profile_pic','bottom'],
+        start: ['profile_pic','end',16]
+      },
+      box: {
+        width: 'spread',
+        height: 'spread',
+        start: ['parent', 'start'],
+        end: ['parent', 'end'],
+        top: ['parent', 'top'],
+        bottom: ['parent', 'bottom',-16],
+      }
+    }
+  },
+  Transitions: {
+    default: {
+      from: 'start',
+      to : 'end',
+      pathMotionArc: 'startHorizontal',
+      keyFrames: {
+        keyAttributes: [
+          {
+            target: ['profile_pic'],
+            frames: [0,100],
+          },
+          {
+            target: ['username'],
+            frames: [0,50,100],
+            translationX: [0,70,0],
+          }
+        ]
+      }
+    }
+  }
+}

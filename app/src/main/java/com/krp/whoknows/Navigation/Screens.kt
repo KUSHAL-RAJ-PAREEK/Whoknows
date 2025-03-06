@@ -34,10 +34,19 @@ data object PreferredAgeRange
 data object GeoRadiusRange
 
 @Serializable
-data class LatLong(val latitude : String?, val longitude : String?)
+data class LatLong(val latitude : String? = null, val longitude : String? = null)
 
 @Serializable
 data object MapScreen
 
 @Serializable
+data object ProfileScreen
+
+@Serializable
+data object ChatScreen
+
+@Serializable
 data class OTPScreen(val phoneNumber: String)
+
+@Serializable
+data object MatchingScreen

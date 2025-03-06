@@ -83,7 +83,7 @@ fun OTPScreen(
         if (state.isOtpVerified) {
             val jwt = state.successMessage.toString()
             jwtViewModel.saveToken(jwt)
-           val t =  jwtViewModel.savePhoneNumber(phoneNumber)
+         jwtViewModel.savePhoneNumber(phoneNumber)
             onOTp()
         }
     }

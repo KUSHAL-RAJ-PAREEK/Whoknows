@@ -1,6 +1,7 @@
 package com.krp.whoknows.Appui.userInfo
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.util.Log
 import android.widget.Toast
@@ -44,6 +45,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.wear.compose.material.Icon
 import androidx.xr.compose.testing.toDp
@@ -91,6 +93,7 @@ fun MapScreen(navController : NavController, context: Context) {
 //        Log.d("dofkapodkfapodkfs" ,loc.toString())
 //    }
 
+
     LaunchedEffect(searchQuery.text) {
         if (searchQuery.text.isNotBlank()) {
             val result = geocodeLocation(context, searchQuery.text)
@@ -110,7 +113,9 @@ fun MapScreen(navController : NavController, context: Context) {
         showMap = true
     }
 
-    if (showMap) {
+
+
+//    if (showMap) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -163,11 +168,7 @@ fun MapScreen(navController : NavController, context: Context) {
                 )
             }
         }
-    }
-
-
-
-
+//    }
 }
 
 suspend fun geocodeLocation(context: Context, query: String): LatLng? {

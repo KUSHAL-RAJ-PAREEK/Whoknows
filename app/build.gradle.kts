@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.implementation
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -118,5 +120,11 @@ dependencies {
 
     // google maps utils
     implementation (libs.android.maps.utils)
+
+    implementation (libs.accompanist.insets)
+    implementation (libs.exoplayer.core)
+    implementation (libs.exoplayer.ui)
+
+//    implementation ("com.github.x3rocode:xblur-compose:[latest_version]")
 }
 

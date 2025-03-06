@@ -1,6 +1,7 @@
 package com.krp.whoknows
 
 import android.os.Build
+import android.os.Build.VERSION_CODES.P
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -33,13 +34,6 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.KoinApplication.Companion.init
 import kotlin.math.log
-
-sealed class StartDestination {
-    object Loading : StartDestination()
-    object Welcome : StartDestination()
-    object UserGender : StartDestination()
-}
-
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,47 +42,44 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val jwtViewModel: JWTViewModel by inject()
-            val startDestination = rememberStartDestination(jwtViewModel)
+//            val token by jwtViewModel.jwtToken.collectAsState(initial = null)
+            val p by jwtViewModel.userDetail.collectAsState(initial = null)
+            Log.d("userishere1111", p.toString())
 
-            splashScreen.setKeepOnScreenCondition {
-                startDestination is StartDestination.Loading
+            var startDest by remember { mutableStateOf<Any?>(null) }
+            var timeoutReached by remember { mutableStateOf(false) }
+
+            splashScreen.setKeepOnScreenCondition { startDest == null && !timeoutReached }
+
+            LaunchedEffect(p) {
+                if (p?.username != null) {
+                    startDest = if (p?.username!!.isEmpty()) {
+                        com.krp.whoknows.Navigation.WelcomeScreen
+                    } else {
+                        com.krp.whoknows.Navigation.HomeScreen
+                    }
+                }
             }
 
-            if (startDestination !is StartDestination.Loading) {
+            LaunchedEffect(Unit) {
+                kotlinx.coroutines.delay(3000)
+                if (startDest == null) {
+                    timeoutReached = true
+                    startDest = com.krp.whoknows.Navigation.WelcomeScreen
+                }
+            }
+
+            if (startDest != null) {
                 WhoknowsTheme {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
                             .background(color = colorResource(id = R.color.splashScreenColor))
                     ) {
-                        SetUpNavGraph(
-                            startDest = when (startDestination) {
-                                is StartDestination.Welcome -> com.krp.whoknows.Navigation.WelcomeScreen
-                                is StartDestination.UserGender -> com.krp.whoknows.Navigation.UserGender
-                                else -> com.krp.whoknows.Navigation.WelcomeScreen
-                            }
-                        )
+                        SetUpNavGraph(startDest = startDest!!)
                     }
                 }
             }
         }
     }
-}
-
-@Composable
-private fun rememberStartDestination(
-    jwtViewModel: JWTViewModel
-): StartDestination {
-    val token by jwtViewModel.jwtToken.collectAsState(initial = null)
-    var destination by remember { mutableStateOf<StartDestination>(StartDestination.Loading) }
-
-    LaunchedEffect(token) {
-        destination = when {
-            token == null -> StartDestination.Loading
-            token!!.isEmpty() -> StartDestination.Welcome
-            else -> StartDestination.UserGender
-        }
-    }
-
-    return destination
 }

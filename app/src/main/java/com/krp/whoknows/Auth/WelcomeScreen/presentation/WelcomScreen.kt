@@ -46,6 +46,13 @@ import com.krp.whoknows.ui.theme.splashScreenColor
  * Created by KUSHAL RAJ PAREEK on 27,January,2025
  */
 
+
+@Preview
+@Composable
+private fun run() {
+    WelcomeScreen {  }
+}
+
 @SuppressLint("ResourceAsColor")
 @Composable
 fun WelcomeScreen(modifier: Modifier = Modifier,

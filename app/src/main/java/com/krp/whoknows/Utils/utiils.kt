@@ -11,10 +11,16 @@ import android.location.Location
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.core.Easing
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.room.TypeConverter
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -36,6 +42,19 @@ import java.time.format.DateTimeFormatter
 /**
  * Created by KUSHAL RAJ PAREEK on 11,February,2025
  */
+
+
+class Converters {
+    @TypeConverter
+    fun fromString(value: String?): List<String> {
+        return value?.split(",") ?: emptyList()
+    }
+
+    @TypeConverter
+    fun toString(list: List<String>?): String {
+        return list?.joinToString(",") ?: ""
+    }
+}
 
 fun checkForPermission(context: Context): Boolean {
     return !(ActivityCompat.checkSelfPermission(
@@ -70,6 +89,7 @@ fun calculateSurfaceArea(latlngList: List<LatLng>): Double {
 fun formattedValue(value: Double) = String.format("%.2f",value)
 
 
+
 @SuppressLint("MissingPermission")
 fun getCurrentLocation(context: Context, onLocationFetched: (location: LatLng) -> Unit) {
     var loc: LatLng
@@ -77,7 +97,9 @@ fun getCurrentLocation(context: Context, onLocationFetched: (location: LatLng) -
 
     fusedLocationClient.lastLocation
         .addOnSuccessListener { location: Location? ->
+            
             if (location != null) {
+
                 val latitude = location.latitude
                 val longitude = location.longitude
                 loc = LatLng(latitude,longitude)
@@ -85,7 +107,6 @@ fun getCurrentLocation(context: Context, onLocationFetched: (location: LatLng) -
             }
         }
         .addOnFailureListener { exception: Exception ->
-            // Handle failure to get location
             Log.d("MAP-EXCEPTION",exception.message.toString())
         }
 
@@ -170,3 +191,13 @@ object LocalDateSerializer : KSerializer<LocalDate> {
 }
 
 
+operator fun PaddingValues.times(value: Float): PaddingValues = PaddingValues(
+    top = calculateTopPadding() * value,
+    bottom = calculateBottomPadding() * value,
+    start = calculateStartPadding(LayoutDirection.Ltr) * value,
+    end = calculateEndPadding(LayoutDirection.Ltr) * value
+)
+
+fun Easing.transform(from: Float, to: Float, value: Float): Float {
+    return transform(((value - from) * (1f / (to - from))).coerceIn(0f, 1f))
+}

@@ -8,23 +8,19 @@ import android.util.Log
 import com.krp.whoknows.model.OtpDetail
 import com.krp.whoknows.model.SendOTP
 import com.krp.whoknows.model.User
-import com.krp.whoknows.model.userResponse
+import com.krp.whoknows.model.UserResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
-import io.ktor.http.path
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import io.ktor.client.request.*
 import io.ktor.client.statement.bodyAsText
-import kotlinx.coroutines.delay
-import kotlinx.serialization.Serializable
 
 
 class KtorClient : KoinComponent {
@@ -70,7 +66,7 @@ class KtorClient : KoinComponent {
     }
 
 
-    suspend fun createUser(user: User,jwt : String): userResponse {
+    suspend fun createUser(user: User,jwt : String): UserResponse {
         val jwtToken =
             "Bearer $jwt"
         Log.d("jwtisthere", jwtToken)
@@ -94,7 +90,7 @@ class KtorClient : KoinComponent {
                 response.body()
             }
             404 -> response.body()
-            200 -> response.body()
+            in 200 ..299 -> response.body()
             else -> throw Exception("Failed to verify OTP. Status code: ${response.status.value}")
         }
     }
