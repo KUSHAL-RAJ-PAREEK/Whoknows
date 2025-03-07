@@ -126,5 +126,8 @@ dependencies {
     implementation (libs.exoplayer.ui)
 
 //    implementation ("com.github.x3rocode:xblur-compose:[latest_version]")
+
+    implementation("io.coil-kt:coil-compose:2.3.0")
+    implementation ("androidx.palette:palette:1.0.0")
 }
 

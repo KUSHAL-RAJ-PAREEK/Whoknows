@@ -71,6 +71,7 @@ fun Interest(modifier: Modifier = Modifier) {
                fontSize = 25.sp,
                fontFamily = FontFamily(Font(R.font.outfit_semibold)))
        }
+
        LazyVerticalGrid(columns = GridCells.Fixed(3),
        ) {
            items(list.size){i ->

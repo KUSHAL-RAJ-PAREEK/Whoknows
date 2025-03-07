@@ -14,9 +14,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -188,6 +192,8 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
             }
 
             composable<ProfileScreen> {
+                var matrix by remember { mutableStateOf(ColorMatrix()) }
+
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -199,7 +205,7 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
                             animatedVisibilityScope = this
                         ),
                 ) {
-                    com.krp.whoknows.Appui.Profile.presentation.ProfileScreen()
+                    com.krp.whoknows.Appui.Profile.presentation.ProfileScreen(matrix = matrix)
                 }
             }
 
