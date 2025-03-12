@@ -1,9 +1,11 @@
 package com.krp.whoknows.roomdb
+
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.room.Room
 import com.krp.whoknows.roomdb.entity.InterUserDetail
 import com.krp.whoknows.roomdb.entity.JWTToken
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +20,7 @@ import org.koin.core.KoinApplication.Companion.init
 
 class JWTViewModel(application: Application) : AndroidViewModel(application) {
     private val dataStore = DataStoreManager(application)
-
+    private val userRepository: UserRepository
     private val _jwtToken = MutableStateFlow<String?>(null)
     val jwtToken: StateFlow<String?> get() = _jwtToken
 
@@ -29,6 +31,13 @@ class JWTViewModel(application: Application) : AndroidViewModel(application) {
     val userDetail: StateFlow<InterUserDetail?> get() = _userDetails
 
     init {
+        val database = Room.databaseBuilder(
+            application,
+            DataBase::class.java,
+            "userDB"
+        ).build()
+        val dao = database.dao()
+        userRepository = UserRepository(dao)
         loadToken()
         loadPhoneNumber()
         loadUserDetails()
@@ -58,6 +67,7 @@ class JWTViewModel(application: Application) : AndroidViewModel(application) {
     fun saveToken(token: String) {
         viewModelScope.launch {
             dataStore.saveToken(token)
+            userRepository.saveToken(token)
             _jwtToken.value = token
         }
     }
@@ -71,8 +81,8 @@ class JWTViewModel(application: Application) : AndroidViewModel(application) {
 
     suspend fun savePhoneNumber(number: String) {
 
-            dataStore.savePhoneNumber(number)
-            _phoneNumber.value = number
+        dataStore.savePhoneNumber(number)
+        _phoneNumber.value = number
 
     }
 

@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
                     startDest = if (p?.username!!.isEmpty()) {
                         com.krp.whoknows.Navigation.WelcomeScreen
                     } else {
-                        com.krp.whoknows.Navigation.HomeScreen
+                        com.krp.whoknows.Navigation.GreetingScreen
                     }
                 }
             }

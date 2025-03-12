@@ -9,5 +9,4 @@ import com.krp.whoknows.model.SendOTP
 sealed  class OTPVerificationEvent {
     data class VerifyOtp(val otpDetails: SendOTP) : OTPVerificationEvent()
     data class ResendOtp(val otpSend: OtpDetail) : OTPVerificationEvent()
-
 }

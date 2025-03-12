@@ -3,7 +3,7 @@ package com.krp.whoknows.roomdb.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.krp.whoknows.Utils.Converters
+import com.krp.whoknows.roomdb.Converters
 
 /**
  * Created by KUSHAL RAJ PAREEK on 10,February,2025

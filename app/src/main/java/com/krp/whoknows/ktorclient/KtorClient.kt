@@ -20,7 +20,9 @@ import io.ktor.http.contentType
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import io.ktor.client.request.*
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpStatusCode
 
 
 class KtorClient : KoinComponent {
@@ -77,7 +79,6 @@ class KtorClient : KoinComponent {
 //            bearerAuth(jwtToken)
             header(HttpHeaders.Authorization, jwtToken)
             setBody(user)
-
         }
 
         val statusCode = response.status.value
@@ -92,6 +93,42 @@ class KtorClient : KoinComponent {
             404 -> response.body()
             in 200 ..299 -> response.body()
             else -> throw Exception("Failed to verify OTP. Status code: ${response.status.value}")
+        }
+    }
+
+
+    suspend fun getUser(pnumber: String, jwt: String): UserResponse? {
+        return try {
+            Log.d("iaminrequest","$pnumber $jwt")
+            val response = client.get("/users/user-details") {
+                contentType(ContentType.Application.Json)
+                  bearerAuth(jwt)
+                url {
+                    parameters.append("phone", pnumber)
+                }
+            }
+            val statusCode = response.status.value
+            Log.d("API_STATUS", "Status Code: $statusCode")
+            Log.d("API_RESPONSE", "Response Body: ${response.bodyAsText()}")
+
+            return when (statusCode) {
+                in 200..299 -> response.body<UserResponse>()
+                401 -> {
+                    Log.e("AUTH_ERROR", "Unauthorized - Invalid token")
+                    null
+                }
+                404 -> {
+                    Log.e("NOT_FOUND", "User not found")
+                    null
+                }
+                else -> {
+                    Log.e("API_ERROR", "Unexpected error: $statusCode - ${response.bodyAsText()}")
+                    throw Exception("Unexpected error: $statusCode")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("NETWORK_ERROR", "Exception: ${e.localizedMessage}")
+            null
         }
     }
 }

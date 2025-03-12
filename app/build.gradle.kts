@@ -1,3 +1,5 @@
+import com.android.tools.r8.internal.kt
+import org.bouncycastle.asn1.iana.IANAObjectIdentifiers.experimental
 import org.gradle.kotlin.dsl.implementation
 
 plugins {
@@ -75,6 +77,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    androidTestImplementation(libs.androidx.runner)
+    androidTestImplementation(libs.androidx.rules)
 
     // Extended Icons
     implementation(libs.androidx.material.icons.extended)
@@ -129,5 +133,14 @@ dependencies {
 
     implementation("io.coil-kt:coil-compose:2.3.0")
     implementation ("androidx.palette:palette:1.0.0")
+
+    implementation(libs.androidx.compose.animation)
+
+    implementation ("io.github.jan-tennert.supabase:storage-kt:1.1.0")
+
+    implementation("com.airbnb.android:lottie-compose:6.3.0")
+    implementation("com.google.code.gson:gson:2.10.1")
+
+
 }
 

@@ -4,9 +4,11 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.krp.whoknows.model.UserResponse
 import com.krp.whoknows.roomdb.entity.InterUserDetail
 import com.krp.whoknows.roomdb.entity.JWTToken
 import com.krp.whoknows.roomdb.entity.UserPhoneNumber
+import com.krp.whoknows.roomdb.entity.UserResponseEntity
 
 /**
  * Created by KUSHAL RAJ PAREEK on 03,February,2025
@@ -14,6 +16,16 @@ import com.krp.whoknows.roomdb.entity.UserPhoneNumber
 
 @Dao
 interface Dao {
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveUser(user: UserResponseEntity)
+
+    @Query("SELECT * FROM userdetails LIMIT 1")
+    suspend fun getUser(): UserResponseEntity?
+
+    @Query("DELETE FROM userdetails WHERE id = :userId")
+    suspend fun deleteUser(userId: String)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveToken(token: JWTToken)
 

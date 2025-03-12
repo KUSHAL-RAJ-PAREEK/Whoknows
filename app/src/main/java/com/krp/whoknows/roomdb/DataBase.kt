@@ -8,12 +8,12 @@ import androidx.room.Room
 
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.krp.whoknows.Utils.Converters
 import com.krp.whoknows.roomdb.entity.InterUserDetail
 import com.krp.whoknows.roomdb.entity.JWTToken
 import com.krp.whoknows.roomdb.entity.UserPhoneNumber
+import com.krp.whoknows.roomdb.entity.UserResponseEntity
 
-@Database(entities = [JWTToken::class, UserPhoneNumber::class,InterUserDetail::class], version = 1, exportSchema = false)
+@Database(entities = [UserResponseEntity::class,JWTToken::class, UserPhoneNumber::class,InterUserDetail::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class DataBase : RoomDatabase() {
     abstract fun dao(): Dao

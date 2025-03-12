@@ -177,12 +177,7 @@ fun SharedTransitionScope.HomeScreen(
     ) {
         isMenuExtended.value = isMenuExtended.value.not()
     }
-
-
 }
-
-
-
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable

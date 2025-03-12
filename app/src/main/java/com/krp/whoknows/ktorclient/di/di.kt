@@ -4,12 +4,17 @@ package com.krp.whoknows.ktorclient.di
  * Created by KUSHAL RAJ PAREEK on 31,January,2025
  */
 
+import androidx.room.Room
+import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
 import com.krp.whoknows.Appui.userInfo.CreateUserViewModel
 import com.krp.whoknows.Appui.userInfo.InfoViewModel
 import com.krp.whoknows.Auth.OTPScreen.OTPVerificationViewModel
 import com.krp.whoknows.Auth.PhoneScreen.Presentation.PhoneAuthViewModel
+import com.krp.whoknows.SupabaseClient.supabaseClient
 import com.krp.whoknows.ktorclient.KtorClient
+import com.krp.whoknows.roomdb.DataBase
 import com.krp.whoknows.roomdb.JWTViewModel
+import com.krp.whoknows.roomdb.UserRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.ANDROID
@@ -32,6 +37,18 @@ import org.koin.dsl.module
 val ktorModule = module {
     single { provideHttpClient() }
     single { KtorClient() }
+    single { supabaseClient() }
+    single {
+        Room.databaseBuilder(
+            get(),
+            DataBase::class.java,
+            "userDB"
+        ).fallbackToDestructiveMigration()
+            .build()
+    }
+
+    single { get<DataBase>().dao() }
+    single { UserRepository(get()) }
 }
 val appModule: Module = module {
     viewModel { PhoneAuthViewModel() }
@@ -39,6 +56,7 @@ val appModule: Module = module {
     viewModel{ JWTViewModel(androidApplication())}
     viewModel{InfoViewModel()}
     viewModel{ CreateUserViewModel() }
+    viewModel { GreetingViewModel(get(), get()) }
 }
 
 fun provideHttpClient(): HttpClient {
@@ -55,7 +73,7 @@ fun provideHttpClient(): HttpClient {
 
         install(DefaultRequest) {
             url {
-                host = "java-spring-boot-production-2c58.up.railway.app"
+                host = "whoknows-jaqw.onrender.com"
                 protocol = URLProtocol.HTTPS
             }
         }

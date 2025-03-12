@@ -1,5 +1,6 @@
 package com.krp.whoknows.Navigation
 
+import android.os.Parcelable
 import kotlinx.serialization.Serializable
 
 /**
@@ -44,6 +45,12 @@ data object ProfileScreen
 
 @Serializable
 data object ChatScreen
+
+@Serializable
+data object GreetingScreen
+
+@Serializable
+data object ProfileEditScreen
 
 @Serializable
 data class OTPScreen(val phoneNumber: String)

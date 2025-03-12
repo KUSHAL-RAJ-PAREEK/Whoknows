@@ -35,6 +35,9 @@ playServicesAuth = "21.3.0"
 protoliteWellKnownTypes = "18.0.0"
 firebaseAppdistributionGradle = "5.1.0"
 composeTesting = "1.0.0-alpha01"
+composeAnimation = "1.7.0-alpha07"
+rules = "1.6.1"
+runner = "1.6.2"
 
 [libraries]
 accompanist-insets = { module = "com.google.accompanist:accompanist-insets", version.ref = "accompanistInsets" }
@@ -44,6 +47,8 @@ android-maps-utils = { module = "com.google.maps.android:android-maps-utils", ve
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+androidx-rules = { module = "androidx.test:rules", version.ref = "rules" }
+androidx-runner = { module = "androidx.test:runner", version.ref = "runner" }
 exoplayer-core = { module = "com.google.android.exoplayer:exoplayer-core", version.ref = "exoplayerCore" }
 exoplayer-ui = { module = "com.google.android.exoplayer:exoplayer-ui", version.ref = "exoplayerCore" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -89,6 +94,7 @@ play-services-maps = { module = "com.google.android.gms:play-services-maps", ver
 protolite-well-known-types = { group = "com.google.firebase", name = "protolite-well-known-types", version.ref = "protoliteWellKnownTypes" }
 firebase-appdistribution-gradle = { group = "com.google.firebase", name = "firebase-appdistribution-gradle", version.ref = "firebaseAppdistributionGradle" }
 androidx-compose-testing = { group = "androidx.xr.compose", name = "compose-testing", version.ref = "composeTesting" }
+androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "composeAnimation" }
 
 
 [plugins]

@@ -1,10 +1,12 @@
 package com.krp.whoknows.Navigation
 
+import android.R.attr.text
 import android.content.Context
 import android.icu.text.IDNA.Info
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,12 +27,19 @@ import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import androidx.navigation.toRoute
 import com.google.android.gms.maps.model.LatLng
+import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingScreen
+import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
 import com.krp.whoknows.Appui.HomeScreen.presentation.HomeScreen
+import com.krp.whoknows.Appui.Profile.presentation.EditProfileComponents.EditBioScreen
+import com.krp.whoknows.Appui.Profile.presentation.EditProfileComponents.EditProfileMapScreen
+import com.krp.whoknows.Appui.Profile.presentation.ProfileEditScreen
 import com.krp.whoknows.Appui.Profile.presentation.ProfileScreen
 import com.krp.whoknows.Appui.userInfo.CreateUserViewModel
 import com.krp.whoknows.Appui.userInfo.DOBScreen
@@ -39,6 +49,8 @@ import com.krp.whoknows.Auth.OTPScreen.OTPVerificationViewModel
 import com.krp.whoknows.Auth.PhoneScreen.Presentation.PhoneAuthViewModel
 import com.krp.whoknows.Auth.PhoneScreen.Presentation.PhoneScreen
 import com.krp.whoknows.Auth.WelcomeScreen.presentation.WelcomeScreen
+import com.krp.whoknows.Utils.scaleIntoContainer
+import com.krp.whoknows.Utils.scaleOutOfContainer
 import com.krp.whoknows.model.LatLongs
 import com.krp.whoknows.roomdb.JWTViewModel
 import com.krp.whoknows.ui.theme.ordColor
@@ -57,176 +69,246 @@ const val FAB_KEY = "FAB_KEY"
 @Composable
 fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
 
-    val navController = rememberNavController()
     val InfoViewModel: InfoViewModel = koinViewModel()
-
     SharedTransitionLayout {
-        NavHost(
-            navController = navController,
-            startDestination = startDest
-        ) {
+            val navController = rememberNavController()
+            NavHost(
+                navController = navController,
+                startDestination = startDest
+            ) {
 
-            composable<WelcomeScreen> {
-                WelcomeScreen(modifier = Modifier) { onLandingButtonClick(navController) }
-            }
+                composable<WelcomeScreen> {
+                    WelcomeScreen(modifier = Modifier) { onLandingButtonClick(navController) }
+                }
 
-            composable<LoginScreen> {
-                LoginScreen(modifier = Modifier) { onPhoneSlide(navController) }
-            }
+                composable<LoginScreen> {
+                    LoginScreen(modifier = Modifier) { onPhoneSlide(navController) }
+                }
 
-            composable<PhoneScreen> {
-                val viewModel: PhoneAuthViewModel = koinViewModel()
-                val state by viewModel.state.collectAsStateWithLifecycle()
-                PhoneScreen(
-                    modifier = Modifier,
-                    event = viewModel::onEvent,
-                    state = state,
-                    onOtpSent = { onPhoneVerify(navController, state.phoneNumber!!) }
-                )
-            }
-
-            composable<OTPScreen> {
-                var args = it.toRoute<OTPScreen>()
-                val viewModel: OTPVerificationViewModel = koinViewModel()
-                val state by viewModel.state.collectAsStateWithLifecycle()
-                val jwtViewModel: JWTViewModel = koinViewModel()
-                com.krp.whoknows.Auth.OTPScreen.OTPScreen(modifier = Modifier,
-                    event = viewModel::onEvent,
-                    state = state,
-                    jwtViewModel,
-                    navController = navController,
-                    phoneNumber = args.phoneNumber,
-                    onOTp = { onOTp(navController) }
-                )
-            }
-
-            composable<PreferredGender> {
-                com.krp.whoknows.Appui.userInfo.PreferredGender(
-                    viewModel = InfoViewModel,
-                    navController = navController
-                )
-            }
-
-            composable<DOBScreen> {
-                com.krp.whoknows.Appui.userInfo.DOBScreen(
-                    viewModel = InfoViewModel,
-                    navController = navController
-                )
-            }
-            composable<UserGender> {
-                com.krp.whoknows.Appui.userInfo.UserGender(
-                    viewModel = InfoViewModel,
-                    navController = navController
-                )
-            }
-            composable<PreferredAgeRange> {
-                com.krp.whoknows.Appui.userInfo.PreferredAgeRange(
-                    viewModel = InfoViewModel,
-                    navController = navController
-                )
-            }
-            composable<GeoRadiusRange> {
-                com.krp.whoknows.Appui.userInfo.GeoRadiusRange(
-                    viewModel = InfoViewModel,
-                    navController = navController
-                )
-            }
-
-            composable<LatLong> {
-                val userViewModel: CreateUserViewModel = koinViewModel()
-                val jwtViewModel: JWTViewModel = koinViewModel()
-                val state by userViewModel.state.collectAsStateWithLifecycle()
-                val args = it.toRoute<LatLong>()
-                com.krp.whoknows.Appui.userInfo.LatLong(
-                    viewModel = InfoViewModel, event = userViewModel::onEvent, state = state,
-                    jwtViewModel = jwtViewModel, navController = navController, latLong = LatLongs(
-                        args.latitude ?: "",
-                        args.longitude ?: ""
+                composable<PhoneScreen> {
+                    val viewModel: PhoneAuthViewModel = koinViewModel()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+                    PhoneScreen(
+                        modifier = Modifier,
+                        event = viewModel::onEvent,
+                        state = state,
+                        onOtpSent = { onPhoneVerify(navController, state.phoneNumber!!) }
                     )
-                )
-            }
+                }
 
-            composable<MapScreen> {
-                com.krp.whoknows.Appui.userInfo.MapScreen(
-                    navController = navController,
-                    context = LocalContext.current
-                )
-            }
+                composable<OTPScreen> {
+                    var args = it.toRoute<OTPScreen>()
+                    val viewModel: OTPVerificationViewModel = koinViewModel()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+                    val jwtViewModel: JWTViewModel = koinViewModel()
+                    com.krp.whoknows.Auth.OTPScreen.OTPScreen(modifier = Modifier,
+                        event = viewModel::onEvent,
+                        state = state,
+                        jwtViewModel,
+                        navController = navController,
+                        phoneNumber = args.phoneNumber,
+                        onOTp = { onOTp(navController) }
+                    )
+                }
 
-            composable<HomeScreen> {
-                HomeScreen(
-                    videoUri = getVideoUri(),
-                    navController = navController,animatedVisibilityScope = this
-                    ,onFabClick={
-                        navController.navigate(MatchingScreen)
+                composable<PreferredGender> {
+                    com.krp.whoknows.Appui.userInfo.PreferredGender(
+                        viewModel = InfoViewModel,
+                        navController = navController
+                    )
+                }
+
+                composable<DOBScreen> {
+                    com.krp.whoknows.Appui.userInfo.DOBScreen(
+                        viewModel = InfoViewModel,
+                        navController = navController
+                    )
+                }
+                composable<UserGender> {
+                    com.krp.whoknows.Appui.userInfo.UserGender(
+                        viewModel = InfoViewModel,
+                        navController = navController
+                    )
+                }
+                composable<PreferredAgeRange> {
+                    com.krp.whoknows.Appui.userInfo.PreferredAgeRange(
+                        viewModel = InfoViewModel,
+                        navController = navController
+                    )
+                }
+                composable<GeoRadiusRange> {
+                    com.krp.whoknows.Appui.userInfo.GeoRadiusRange(
+                        viewModel = InfoViewModel,
+                        navController = navController
+                    )
+                }
+
+                composable<LatLong> {
+                    val userViewModel: CreateUserViewModel = koinViewModel()
+                    val jwtViewModel: JWTViewModel = koinViewModel()
+                    val state by userViewModel.state.collectAsStateWithLifecycle()
+                    val args = it.toRoute<LatLong>()
+                    com.krp.whoknows.Appui.userInfo.LatLong(
+                        viewModel = InfoViewModel, event = userViewModel::onEvent, state = state,
+                        jwtViewModel = jwtViewModel, navController = navController, latLong = LatLongs(
+                            args.latitude ?: "",
+                            args.longitude ?: ""
+                        )
+                    )
+                }
+
+                composable<MapScreen> {
+                    com.krp.whoknows.Appui.userInfo.MapScreen(
+                        navController = navController,
+                        context = LocalContext.current
+                    )
+                }
+
+                composable<HomeScreen> {
+                    HomeScreen(
+                        videoUri = getVideoUri(),
+                        navController = navController,animatedVisibilityScope = this
+                        ,onFabClick={
+                            navController.navigate(MatchingScreen)
+                        },
+                        onProfileClick={
+                            navController.navigate("profileScreen")
+                        },
+                        onChatClick={
+                            navController.navigate(ChatScreen)
+                        })
+                }
+
+                composable<MatchingScreen> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(ordColor)
+                            .sharedBounds(
+                                sharedContentState = rememberSharedContentState(
+                                    key = FAB_KEY
+                                ),
+                                animatedVisibilityScope = this
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        com.krp.whoknows.Appui.MatchingScreen.presentation
+                            .MatchingScreen()
+                    }
+                }
+
+
+                composable("profileScreen"){
+                    var matrix by remember { mutableStateOf(ColorMatrix()) }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(ordColor)
+                            .sharedBounds(
+                                sharedContentState = rememberSharedContentState(
+                                    key = FAB_KEY
+                                ),
+                                animatedVisibilityScope = this
+                            ),
+                    ) {
+                        ProfileScreen(matrix = matrix, navController = navController, onITemClick = {resId ,text ->
+                            navController.navigate("profileEditScreen/$resId/$text")
+                        },  animatedVisibilityScope = this@composable)
+                    }
+                }
+
+                composable<ChatScreen> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(ordColor)
+                            .sharedBounds(
+                                sharedContentState = rememberSharedContentState(
+                                    key = FAB_KEY
+                                ),
+                                animatedVisibilityScope = this
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        com.krp.whoknows.Appui.Chat.presentation.ChatScreen()
+                    }
+                }
+
+                composable("profileEditScreen/{resId}/{text}",
+                    arguments = listOf(
+                        navArgument("resId") {
+                            type = NavType.IntType
+                        },
+                        navArgument("text") {
+                            type = NavType.StringType
+                        }
+                    )){
+                    val resId = it.arguments?.getInt("resId")?:0
+                    val text = it.arguments?.getString("text")?:""
+                 ProfileEditScreen(
+                        resId = resId,
+                        text = text,
+                        animatedVisibilityScope = this,
+                     viewModel = InfoViewModel,
+                     navController = navController,
+                     onBioClick={t->
+                         navController.navigate("EditBioScreen/$t")
+                     },
+                     onMapClick={t ->
+                         navController.navigate("EditProfileMapScreen/$t")
+                     }
+                    )
+
+                }
+
+                composable("EditProfileMapScreen/{t}",
+                    arguments = listOf(
+                        navArgument("t") {
+                            type = NavType.StringType
+                        }
+                    )){
+                    val text = it.arguments?.getString("t")?:""
+                    EditProfileMapScreen(
+                        text = text,
+                        animatedVisibilityScope = this@composable,
+                        viewModel = InfoViewModel,
+                        navController = navController)
+
+                }
+
+                composable("EditBioScreen/{t}",
+                    arguments = listOf(
+                        navArgument("t") {
+                            type = NavType.StringType
+                        }
+                    )){
+                    val text = it.arguments?.getString("t")?:""
+                    EditBioScreen(
+                        text = text,
+                        animatedVisibilityScope = this@composable,
+                        viewModel = InfoViewModel,
+                        navController = navController)
+
+                }
+
+                composable<GreetingScreen> (
+                    popEnterTransition = {
+                        scaleIntoContainer()
                     },
-                    onProfileClick={
-                        navController.navigate(ProfileScreen)
-                    },
-                    onChatClick={
-                        navController.navigate(ChatScreen)
-                    })
-            }
-
-            composable<MatchingScreen> {
-//                com.krp.whoknows.Appui.MatchingScreen.presentation
-//                    .MatchingScreen(modifier = Modifier.sharedBounds(
-//                    sharedContentState = rememberSharedContentState(key = FAB_KEY),
-//                    animatedVisibilityScope = this
-//                ))
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(ordColor)
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(
-                                key = FAB_KEY
-                            ),
-                            animatedVisibilityScope = this
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    com.krp.whoknows.Appui.MatchingScreen.presentation
-                    .MatchingScreen()
+                    popExitTransition = {
+                        scaleOutOfContainer()
+                    }
+                ){
+                    val viewModel: GreetingViewModel = koinViewModel()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+                        GreetingScreen(navController = navController, greetingViewModel = viewModel,
+                            state = state,
+                            event = viewModel::onEvent)
                 }
+
+
             }
 
-            composable<ProfileScreen> {
-                var matrix by remember { mutableStateOf(ColorMatrix()) }
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(ordColor)
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(
-                                key = FAB_KEY
-                            ),
-                            animatedVisibilityScope = this
-                        ),
-                ) {
-                    com.krp.whoknows.Appui.Profile.presentation.ProfileScreen(matrix = matrix)
-                }
-            }
-
-            composable<ChatScreen> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(ordColor)
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(
-                                key = FAB_KEY
-                            ),
-                            animatedVisibilityScope = this
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    com.krp.whoknows.Appui.Chat.presentation.ChatScreen()
-                }
-            }
-
-        }
     }
 }
 

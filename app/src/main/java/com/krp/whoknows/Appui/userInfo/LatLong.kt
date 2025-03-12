@@ -134,7 +134,7 @@ LaunchedEffect(state.isLoading) {
         )
         jwtViewModel.saveUser(user)
         navController.popBackStack()
-        navController.navigate(com.krp.whoknows.Navigation.HomeScreen)
+        navController.navigate(com.krp.whoknows.Navigation.GreetingScreen)
     }
 
 
@@ -228,7 +228,7 @@ LaunchedEffect(state.isLoading) {
                     }
                     .onFocusChanged { isFocused = it.isFocused },
                 textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
-                placeholder = { Text("Enter your Preferred Age") },
+                placeholder = { Text("Enter your Location") },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = ordColor,
                     unfocusedBorderColor = Color.Gray

@@ -18,6 +18,7 @@ class App : Application() {
             androidContext(this@App)
             modules(ktorModule)
             modules(appModule)
+
         }
 
     }
