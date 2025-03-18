@@ -60,6 +60,9 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.TravelExplore
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -93,11 +96,14 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -107,6 +113,11 @@ import androidx.wear.compose.material.placeholder
 import androidx.xr.compose.testing.toDp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.airbnb.lottie.RenderMode
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
 import com.krp.whoknows.Appui.Profile.presentation.components.InterestItemImgCancel
 import com.krp.whoknows.Appui.Profile.presentation.components.InterestItemImg
@@ -135,7 +146,9 @@ import io.ktor.utils.io.core.use
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
@@ -285,6 +298,13 @@ fun SharedTransitionScope.ProfileEditScreen(
     var tImage by remember {
         mutableStateOf<Uri?>(null)
     }
+
+    var uploading by remember {
+        mutableStateOf(false)
+    }
+
+
+    UploadingDialog(showDialog = uploading)
 
 
     var Pimg_url by remember { mutableStateOf<String?>(null) }
@@ -482,10 +502,15 @@ fun SharedTransitionScope.ProfileEditScreen(
                 Log.d("saveUser", "User saved successfully in background")
 //            }
             Log.d("asdasdasdsadsa", galleryList.toString())
-            Toast.makeText(context, "data saved", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "data saved", Toast.LENGTH_SHORT).show()
+
+            delay(4000)
+            uploading  = false
+            navController.popBackStack()
+            navController.navigate("profileScreen")
 //            navController.navigate(HomeScreen)
         } else {
-            Toast.makeText(context, "error", Toast.LENGTH_SHORT).show()
+           Log.d("profileEditScreen","error");
         }
     }
 
@@ -1119,208 +1144,370 @@ fun SharedTransitionScope.ProfileEditScreen(
 
                 colors = ButtonDefaults.buttonColors(containerColor = ordColor),
                 onClick = {
-                    coroutineScope.launch {
-                        if (isProfileDeleted) {
-                            imageViewModel.deleteProfileSupabase(editProfileViewModel.id.value)
-                            imageViewModel.deleteProfile()
-                            imageViewModel.updateProfile(null)
-                        }
-
-                        if (isG1Deleted) {
-                            imageViewModel.deleteGallerySupabase("${editProfileViewModel.id.value}_g1")
-                            imageViewModel.deleteGalleryImage("${editProfileViewModel.id.value}_g1")
-                            imageViewModel.updateG1(null)
-                        }
-                        if (isG2Deleted) {
-                            imageViewModel.deleteGallerySupabase("${editProfileViewModel.id.value}_g2")
-                            imageViewModel.deleteGalleryImage("${editProfileViewModel.id.value}_g2")
-                            imageViewModel.updateG2(null)
-                        }
-                        if (isG3Deleted) {
-                            imageViewModel.deleteGallerySupabase("${editProfileViewModel.id.value}_g3")
-                            imageViewModel.deleteGalleryImage("${editProfileViewModel.id.value}_g3")
-                            imageViewModel.updateG3(null)
-                        }
-
-                        val profileUpload = async {
-                            mImage?.let { uri ->
-                                val success = imageViewModel.saveProfiletoSupabase(context, uri, editProfileViewModel.id.value)
-                                if (success) {
-                                    imageViewModel.saveProfileImage(context, uri)
-                                    val base64String = uriToBase64(context, uri)
-                                    val bm = base64String?.let { base64ToBitmap(it) }
-                                    imageViewModel.updateProfile(bm!!)
-                                    mainImageViewModel.updateProfile(bm!!)
+                    val today = LocalDate.now()
+                    val ageThreshold = today.minusYears(18)
+                    if (date.isAfter(ageThreshold)) {
+                        Toast.makeText(
+                            context,
+                            "You must be at least 18 years old",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }else if(fPre.text.toInt() > tPre.text.toInt()){
+                        Toast.makeText(context, "min range should be small from max range", Toast.LENGTH_SHORT).show()
+                    }else{
+                        coroutineScope.launch {
+                            uploading = true
+                            val deleteProfileTask = async {
+                                if (isProfileDeleted) {
+                                    val success = imageViewModel.deleteImageSupabase("profile_images",editProfileViewModel.id.value)
+                                    if (success) {
+                                        imageViewModel.deleteProfile()
+                                        imageViewModel.updateProfile(null)
+                                        true
+                                    } else {
+                                        Log.e("DeleteError", "Profile deletion failed!")
+                                        false
+                                    }
                                 } else {
-                                    Log.e("UploadError", "Profile image upload failed!")
+                                    true
                                 }
-                                success
-                            }
-                        }
-
-                        mImage?.let { uri ->
-                            imageViewModel.saveProfiletoSupabase(
-                                context,
-                                uri,
-                                editProfileViewModel.id.value
-                            )
-                            imageViewModel.saveProfileImage(context, uri)
-                            uri?.let {
-                                val base64String = uriToBase64(context, uri)
-                                val bm = base64String?.let { base64ToBitmap(it) }
-                                imageViewModel.updateProfile(bm!!)
-                                mainImageViewModel.updateProfile(bm!!)
                             }
 
-
-                        }
-
-                        val Gpload = async {
-                            mImage?.let { uri ->
-                                val success = imageViewModel.saveProfiletoSupabase(context, uri, editProfileViewModel.id.value)
-                                if (success) {
-                                    imageViewModel.saveProfileImage(context, uri)
-                                    val base64String = uriToBase64(context, uri)
-                                    val bm = base64String?.let { base64ToBitmap(it) }
-                                    imageViewModel.updateProfile(bm!!)
-                                    mainImageViewModel.updateProfile(bm!!)
+                            val deleteG1Task = async {
+                                if (isG1Deleted) {
+                                    val success = imageViewModel.deleteImageSupabase("gallery_images",editProfileViewModel.id.value)
+                                    if (success) {
+                                        imageViewModel.deleteGalleryImage("${editProfileViewModel.id.value}_g1")
+                                        imageViewModel.updateG1(null)
+                                        true
+                                    } else {
+                                        Log.e("DeleteError", "Profile deletion failed!")
+                                        false
+                                    }
                                 } else {
-                                    Log.e("UploadError", "Profile image upload failed!")
+                                    true
                                 }
-                                success
                             }
-                        }
 
-                        val G1Upload = async{
-                            fImage?.let { uri ->
-                                val success = imageViewModel.saveGallerytoSupabase(
-                                    context,
-                                    uri,
-                                    "${editProfileViewModel.id.value}_g1"
-                                )
+                            val deleteG2Task = async {
+                                if (isG2Deleted) {
+                                    val success = imageViewModel.deleteImageSupabase("gallery_images",editProfileViewModel.id.value)
+                                    if (success) {
+                                        imageViewModel.deleteGalleryImage("${editProfileViewModel.id.value}_g2")
+                                        imageViewModel.updateG2(null)
+                                        true
+                                    } else {
+                                        Log.e("DeleteError", "Profile deletion failed!")
+                                        false
+                                    }
+                                } else {
+                                    true
+                                }
+                            }
+                            val deleteG3Task = async {
+                                if (isG3Deleted) {
+                                    val success = imageViewModel.deleteImageSupabase("gallery_images",editProfileViewModel.id.value)
+                                    if (success) {
+                                        imageViewModel.deleteGalleryImage("${editProfileViewModel.id.value}_g3")
+                                        imageViewModel.updateG3(null)
+                                        true
+                                    } else {
+                                        Log.e("DeleteError", "Profile deletion failed!")
+                                        false
+                                    }
+                                } else {
+                                    true
+                                }
+                            }
 
-                                if(success){
-                                    imageViewModel.saveGalleryImage(
+                            val result = awaitAll(deleteProfileTask, deleteG1Task, deleteG2Task, deleteG3Task)
+
+                            Log.d("Debug", "awaitAll completed with results: $result")
+
+                            if (result.all { it == true }) {
+                                Log.d("Debug", "All images deleted successfully")
+                            } else {
+                                Log.e("Debug", "Some deletions failed: $result")
+                            }
+//                        Log.d("hello1",deleteProfileTask.toString())
+//                        Log.d("hello1",deleteG1Task.toString())
+//                        Log.d("hello1",deleteG2Task.toString())
+//                        Log.d("hello1",deleteG3Task.toString())
+
+//                        if (isProfileDeleted) {
+//                            imageViewModel.deleteProfileSupabase(editProfileViewModel.id.value)
+//                            imageViewModel.deleteProfile()
+//                            imageViewModel.updateProfile(null)
+//                        }
+//
+//                        if (isG1Deleted) {
+//                            imageViewModel.deleteGallerySupabase("${editProfileViewModel.id.value}_g1")
+//                            imageViewModel.deleteGalleryImage("${editProfileViewModel.id.value}_g1")
+//                            imageViewModel.updateG1(null)
+//                        }
+//                        if (isG2Deleted) {
+//                            imageViewModel.deleteGallerySupabase("${editProfileViewModel.id.value}_g2")
+//                            imageViewModel.deleteGalleryImage("${editProfileViewModel.id.value}_g2")
+//                            imageViewModel.updateG2(null)
+//                        }
+//                        if (isG3Deleted) {
+//                            imageViewModel.deleteGallerySupabase("${editProfileViewModel.id.value}_g3")
+//                            imageViewModel.deleteGalleryImage("${editProfileViewModel.id.value}_g3")
+//                            imageViewModel.updateG3(null)
+//                        }
+
+
+                            var profileUpload = async {
+                                mImage?.let { uri ->
+                                    val success = imageViewModel.saveProfiletoSupabase(context, uri, editProfileViewModel.id.value)
+                                    if (success) {
+                                        imageViewModel.saveProfileImage(context, uri)
+                                        val base64String = uriToBase64(context, uri)
+                                        val bm = base64String?.let { base64ToBitmap(it) }
+                                        imageViewModel.updateProfile(bm!!)
+                                        mainImageViewModel.updateProfile(bm!!)
+                                    } else {
+                                        Log.e("UploadError", "Profile image upload failed!")
+                                    }
+                                    success
+                                }?:true
+                            }
+
+//                        mImage?.let { uri ->
+//                            Log.d("pppp1","afsfasfafsafa")
+//
+//                            imageViewModel.saveProfiletoSupabase(
+//                                context,
+//                                uri,
+//                                editProfileViewModel.id.value
+//                            )
+//                            imageViewModel.saveProfileImage(context, uri)
+//                            uri?.let {
+//                                val base64String = uriToBase64(context, uri)
+//                                val bm = base64String?.let { base64ToBitmap(it) }
+//                                imageViewModel.updateProfile(bm!!)
+//                                mainImageViewModel.updateProfile(bm!!)
+//                            }
+//
+//
+//                        }
+
+
+                            var G1Upload = async{
+                                Log.d("ggggggg1","afsfasfafsafa")
+
+                                fImage?.let { uri ->
+                                    val success = imageViewModel.saveGallerytoSupabase(
                                         context,
                                         uri,
                                         "${editProfileViewModel.id.value}_g1"
                                     )
+
+                                    if(success){
+                                        imageViewModel.saveGalleryImage(
+                                            context,
+                                            uri,
+                                            "${editProfileViewModel.id.value}_g1"
+                                        )
                                         val base64String = uriToBase64(context, uri)
                                         val bm = base64String?.let { base64ToBitmap(it) }
                                         imageViewModel.updateG1(bm!!)
                                         mainImageViewModel.updateG1(bm!!)
-                                } else {
-                                    Log.e("UploadError", "Profile image upload failed!")
-                                }
-                                success
+                                    } else {
+                                        Log.e("UploadError", "Profile image upload failed!")
+                                    }
+                                    success
+                                }?:true
                             }
-                        }
 
-                        val G2Upload = async{
-                            sImage?.let { uri ->
-                                val success = imageViewModel.saveGallerytoSupabase(
-                                    context,
-                                    uri,
-                                    "${editProfileViewModel.id.value}_g2"
-                                )
-
-                                if(success){
-                                    imageViewModel.saveGalleryImage(
+                            var G2Upload = async{
+                                Log.d("ggggggg2","afsfasfafsafa")
+                                sImage?.let { uri ->
+                                    val success = imageViewModel.saveGallerytoSupabase(
                                         context,
                                         uri,
                                         "${editProfileViewModel.id.value}_g2"
                                     )
-                                    val base64String = uriToBase64(context, uri)
-                                    val bm = base64String?.let { base64ToBitmap(it) }
-                                    imageViewModel.updateG2(bm!!)
-                                    mainImageViewModel.updateG2(bm!!)
-                                } else {
-                                    Log.e("UploadError", "Profile image upload failed!")
-                                }
-                                success
+
+                                    if(success){
+                                        imageViewModel.saveGalleryImage(
+                                            context,
+                                            uri,
+                                            "${editProfileViewModel.id.value}_g2"
+                                        )
+                                        val base64String = uriToBase64(context, uri)
+                                        val bm = base64String?.let { base64ToBitmap(it) }
+                                        imageViewModel.updateG2(bm!!)
+                                        mainImageViewModel.updateG2(bm!!)
+                                    } else {
+                                        Log.e("UploadError", "Profile image upload failed!")
+                                    }
+                                    success
+                                }?:true
                             }
-                        }
 
-                        val G3Upload = async{
-                            tImage?.let { uri ->
-                                val success = imageViewModel.saveGallerytoSupabase(
-                                    context,
-                                    uri,
-                                    "${editProfileViewModel.id.value}_g3"
-                                )
-
-                                if(success){
-                                    imageViewModel.saveGalleryImage(
+                            var G3Upload = async{
+                                Log.d("ggggggg3","afsfasfafsafa")
+                                tImage?.let { uri ->
+                                    val success = imageViewModel.saveGallerytoSupabase(
                                         context,
                                         uri,
                                         "${editProfileViewModel.id.value}_g3"
                                     )
-                                    val base64String = uriToBase64(context, uri)
-                                    val bm = base64String?.let { base64ToBitmap(it) }
-                                    imageViewModel.updateG3(bm!!)
-                                    mainImageViewModel.updateG3(bm!!)
-                                } else {
-                                    Log.e("UploadError", "Profile image upload failed!")
-                                }
-                                success
+
+                                    if(success){
+                                        imageViewModel.saveGalleryImage(
+                                            context,
+                                            uri,
+                                            "${editProfileViewModel.id.value}_g3"
+                                        )
+                                        val base64String = uriToBase64(context, uri)
+                                        val bm = base64String?.let { base64ToBitmap(it) }
+                                        imageViewModel.updateG3(bm!!)
+                                        mainImageViewModel.updateG3(bm!!)
+                                    } else {
+                                        Log.e("UploadError", "Profile image upload failed!")
+                                    }
+                                    success
+                                }?:true
                             }
+
+
+
+                            val results = awaitAll(profileUpload, G1Upload, G2Upload, G3Upload).toMutableList()
+
+
+                            if(isProfileDeleted){
+                                results[0] = true
+                            }
+                            if(isG1Deleted){
+                                results[1] = true
+                            }
+                            if(isG2Deleted){
+                                results[2] = true
+                            }
+                            if(isG3Deleted){
+                                results[3] = true
+                            }
+                            results.map { Log.d("asdasdasd",it.toString()) }
+                            var flag = true
+
+                            for(r in results){
+                                if(r != true){
+                                    flag = false;
+                                    break;
+                                }
+                            }
+
+                            if (flag) {
+                                if(isProfileDeleted){
+                                    Pimg_url = null
+                                }else{
+                                    Pimg_url = "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/profile_images//${editProfileViewModel.id.value}.jpg"
+                                }
+                                if(isG1Deleted){
+                                    g1img_url = null
+                                }else{
+                                    g1img_url = "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/gallery_images//${editProfileViewModel.id.value}_g1.jpg"
+                                }
+                                if(isG2Deleted){
+                                    g2img_url = null
+                                }else{
+                                    g2img_url = "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/gallery_images//${editProfileViewModel.id.value}_g2.jpg"
+                                }
+                                if(isG3Deleted){
+                                    g3img_url = null
+                                }else{
+                                    g3img_url = "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/gallery_images//${editProfileViewModel.id.value}_g3.jpg"
+                                }
+
+                                galleryList = listOfNotNull(g1img_url, g2img_url, g3img_url).takeIf { it.isNotEmpty() }
+                                Log.d("hello",Pimg_url.toString())
+                                Log.d("hello",g1img_url.toString())
+                                Log.d("hello",g2img_url.toString())
+                                Log.d("hello",g3img_url.toString())
+                                val user = UserResponseEntity(
+                                    imgUrl = Pimg_url,
+                                    posts = galleryList,
+                                    id = editProfileViewModel.id.value,
+                                    ageGap = "${editProfileViewModel.preAgeFRange.value}-${editProfileViewModel.preAgeTRange.value}",
+                                    bio = editProfileViewModel.bio.value,
+                                    dob = editProfileViewModel.dob.value.toString(),
+                                    gender = editProfileViewModel.gender.value,
+                                    geoRadiusRange = editProfileViewModel.geoRadiusRange.value.toInt(),
+                                    latitude = editProfileViewModel.latitude.value,
+                                    longitude = editProfileViewModel.longitude.value,
+                                    pnumber = editProfileViewModel.pnumber.value,
+                                    preferredGender = editProfileViewModel.preGender.value,
+                                    username = editProfileViewModel.username.value,
+                                    interests = editProfileViewModel.interests.value,
+                                )
+
+                                Log.d("jwtinprofile", jwt.toString())
+
+                                event(UpdateUserEvent.UpdateUser(user, jwt.toString()))
+                            } else {
+                                Log.e("UploadError", "One or more image uploads failed. Skipping API call.")
+                            }
+
+//
+//                        if (profileUpload.await() == true) {
+//                            Pimg_url = imageViewModel.getImageUrlSupabase("profile_images", "${editProfileViewModel.id.value}.jpg")
+//                        } else {
+//                            Log.e("UploadError", "Profile image upload failed. Skipping URL fetch.")
+//                        }
+//
+//                        if (G1Upload.await() == true) {
+//                            g1img_url = imageViewModel.getImageUrlSupabase("gallery_images", "${editProfileViewModel.id.value}_g1.jpg")
+//                        } else {
+//                            Log.e("UploadError", "Profile image upload failed. Skipping URL fetch.")
+//                        }
+//
+//                        if (G2Upload.await() == true) {
+//                            g2img_url = imageViewModel.getImageUrlSupabase("gallery_images", "${editProfileViewModel.id.value}_g2.jpg")
+//                        } else {
+//                            Log.e("UploadError", "Profile image upload failed. Skipping URL fetch.")
+//                        }
+//
+//                        if (G3Upload.await() == true) {
+//                            g3img_url = imageViewModel.getImageUrlSupabase("gallery_images", "${editProfileViewModel.id.value}_g3.jpg")
+//                        } else {
+//                            Log.e("UploadError", "Profile image upload failed. Skipping URL fetch.")
+//                        }
+//
+//
+//                        Log.d("iadsnmiasmdasd", Pimg_url.toString())
+//
+//                        galleryList = listOfNotNull(
+//                            g1img_url,
+//                            g2img_url,
+//                            g3img_url
+//                        ).takeIf { it.isNotEmpty() }
+////if(galleryList ==null){
+////    galleryList = editProfileViewModel.posts.value
+////}
+//                        Log.d("iadsnmiasmdasd", Pimg_url.toString())
+//                        val user = UserResponseEntity(
+//                            imgUrl = Pimg_url,
+//                            posts = galleryList,
+//                            id = editProfileViewModel.id.value,
+//                            ageGap = "${editProfileViewModel.preAgeFRange.value}-${editProfileViewModel.preAgeTRange.value}",
+//                            bio = editProfileViewModel.bio.value,
+//                            dob = editProfileViewModel.dob.value.toString(),
+//                            gender = editProfileViewModel.gender.value,
+//                            geoRadiusRange = editProfileViewModel.geoRadiusRange.value.toInt(),
+//                            latitude = editProfileViewModel.latitude.value,
+//                            longitude = editProfileViewModel.longitude.value,
+//                            pnumber = editProfileViewModel.pnumber.value,
+//                            preferredGender = editProfileViewModel.preGender.value,
+//                            username = editProfileViewModel.username.value,
+//                            interests = editProfileViewModel.interests.value,
+//                        )
+//                        Log.d("jwtinprofile", jwt.toString())
+//                        event(UpdateUserEvent.UpdateUser(user, jwt.toString()))
                         }
-
-                        if (profileUpload.await() == true) {
-                            Pimg_url = imageViewModel.getImageUrlSupabase("profile_images", "${editProfileViewModel.id.value}.jpg")
-                        } else {
-                            Log.e("UploadError", "Profile image upload failed. Skipping URL fetch.")
-                        }
-
-                        if (G1Upload.await() == true) {
-                            g1img_url = imageViewModel.getImageUrlSupabase("gallery_images", "${editProfileViewModel.id.value}_g1.jpg")
-                        } else {
-                            Log.e("UploadError", "Profile image upload failed. Skipping URL fetch.")
-                        }
-
-                        if (G2Upload.await() == true) {
-                            g2img_url = imageViewModel.getImageUrlSupabase("gallery_images", "${editProfileViewModel.id.value}_g2.jpg")
-                        } else {
-                            Log.e("UploadError", "Profile image upload failed. Skipping URL fetch.")
-                        }
-
-                        if (G3Upload.await() == true) {
-                            g3img_url = imageViewModel.getImageUrlSupabase("gallery_images", "${editProfileViewModel.id.value}_g3.jpg")
-                        } else {
-                            Log.e("UploadError", "Profile image upload failed. Skipping URL fetch.")
-                        }
-
-
-                        Log.d("iadsnmiasmdasd", Pimg_url.toString())
-
-                        galleryList = listOfNotNull(
-                            g1img_url,
-                            g2img_url,
-                            g3img_url
-                        ).takeIf { it.isNotEmpty() }
-//if(galleryList ==null){
-//    galleryList = editProfileViewModel.posts.value
-//}
-                        Log.d("iadsnmiasmdasd", Pimg_url.toString())
-                        val user = UserResponseEntity(
-                            imgUrl = Pimg_url,
-                            posts = galleryList,
-                            id = editProfileViewModel.id.value,
-                            ageGap = "${editProfileViewModel.preAgeFRange.value}-${editProfileViewModel.preAgeTRange.value}",
-                            bio = editProfileViewModel.bio.value,
-                            dob = editProfileViewModel.dob.value.toString(),
-                            gender = editProfileViewModel.gender.value,
-                            geoRadiusRange = editProfileViewModel.geoRadiusRange.value.toInt(),
-                            latitude = editProfileViewModel.latitude.value,
-                            longitude = editProfileViewModel.longitude.value,
-                            pnumber = editProfileViewModel.pnumber.value,
-                            preferredGender = editProfileViewModel.preGender.value,
-                            username = editProfileViewModel.username.value,
-                            interests = editProfileViewModel.interests.value,
-                        )
-                        Log.d("jwtinprofile", jwt.toString())
-                        event(UpdateUserEvent.UpdateUser(user, jwt.toString()))
                     }
+
                 }
             ) {
                 Text(
@@ -1360,7 +1547,39 @@ suspend fun uploadProfileImage(
     }
 }
 
+@Composable
+fun UploadingDialog(showDialog: Boolean) {
+    if (showDialog) {
+        Dialog(onDismissRequest = { },
+            properties = DialogProperties(
+                dismissOnBackPress = false,
+                dismissOnClickOutside = false,
+                usePlatformDefaultWidth = false
+            )) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.5f))
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.uploading_anim))
+                    LottieAnimation(
+                        composition,
+                        iterations = 1,
+//                        modifier = Modifier.size(150.dp),
+                        renderMode = RenderMode.HARDWARE
+                    )
+                }
 
+            }
+        }
+    }
+}
 
 
 

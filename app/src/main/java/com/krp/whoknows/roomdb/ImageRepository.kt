@@ -32,7 +32,7 @@ class ImageRepository(private val imageDao: Dao) {
 
 
     suspend fun saveProfileImageToSupabase(context: Context, uri: Uri?, id: String): Boolean {
-        if (uri == null) return false
+        if (uri == null) return true
 
         return withContext(Dispatchers.IO) {
             try {
@@ -88,6 +88,28 @@ class ImageRepository(private val imageDao: Dao) {
         }
     }
 
+    suspend fun deleteImageFromSupabase(bucket : String,id: String): Boolean {
+        Log.d("DeleteRequest", "Attempting to delete image with ID: $id")
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = supabase.storage.from(bucket).delete("${id}.jpg")
+
+                return@withContext if (response != null) {
+                    Log.d("SupabaseDelete", "Image deleted successfully: $id")
+                    true
+                } else {
+                    Log.e("SupabaseDelete", "Failed to delete image: $id, Error: ${response}")
+                    false
+                }
+            } catch (e: Exception) {
+                Log.e("SupabaseDelete", "Error deleting image: ${e.message}")
+                false
+            }
+        }
+    }
+
+
 
     suspend fun deleteGalleryImageFromSupabase(id: String): Boolean {
         return withContext(Dispatchers.IO) {
@@ -110,7 +132,8 @@ class ImageRepository(private val imageDao: Dao) {
 
 
     suspend fun saveGalleryImageToSupabase(context: Context, uri: Uri?, id: String): Boolean {
-        if (uri == null) return false
+        Log.d("adsadasddggwer",uri.toString())
+        if (uri == null) return true
 
         return withContext(Dispatchers.IO) {
             try {

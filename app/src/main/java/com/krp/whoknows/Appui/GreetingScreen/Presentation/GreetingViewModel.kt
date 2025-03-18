@@ -116,7 +116,7 @@ class GreetingViewModel(
             try {
                 Log.d("iamingetUser","$pnumber  $jwt")
                 val response = ktorClient.getUser(pnumber, jwt)
-                _state.value = GetUserState(isSuccess = true, successMessage = response)
+                _state.value = GetUserState(isSuccess = true, successMessage = response, isLoading = false)
                 Log.d("GreetingViewModel", "User response: ${state.value.successMessage}")
             } catch (e: Exception) {
                 _state.value = GetUserState(errorMessage = e.localizedMessage ?: "An error occurred")

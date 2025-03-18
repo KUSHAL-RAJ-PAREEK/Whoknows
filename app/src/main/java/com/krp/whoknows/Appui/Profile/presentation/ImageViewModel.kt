@@ -3,6 +3,7 @@ package com.krp.whoknows.Appui.Profile.presentation
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.krp.whoknows.Utils.toBitmap
@@ -57,6 +58,7 @@ class ImageViewModel(private val repository: ImageRepository) : ViewModel() {
     }
 
     suspend fun saveGallerytoSupabase(context: Context, uri: Uri?, id: String):Boolean {
+        Log.d("afdasfafasfasfsf",uri.toString())
            return repository.saveGalleryImageToSupabase(context, uri, id)
     }
 
@@ -76,6 +78,14 @@ class ImageViewModel(private val repository: ImageRepository) : ViewModel() {
             repository.deleteProfileImageFromSupabase(id)
         }
     }
+
+    suspend fun deleteImageSupabase(bucket : String, id: String): Boolean {
+   return withContext(Dispatchers.IO) {
+       repository.deleteImageFromSupabase(bucket,id)
+   }
+
+    }
+
 
     suspend fun getImageUrlSupabase(bucket:String, imagePath: String) :String {
         return withContext(Dispatchers.IO) {
