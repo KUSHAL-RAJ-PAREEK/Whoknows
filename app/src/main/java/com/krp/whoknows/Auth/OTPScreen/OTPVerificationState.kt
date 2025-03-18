@@ -7,6 +7,7 @@ import androidx.annotation.BoolRes
  */
 data class OTPVerificationState (
     val isLoading:Boolean = false,
+    val statusCode : Int?= null,
     val isOtpVerified: Boolean = false,
     val successMessage: String?= null,
     val errorMessage: String? = null,

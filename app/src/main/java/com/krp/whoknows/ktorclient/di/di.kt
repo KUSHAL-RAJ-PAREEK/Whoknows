@@ -6,6 +6,12 @@ package com.krp.whoknows.ktorclient.di
 
 import androidx.room.Room
 import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
+import com.krp.whoknows.Appui.Profile.presentation.EditProfileViewModel
+import com.krp.whoknows.Appui.Profile.presentation.ImageViewModel
+import com.krp.whoknows.Appui.Profile.presentation.MainImageViewModel
+import com.krp.whoknows.Appui.Profile.presentation.ProfileDetailViewModel
+import com.krp.whoknows.Appui.Profile.presentation.ProfileViewModel
+import com.krp.whoknows.Appui.Profile.presentation.UpdateUserViewModel
 import com.krp.whoknows.Appui.userInfo.CreateUserViewModel
 import com.krp.whoknows.Appui.userInfo.InfoViewModel
 import com.krp.whoknows.Auth.OTPScreen.OTPVerificationViewModel
@@ -13,8 +19,12 @@ import com.krp.whoknows.Auth.PhoneScreen.Presentation.PhoneAuthViewModel
 import com.krp.whoknows.SupabaseClient.supabaseClient
 import com.krp.whoknows.ktorclient.KtorClient
 import com.krp.whoknows.roomdb.DataBase
+import com.krp.whoknows.roomdb.ImageRepository
 import com.krp.whoknows.roomdb.JWTViewModel
 import com.krp.whoknows.roomdb.UserRepository
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.storage.Storage
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.ANDROID
@@ -37,7 +47,7 @@ import org.koin.dsl.module
 val ktorModule = module {
     single { provideHttpClient() }
     single { KtorClient() }
-    single { supabaseClient() }
+    single<SupabaseClient> { supabaseClient() }
     single {
         Room.databaseBuilder(
             get(),
@@ -49,6 +59,9 @@ val ktorModule = module {
 
     single { get<DataBase>().dao() }
     single { UserRepository(get()) }
+    single { ImageRepository(get()) }
+    single { ImageViewModel(get()) }
+    single{MainImageViewModel(get())}
 }
 val appModule: Module = module {
     viewModel { PhoneAuthViewModel() }
@@ -57,6 +70,10 @@ val appModule: Module = module {
     viewModel{InfoViewModel()}
     viewModel{ CreateUserViewModel() }
     viewModel { GreetingViewModel(get(), get()) }
+    viewModel{ProfileViewModel(get())}
+    viewModel{EditProfileViewModel()}
+    viewModel{ProfileDetailViewModel()}
+    viewModel{UpdateUserViewModel()}
 }
 
 fun provideHttpClient(): HttpClient {

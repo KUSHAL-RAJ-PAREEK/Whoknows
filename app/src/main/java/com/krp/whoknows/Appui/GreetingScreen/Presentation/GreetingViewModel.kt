@@ -2,6 +2,7 @@ package com.krp.whoknows.Appui.GreetingScreen.Presentation
 
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.krp.whoknows.ktorclient.KtorClient
@@ -10,6 +11,8 @@ import com.krp.whoknows.roomdb.UserRepository
 import com.krp.whoknows.roomdb.entity.UserResponseEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /**
@@ -27,10 +30,21 @@ class GreetingViewModel(
     private val _jwtToken = MutableStateFlow<String?>(null)
     val jwtToken: StateFlow<String?> get() = _jwtToken
 
+    private val _userState = MutableStateFlow<UserResponseEntity?>(null)
+    val userState: StateFlow<UserResponseEntity?> = _userState.asStateFlow()
 
+    private val _pNumber = MutableStateFlow<String?>(null)
+    val pNumber: StateFlow<String?> get() = _pNumber
 
     init {
         loadJwtToken()
+        loadPNumber()
+        viewModelScope.launch {
+            userRepository.getUser().collectLatest { user ->
+                _userState.value = user
+            }
+        }
+
     }
 
     fun saveUser(user: UserResponseEntity?) {
@@ -39,9 +53,9 @@ class GreetingViewModel(
         }
     }
 
-    suspend fun getUser(): UserResponseEntity? {
-        return userRepository.getUser()
-    }
+//    suspend fun getUser(): UserResponseEntity? {
+//        return userRepository.getUser()
+//    }
 
     fun deleteUser(userId: String) {
         viewModelScope.launch {
@@ -49,12 +63,37 @@ class GreetingViewModel(
         }
     }
 
-
-    private fun loadJwtToken() {
+    fun saveToken(token : String){
         viewModelScope.launch {
-            _jwtToken.value = userRepository.getToken()
+            userRepository.saveToken(token)
         }
     }
+
+    fun savePnumber(pnumber : String){
+        viewModelScope.launch {
+            userRepository.savePhone(pnumber)
+        }
+    }
+     fun loadJwtToken() {
+        viewModelScope.launch {
+            userRepository.getToken()
+                .collect { token ->
+                    _jwtToken.value = token?.token
+                }
+        }
+    }
+
+    fun loadPNumber() {
+        viewModelScope.launch {
+            userRepository.getPnumber()
+                .collect { phone ->
+                    _pNumber.value = phone?.userPhoneNumber
+                }
+        }
+    }
+
+
+
 
     fun onEvent(event: GetUserEvent) {
         when (event) {

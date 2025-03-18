@@ -4,11 +4,12 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.krp.whoknows.roomdb.Converters
+import kotlinx.serialization.Serializable
 
 /**
  * Created by KUSHAL RAJ PAREEK on 12,March,2025
  */
-
+@Serializable
 @Entity(tableName = "userdetails")
 @TypeConverters(Converters::class)
 data class UserResponseEntity(

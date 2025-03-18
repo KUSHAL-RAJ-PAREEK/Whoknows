@@ -1,6 +1,9 @@
 package com.krp.whoknows.Appui.GreetingScreen.Presentation
 
+import android.annotation.SuppressLint
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -12,58 +15,99 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.airbnb.lottie.RenderMode
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.krp.whoknows.Appui.Profile.presentation.EditProfileViewModel
+import com.krp.whoknows.Appui.Profile.presentation.ImageViewModel
+import com.krp.whoknows.Appui.Profile.presentation.MainImageViewModel
+import com.krp.whoknows.Appui.Profile.presentation.ProfileDetailViewModel
 import com.krp.whoknows.Navigation.HomeScreen
 import com.krp.whoknows.R
 import com.krp.whoknows.Utils.TypewriteText
+import com.krp.whoknows.Utils.calculateAge
+import com.krp.whoknows.Utils.convertImageUrlToBase64
+import com.krp.whoknows.Utils.getLocationCityState
 import com.krp.whoknows.model.User
+import com.krp.whoknows.roomdb.JWTViewModel
 import com.krp.whoknows.roomdb.entity.UserResponseEntity
 import com.krp.whoknows.ui.theme.Cyan
 import com.krp.whoknows.ui.theme.LightBlue
 import com.krp.whoknows.ui.theme.Purple
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.Dispatcher
+import org.koin.compose.koinInject
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import kotlin.math.log
 
 /**
  * Created by KUSHAL RAJ PAREEK on 11,March,2025
  */
 
+@SuppressLint("StateFlowValueCalledInComposition", "SuspiciousIndentation")
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun GreetingScreen(modifier: Modifier = Modifier,
                    navController: NavController,
                    greetingViewModel: GreetingViewModel,
                    state : GetUserState,
-                   event : (GetUserEvent)-> Unit) {
+                   event : (GetUserEvent)-> Unit,
+                   profileDetailViewModel : ProfileDetailViewModel,
+                   editProfileViewModel : EditProfileViewModel,
+                   jwtViewModel: JWTViewModel,
+                   imageViewModel: ImageViewModel,
+                   mainImageViewModel: MainImageViewModel) {
 
+    val jwtToken = jwtViewModel.jwtToken.value
 
-    val jwtToken = greetingViewModel.jwtToken.collectAsState()
+    val user by greetingViewModel.userState.collectAsState()
+    val pNumber by greetingViewModel.pNumber.collectAsState()
 
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(jwtToken) {
-        val user = greetingViewModel.getUser()
+    LaunchedEffect(user?.latitude, user?.longitude) {
+       val  location = getLocationCityState(
+            user?.latitude?.toDouble() ?: 26.9124,
+            user?.longitude?.toDouble() ?: 75.7873,
+            context
+        )
+        profileDetailViewModel.updateLocation(location)
+    }
+
+    LaunchedEffect(user?.username) {
+        delay(2000)
         Log.d("maalagaya", user.toString())
         if (user != null) {
-            delay(5000)
+//            delay(3000)
             navController.popBackStack()
             navController.navigate(HomeScreen)
         } else {
+            val jwtToken = jwtViewModel.jwtToken
             jwtToken?.let { token ->
                 Log.d("tokenaagaya", token.value.toString())
-                event(GetUserEvent.GetUser("9414696844", token.value.toString()))
+                event(GetUserEvent.GetUser(pNumber.toString(), token.value.toString()))
             }
         }
     }
+
 
 
     LaunchedEffect(state.isLoading) {
@@ -86,12 +130,160 @@ fun GreetingScreen(modifier: Modifier = Modifier,
                 interests = user?.interests ?: emptyList(),
                 posts = user?.posts ?: emptyList()
             )
-            greetingViewModel.saveUser(data)
-            delay(5000)
+
+//            withContext(Dispatchers.IO) {
+                val dobString = user?.dob ?: "2004-12-12"
+            val localDate = LocalDate.parse(dobString, DateTimeFormatter.ISO_LOCAL_DATE)
+            profileDetailViewModel.updateId(user?.id.toString())
+            profileDetailViewModel.updateUsername(user?.username.toString())
+            profileDetailViewModel.updateImgUrl(user?.imgUrl.toString())
+            profileDetailViewModel.updateGeoRadiusRange(user?.geoRadiusRange.toString())
+            profileDetailViewModel.updatePreGender(user?.preferredGender.toString())
+            profileDetailViewModel.updateGender(user?.gender.toString())
+            profileDetailViewModel.updateDobs(calculateAge(localDate.toString()).toString())
+            profileDetailViewModel.updateDOB(localDate)
+            profileDetailViewModel.updatePreAgeRange(user?.ageGap.toString())
+            profileDetailViewModel.updateBio(user?.bio?:"hey, I am using whoknows.")
+            profileDetailViewModel.updateInterest(user?.interests ?: emptyList())
+            profileDetailViewModel.updatePosts(user?.posts ?: emptyList())
+//        profileDetailViewModel.updateFPreAgeRange(parts[0].toString())
+//        profileDetailViewModel.updateTPreAgeRange(parts[1].toString())
+            profileDetailViewModel.updateLatitude(user?.latitude.toString())
+            profileDetailViewModel.updateLongitude(user?.longitude.toString())
+            profileDetailViewModel.updatePnumber(user?.pnumber.toString())
+
+            val imgUrl = user?.imgUrl.toString()
+            val list = user?.posts ?: emptyList()
+
+
+            profileDetailViewModel.updatemImage(imgUrl)
+
+            if (list.isNotEmpty()) {
+                val firstElement = list[0]
+                profileDetailViewModel.updatefImage(firstElement)
+            }
+
+            if (list.size > 1) {
+                val secondElement = list[1]
+                profileDetailViewModel.updatesImage(secondElement)
+
+            }
+
+            if (list.size > 2) {
+                val thirdlement = list[2]
+                profileDetailViewModel.updatetImage(thirdlement)
+
+            }
+
+//            coroutineScope.launch {
+                mainImageViewModel.saveProfileImage(convertImageUrlToBase64(user?.imgUrl.toString()))
+                val size = user?.posts?.size ?: 0
+                for (i in 0 until size) {
+                    val imgUrl = user?.posts?.get(i) ?: continue
+                    val base64String = convertImageUrlToBase64(imgUrl)
+                    Log.d("imgusdasdsdrl",imgUrl)
+                    if (base64String != null) {
+                        Log.d("converted",i.toString())
+                        mainImageViewModel.saveGalleryImage("${user?.id}_g${i+1}",base64String)
+                    } else {
+                        Log.e("ProfileImage", "Failed to convert image to Base64")
+                    }
+//                }
+//            }
+
+
+
+                greetingViewModel.saveUser(data)
+                delay(3000)
+            }
             navController.popBackStack()
+            Log.d("itiscomingthere","hello before")
+
             navController.navigate(HomeScreen)
+            Log.d("itiscomingthere","hello after")
         }
     }
+
+
+    LaunchedEffect(user?.username) {
+        val dobString = user?.dob ?: "2004-12-12"
+        val localDate = LocalDate.parse(dobString, DateTimeFormatter.ISO_LOCAL_DATE)
+        profileDetailViewModel.updateId(user?.id.toString())
+        profileDetailViewModel.updateUsername(user?.username.toString())
+        profileDetailViewModel.updateImgUrl(user?.imgUrl.toString())
+        profileDetailViewModel.updateGeoRadiusRange(user?.geoRadiusRange.toString())
+        profileDetailViewModel.updatePreGender(user?.preferredGender.toString())
+        profileDetailViewModel.updateGender(user?.gender.toString())
+        profileDetailViewModel.updateDobs(calculateAge(localDate.toString()).toString())
+        profileDetailViewModel.updateDOB(localDate)
+        profileDetailViewModel.updatePreAgeRange(user?.ageGap.toString())
+        profileDetailViewModel.updateBio(user?.bio?:"hey, I am using whoknows.")
+        profileDetailViewModel.updateInterest(user?.interests ?: emptyList())
+        profileDetailViewModel.updatePosts(user?.posts ?: emptyList())
+//        profileDetailViewModel.updateFPreAgeRange(parts[0].toString())
+//        profileDetailViewModel.updateTPreAgeRange(parts[1].toString())
+        profileDetailViewModel.updateLatitude(user?.latitude.toString())
+        profileDetailViewModel.updateLongitude(user?.longitude.toString())
+        profileDetailViewModel.updatePnumber(user?.pnumber.toString())
+
+        val imgUrl = user?.imgUrl.toString()
+        val list = user?.posts ?: emptyList()
+
+
+        profileDetailViewModel.updatemImage(imgUrl)
+
+        if (list.isNotEmpty()) {
+            val firstElement = list[0]
+            profileDetailViewModel.updatefImage(firstElement)
+        }
+
+        if (list.size > 1) {
+            val secondElement = list[1]
+            profileDetailViewModel.updatesImage(secondElement)
+
+        }
+
+        if (list.size > 2) {
+            val thirdlement = list[2]
+            profileDetailViewModel.updatetImage(thirdlement)
+
+        }
+
+//        coroutineScope.launch {
+            mainImageViewModel.saveProfileImage(convertImageUrlToBase64(user?.imgUrl.toString()))
+            val size = user?.posts?.size ?: 0
+            for (i in 0 until size) {
+                val imgUrl = user?.posts?.get(i) ?: continue
+                val base64String = convertImageUrlToBase64(imgUrl)
+                Log.d("imgusdasdsdrl",imgUrl)
+                if (base64String != null) {
+                    Log.d("converted",i.toString())
+                    mainImageViewModel.saveGalleryImage("${user?.id}_g${i+1}",base64String)
+                } else {
+                    Log.e("ProfileImage", "Failed to convert image to Base64")
+                }
+//            }
+        }
+
+        fun logValues() {
+            Log.d("ProfileViewModel", """
+        Username: ${profileDetailViewModel.username.value}
+        Image URL: ${profileDetailViewModel.imgUrl.value}
+        Geo Radius Range: ${profileDetailViewModel.geoRadiusRange.value}
+        Preferred Gender: ${profileDetailViewModel.preGender.value}
+        DOB: ${profileDetailViewModel.dob.value}
+        Preferred Age Range: ${profileDetailViewModel.preAgeRange.value}
+        Bio: ${profileDetailViewModel.bio.value}
+        Interests: ${profileDetailViewModel.interests.value}
+        Posts: ${profileDetailViewModel.posts.value}
+        Latitude: ${profileDetailViewModel.latitude.value}
+        Longitude: ${profileDetailViewModel.longitude.value}
+    """.trimIndent())
+        }
+        logValues()
+    }
+
+
 
     val gradientColors = listOf(Cyan, LightBlue, Purple)
 
@@ -143,4 +335,5 @@ fun GreetingScreen(modifier: Modifier = Modifier,
             renderMode = RenderMode.HARDWARE )
     }
 }
+
 

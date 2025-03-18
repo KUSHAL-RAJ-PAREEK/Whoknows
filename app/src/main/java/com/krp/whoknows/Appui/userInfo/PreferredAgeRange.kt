@@ -171,7 +171,10 @@ fun PreferredAgeRange(viewModel: InfoViewModel,
                 onClick = {
                     text ="${text1.text}-${text2.text}"
                     Log.d("textiti",text)
-                    if (text1.text.isBlank() && text2.text.isBlank()) {
+                    if(text1.text > text2.text){
+                        Toast.makeText(context, "min range should be small from max range", Toast.LENGTH_SHORT).show()
+                    }
+                   else if (text1.text.isBlank() || text2.text.isBlank()) {
                         Toast.makeText(context, "Please enter min and max range", Toast.LENGTH_SHORT).show()
                     } else {
                         viewModel.updatePreAgeRange(text)

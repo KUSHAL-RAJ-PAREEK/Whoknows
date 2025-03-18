@@ -3,7 +3,9 @@ package com.krp.whoknows.Appui.Profile.presentation.EditProfileComponents
 import android.R.attr.text
 import android.content.Context
 import android.location.Geocoder
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -52,10 +54,12 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.krp.whoknows.Appui.Profile.presentation.EditProfileViewModel
 import com.krp.whoknows.Appui.userInfo.InfoViewModel
 import com.krp.whoknows.Appui.userInfo.MyMap
 import com.krp.whoknows.Appui.userInfo.SearchBar
 import com.krp.whoknows.Utils.getCurrentLocation
+import com.krp.whoknows.Utils.getLocationCityState
 import com.krp.whoknows.ui.theme.ordColor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -65,13 +69,17 @@ import java.io.IOException
  * Created by KUSHAL RAJ PAREEK on 09,March,2025
  */
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.EditProfileMapScreen(modifier: Modifier = Modifier,
-                         text : String,
-                         animatedVisibilityScope : AnimatedVisibilityScope,
-                         viewModel : InfoViewModel,
-                         navController : NavController) {
+fun SharedTransitionScope.EditProfileMapScreen(
+    modifier: Modifier = Modifier,
+    text: String,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    viewModel: InfoViewModel,
+    editProfileViewModel: EditProfileViewModel,
+    navController: NavController
+) {
 
     val context = LocalContext.current
     var showMap by remember { mutableStateOf(false) }
@@ -102,7 +110,6 @@ fun SharedTransitionScope.EditProfileMapScreen(modifier: Modifier = Modifier,
     }
 
 
-
 //    if (showMap) {
     Box(
         modifier = Modifier
@@ -118,7 +125,11 @@ fun SharedTransitionScope.EditProfileMapScreen(modifier: Modifier = Modifier,
             Log.d("mapnewpos", it.toString())
         }
 
-        SearchBarEdit(searchQuery = searchQuery, onSearch = { newValue -> searchQuery = newValue },animatedVisibilityScope = animatedVisibilityScope)
+        SearchBarEdit(
+            searchQuery = searchQuery,
+            onSearch = { newValue -> searchQuery = newValue },
+            animatedVisibilityScope = animatedVisibilityScope
+        )
 
         Image(
             modifier = Modifier
@@ -138,9 +149,12 @@ fun SharedTransitionScope.EditProfileMapScreen(modifier: Modifier = Modifier,
     ) {
         FloatingActionButton(
             onClick = {
-                Log.d("before transmit","${location.latitude} ${location.longitude}")
+                Log.d("before transmit", "${location.latitude} ${location.longitude}")
+                editProfileViewModel.updateLatitude(location.latitude.toString())
+                editProfileViewModel.updateLongitude(location.longitude.toString())
+                editProfileViewModel.updateLocation(getLocationCityState(location.latitude,location.longitude,context))
                 navController.popBackStack()
-                navController.navigate(com.krp.whoknows.Navigation.LatLong(location.latitude.toString(),location.longitude.toString()))
+                navController.navigate("profileEditScreen/123/whoknows")
             },
             shape = CircleShape,
             containerColor = ordColor,
@@ -176,20 +190,25 @@ suspend fun geocodeLocation(context: Context, query: String): LatLng? {
 }
 
 
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.SearchBarEdit(searchQuery: TextFieldValue, onSearch: (TextFieldValue) -> Unit,animatedVisibilityScope: AnimatedVisibilityScope) {
+fun SharedTransitionScope.SearchBarEdit(
+    searchQuery: TextFieldValue,
+    onSearch: (TextFieldValue) -> Unit,
+    animatedVisibilityScope: AnimatedVisibilityScope
+) {
     var localQuery by remember { mutableStateOf(searchQuery) }
-    OutlinedTextField(value = localQuery,
+    OutlinedTextField(
+        value = localQuery,
         onValueChange = {
-            localQuery = it},
+            localQuery = it
+        },
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = ordColor,
             unfocusedBorderColor = Color.Gray
         ),
         shape = RoundedCornerShape(20.dp),
-        label = { Text(text = "Search Location")},
+        label = { Text(text = "Search Location") },
         singleLine = true,
         modifier = Modifier
             .fillMaxWidth()

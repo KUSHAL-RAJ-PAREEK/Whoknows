@@ -24,6 +24,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,10 +43,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import com.krp.whoknows.Appui.userInfo.InfoViewModel
+import com.krp.whoknows.ui.theme.background_white
 import com.krp.whoknows.ui.theme.ordColor
 import io.ktor.websocket.Frame
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import kotlin.math.log
 
 /**
  * Created by KUSHAL RAJ PAREEK on 09,February,2025
@@ -60,7 +63,7 @@ fun DropDownMenu(
     value : String,
     onItemSelected: (String) -> Unit
 ) {
-
+    Log.d("insidedropdown", value)
     var selectedItem by remember { mutableStateOf(value) }
     var isFocused by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
@@ -107,7 +110,7 @@ fun DropDownMenu(
                 isFocused = false
             },
             modifier = Modifier
-                .background(Color.White)
+                .background(background_white)
 //                .clip(RoundedCornerShape(20.dp))
 //                .border(1.dp, ordColor,RoundedCornerShape(1.dp))
                 .width(
@@ -135,6 +138,97 @@ fun DropDownMenu(
             }
         }
             }
+
+    }
+}
+
+
+
+@SuppressLint("StateFlowValueCalledInComposition")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RemDropDownMenu(
+    list: List<String>,
+    value : String,
+    onItemSelected: (String) -> Unit
+) {
+    Log.d("insidedropdown", value)
+    var selectedItem by remember { mutableStateOf(value) }
+    var isFocused by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
+    var textFieldSize by remember { mutableStateOf(Size.Zero) }
+
+//    Log.d("kdsnfdsnklfd", "DropDownMenu: $selectedItem")
+    val icon = if (expanded) {
+        Icons.Filled.KeyboardArrowUp
+    } else {
+        Icons.Filled.KeyboardArrowDown
+    }
+    LaunchedEffect(value){
+        selectedItem = value
+    }
+    Column(
+    ) {
+        OutlinedTextField(
+            value = selectedItem,
+            onValueChange = { },
+            readOnly = true,
+            modifier = Modifier
+                .onGloballyPositioned { coordinates ->
+                    textFieldSize = coordinates.size.toSize()
+                }
+                .fillMaxWidth(),
+            trailingIcon = {
+                Icon(icon, "", Modifier.clickable {
+                    expanded = !expanded
+                    isFocused = expanded
+                })
+            },
+            textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+            placeholder = { Text("Enter preferred Gender") },
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = if (isFocused) ordColor else Color.Gray,
+                unfocusedBorderColor = Color.Gray
+            ),
+            shape = RoundedCornerShape(20.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
+        )
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {
+                expanded = false
+                isFocused = false
+            },
+            modifier = Modifier
+                .background(background_white)
+//                .clip(RoundedCornerShape(20.dp))
+//                .border(1.dp, ordColor,RoundedCornerShape(1.dp))
+                .width(
+                    with(LocalDensity.current) { textFieldSize.width.toDp() },
+                )
+        ) {
+            list.forEach { label ->
+                MaterialTheme(shapes = MaterialTheme.shapes.copy(extraSmall  = RoundedCornerShape(40.dp))) {
+
+                    DropdownMenuItem(
+                        modifier = Modifier
+//                        .clip(RoundedCornerShape(20.dp))
+//                            .background(Color.White)
+                        ,
+                        text = {
+                            Text(text = label, color = Color.Black)
+                        },
+                        onClick = {
+                            selectedItem = label
+                            onItemSelected(label)
+                            expanded = false
+                            isFocused = false
+                        },
+                    )
+                }
+            }
+        }
 
     }
 }

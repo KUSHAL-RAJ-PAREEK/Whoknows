@@ -1,5 +1,6 @@
 package com.krp.whoknows.Auth.OTPScreen
 
+import android.R.attr.phoneNumber
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
@@ -21,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,8 +41,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
+import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
 import com.krp.whoknows.Auth.OTPScreen.componenets.OTPInputField
+import com.krp.whoknows.Navigation.GreetingScreen
 import com.krp.whoknows.Navigation.PhoneScreen
+import com.krp.whoknows.Navigation.UserGender
+import com.krp.whoknows.Navigation.WelcomeScreen
 
 import com.krp.whoknows.R
 import com.krp.whoknows.model.OtpDetail
@@ -49,7 +55,10 @@ import com.krp.whoknows.roomdb.DataBase
 import com.krp.whoknows.roomdb.JWTViewModel
 import com.krp.whoknows.roomdb.entity.JWTToken
 import com.krp.whoknows.ui.theme.ordColor
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
+import okhttp3.Dispatcher
 
 /**
  * Created by KUSHAL RAJ PAREEK on 31,January,2025
@@ -63,10 +72,13 @@ fun OTPScreen(
     jwtViewModel : JWTViewModel,
     navController : NavController,
     phoneNumber: String,
-    onOTp: () -> Unit) {
+    onOTp: () -> Unit,
+    greetingViewModel: GreetingViewModel) {
     var otp by remember { mutableStateOf("") }
     var counter by remember { mutableStateOf(30) }
     var enable by remember { mutableStateOf(false) }
+//    val user by greetingViewModel.userState.collectAsState()
+
     BackHandler {
         navController.navigate(PhoneScreen){
             popUpTo(0) { inclusive = true }
@@ -82,9 +94,22 @@ fun OTPScreen(
     LaunchedEffect(state.isOtpVerified) {
         if (state.isOtpVerified) {
             val jwt = state.successMessage.toString()
-            jwtViewModel.saveToken(jwt)
-         jwtViewModel.savePhoneNumber(phoneNumber)
-            onOTp()
+            jwtViewModel.savePhoneNumber(phoneNumber)
+            withContext(Dispatchers.IO){
+                jwtViewModel.saveToken(jwt)
+                greetingViewModel.saveToken(jwt)
+                greetingViewModel.savePnumber(phoneNumber)
+                greetingViewModel.savePnumber(phoneNumber)
+                greetingViewModel.loadPNumber()
+                greetingViewModel.loadJwtToken()
+            }
+
+            if(state.statusCode == 200){
+                    navController.navigate(GreetingScreen)
+            }else{
+                onOTp()
+            }
+
         }
     }
         Box(modifier = Modifier

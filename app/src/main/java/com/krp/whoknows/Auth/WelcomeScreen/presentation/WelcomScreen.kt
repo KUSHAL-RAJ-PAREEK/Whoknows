@@ -1,6 +1,7 @@
 package com.krp.whoknows.Auth.WelcomeScreen.presentation
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,8 +40,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.krp.whoknows.R
+import com.krp.whoknows.roomdb.JWTViewModel
 import com.krp.whoknows.ui.theme.ordColor
 import com.krp.whoknows.ui.theme.splashScreenColor
+import kotlinx.coroutines.flow.StateFlow
+import org.koin.java.KoinJavaComponent.inject
 
 /**
  * Created by KUSHAL RAJ PAREEK on 27,January,2025
@@ -53,13 +57,16 @@ private fun run() {
     WelcomeScreen {  }
 }
 
-@SuppressLint("ResourceAsColor")
+@SuppressLint("ResourceAsColor", "StateFlowValueCalledInComposition")
 @Composable
 fun WelcomeScreen(modifier: Modifier = Modifier,
                   onClick:()-> Unit) {
-   Box(modifier = Modifier
-       .fillMaxSize()
-       .background(splashScreenColor)) {
+//    val jwtViewModel : JWTViewModel by inject(JWTViewModel::class.java)
+//    val pNumber: StateFlow<String?> = jwtViewModel.phoneNumber
+//    Log.d("numbereeeeee",pNumber.value.toString())
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(splashScreenColor)) {
        Canvas(modifier = Modifier.size(1400.dp), onDraw = {
            translate(left = 1130f, top = -900f) {
                drawCircle(color = ordColor, radius = 1200f)
@@ -91,17 +98,17 @@ fun WelcomeScreen(modifier: Modifier = Modifier,
                    modifier = Modifier.padding(start = 0.dp, top = 60.dp)
                )
            }
-               Image(
-                   painter = painterResource(id = R.drawable.landing_image),
-                   contentDescription = "Landing Image",
-                   modifier = Modifier
-                       .size(500.dp)
-                       .fillMaxSize()
-                       .graphicsLayer {
-                           translationX = -200f
-                           translationY = 50f
-                       }
-               )
+//               Image(
+//                   painter = painterResource(id = R.drawable.landing_image),
+//                   contentDescription = "Landing Image",
+//                   modifier = Modifier
+//                       .size(500.dp)
+//                       .fillMaxSize()
+//                       .graphicsLayer {
+//                           translationX = -200f
+//                           translationY = 50f
+//                       }
+//               )
 
            Button(modifier = modifier
                .padding(top = 50.dp)

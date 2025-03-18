@@ -6,9 +6,11 @@ package com.krp.whoknows.ktorclient
 
 import android.util.Log
 import com.krp.whoknows.model.OtpDetail
+import com.krp.whoknows.model.OtpResponse
 import com.krp.whoknows.model.SendOTP
 import com.krp.whoknows.model.User
 import com.krp.whoknows.model.UserResponse
+import com.krp.whoknows.roomdb.entity.UserResponseEntity
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.header
@@ -44,7 +46,7 @@ class KtorClient : KoinComponent {
         }
     }
 
-    suspend fun verifyOtp(sendOTP: SendOTP): String {
+    suspend fun verifyOtp(sendOTP: SendOTP): OtpResponse {
         val response = client.post {
             url("/public/verify-otp")
             contentType(ContentType.Application.Json)
@@ -56,10 +58,10 @@ class KtorClient : KoinComponent {
 
         return when (statusCode) {
             404 -> {
-                return response.body()
+                return OtpResponse(response.status.value,response.body())
             }
             200 -> {
-                return response.body()
+                return OtpResponse(response.status.value,response.body())
             }
             else -> {
                 throw Exception("Failed to verify OTP. Status code: ${response.status.value}")
@@ -131,4 +133,26 @@ class KtorClient : KoinComponent {
             null
         }
     }
+
+
+    suspend fun updateUser(user: UserResponseEntity,jwt : String): Int{
+        val jwtToken =
+            "Bearer $jwt"
+        Log.d("jwtisthere", jwtToken)
+        Log.d("KtorClient", "Sending Authorization Header: ${user}")
+
+        val response = client.post("/users/update-user") {
+            contentType(ContentType.Application.Json)
+//            bearerAuth(jwtToken)
+//            header(HttpHeaders.Authorization, jwtToken)
+            bearerAuth(jwt)
+            setBody(user)
+        }
+
+        val statusCode = response.status.value
+        Log.d("sstttsss", statusCode.toString())
+
+        return statusCode
+    }
+
 }

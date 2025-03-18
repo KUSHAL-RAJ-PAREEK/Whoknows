@@ -47,6 +47,7 @@ import android.graphics.ColorMatrixColorFilter
 import android.graphics.RenderEffect
 import android.graphics.Shader
 import android.net.Uri
+import android.util.Log
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -66,6 +67,8 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.focus.focusModifier
@@ -79,10 +82,16 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM
 import com.google.android.exoplayer2.ui.StyledPlayerView
+import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
+import com.krp.whoknows.Appui.Profile.presentation.ProfileDetailViewModel
 import com.krp.whoknows.Navigation.FAB_KEY
 import com.krp.whoknows.Navigation.HomeScreen
 import com.krp.whoknows.Utils.times
 import com.krp.whoknows.Utils.transform
+import org.koin.androidx.compose.getViewModel
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalQueries.localDate
 
 
 /**
@@ -123,8 +132,8 @@ fun SharedTransitionScope.HomeScreen(
     navController: NavController,
     onFabClick: ()-> Unit,
     onProfileClick:()-> Unit,
-    onChatClick:()-> Unit
-) {
+    onChatClick:()-> Unit,
+    greetingViewModel: GreetingViewModel){
     val context = LocalContext.current
 //    val exoPlayer = remember { context.buildExoPlayer(videoUri) }
 //

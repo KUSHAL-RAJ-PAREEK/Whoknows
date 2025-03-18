@@ -41,7 +41,7 @@ class OTPVerificationViewModel : ViewModel(), KoinComponent {
             try {
                 val otpToVerify = SendOTP(countryCode, phoneNumber, otp)
                 val response = ktorClient.verifyOtp(otpToVerify)
-                _state.value = OTPVerificationState(isOtpVerified = true, successMessage = response)
+                _state.value = OTPVerificationState(isOtpVerified = true, successMessage = response.body, statusCode = response.statusCode)
             } catch (e: Exception) {
                 _state.value = OTPVerificationState(errorMessage = e.localizedMessage ?: "An error occurred")
             }

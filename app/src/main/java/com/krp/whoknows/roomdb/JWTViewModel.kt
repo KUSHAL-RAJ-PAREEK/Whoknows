@@ -80,7 +80,6 @@ class JWTViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     suspend fun savePhoneNumber(number: String) {
-
         dataStore.savePhoneNumber(number)
         _phoneNumber.value = number
 

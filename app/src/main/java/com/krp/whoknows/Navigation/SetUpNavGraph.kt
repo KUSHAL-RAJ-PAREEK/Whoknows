@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,8 +40,14 @@ import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
 import com.krp.whoknows.Appui.HomeScreen.presentation.HomeScreen
 import com.krp.whoknows.Appui.Profile.presentation.EditProfileComponents.EditBioScreen
 import com.krp.whoknows.Appui.Profile.presentation.EditProfileComponents.EditProfileMapScreen
+import com.krp.whoknows.Appui.Profile.presentation.EditProfileViewModel
+import com.krp.whoknows.Appui.Profile.presentation.ImageViewModel
+import com.krp.whoknows.Appui.Profile.presentation.MainImageViewModel
+import com.krp.whoknows.Appui.Profile.presentation.ProfileDetailViewModel
 import com.krp.whoknows.Appui.Profile.presentation.ProfileEditScreen
 import com.krp.whoknows.Appui.Profile.presentation.ProfileScreen
+import com.krp.whoknows.Appui.Profile.presentation.ProfileViewModel
+import com.krp.whoknows.Appui.Profile.presentation.UpdateUserViewModel
 import com.krp.whoknows.Appui.userInfo.CreateUserViewModel
 import com.krp.whoknows.Appui.userInfo.DOBScreen
 import com.krp.whoknows.Appui.userInfo.InfoViewModel
@@ -52,9 +59,13 @@ import com.krp.whoknows.Auth.WelcomeScreen.presentation.WelcomeScreen
 import com.krp.whoknows.Utils.scaleIntoContainer
 import com.krp.whoknows.Utils.scaleOutOfContainer
 import com.krp.whoknows.model.LatLongs
+import com.krp.whoknows.roomdb.ImageRepository
 import com.krp.whoknows.roomdb.JWTViewModel
 import com.krp.whoknows.ui.theme.ordColor
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.StateFlow
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import kotlin.math.log
 
 /**
@@ -70,6 +81,13 @@ const val FAB_KEY = "FAB_KEY"
 fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
 
     val InfoViewModel: InfoViewModel = koinViewModel()
+    val profileDetailViewModel: ProfileDetailViewModel = koinViewModel()
+    val editProfileViewModel : EditProfileViewModel = koinViewModel()
+    val jwtViewModel: JWTViewModel = koinViewModel()
+    val imageViewModel : ImageViewModel = koinViewModel()
+    val mainImageViewModel: MainImageViewModel = koinViewModel()
+    val greetingViewModel: GreetingViewModel = koinViewModel()
+
     SharedTransitionLayout {
             val navController = rememberNavController()
             NavHost(
@@ -107,7 +125,8 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
                         jwtViewModel,
                         navController = navController,
                         phoneNumber = args.phoneNumber,
-                        onOTp = { onOTp(navController) }
+                        onOTp = { onOTp(navController) },
+                        greetingViewModel = greetingViewModel
                     )
                 }
 
@@ -145,11 +164,10 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
 
                 composable<LatLong> {
                     val userViewModel: CreateUserViewModel = koinViewModel()
-                    val jwtViewModel: JWTViewModel = koinViewModel()
                     val state by userViewModel.state.collectAsStateWithLifecycle()
                     val args = it.toRoute<LatLong>()
                     com.krp.whoknows.Appui.userInfo.LatLong(
-                        viewModel = InfoViewModel, event = userViewModel::onEvent, state = state,
+                        viewModel = InfoViewModel,greetingViewModel = greetingViewModel, event = userViewModel::onEvent, state = state,
                         jwtViewModel = jwtViewModel, navController = navController, latLong = LatLongs(
                             args.latitude ?: "",
                             args.longitude ?: ""
@@ -165,6 +183,7 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
                 }
 
                 composable<HomeScreen> {
+//                    val greetingViewModel: GreetingViewModel = koinViewModel()
                     HomeScreen(
                         videoUri = getVideoUri(),
                         navController = navController,animatedVisibilityScope = this
@@ -176,7 +195,9 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
                         },
                         onChatClick={
                             navController.navigate(ChatScreen)
-                        })
+                        },
+                        greetingViewModel =greetingViewModel)
+
                 }
 
                 composable<MatchingScreen> {
@@ -200,6 +221,7 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
 
                 composable("profileScreen"){
                     var matrix by remember { mutableStateOf(ColorMatrix()) }
+                    val profileViewModel: ProfileViewModel = koinViewModel()
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -213,7 +235,12 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
                     ) {
                         ProfileScreen(matrix = matrix, navController = navController, onITemClick = {resId ,text ->
                             navController.navigate("profileEditScreen/$resId/$text")
-                        },  animatedVisibilityScope = this@composable)
+                        },  animatedVisibilityScope = this@composable,
+                            profileViewModel = profileViewModel,
+                            profileDetailViewModel = profileDetailViewModel,
+                            editProfileViewModel= editProfileViewModel,
+                            mainImageViewModel = mainImageViewModel,
+                            imageViewModel = imageViewModel)
                     }
                 }
 
@@ -245,18 +272,30 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
                     )){
                     val resId = it.arguments?.getInt("resId")?:0
                     val text = it.arguments?.getString("text")?:""
-                 ProfileEditScreen(
+                    val profileViewModel: ProfileViewModel = koinViewModel()
+                    val updateUserViewModel: UpdateUserViewModel = koinViewModel()
+                    val state by updateUserViewModel.state.collectAsStateWithLifecycle()
+
+                    ProfileEditScreen(
                         resId = resId,
                         text = text,
                         animatedVisibilityScope = this,
-                     viewModel = InfoViewModel,
                      navController = navController,
-                     onBioClick={t->
-                         navController.navigate("EditBioScreen/$t")
+                     onBioClick={
+                         navController.navigate("EditBioScreen/${editProfileViewModel.bio.value}")
                      },
                      onMapClick={t ->
                          navController.navigate("EditProfileMapScreen/$t")
-                     }
+                     },
+                        profileViewModel = profileViewModel,
+                        editProfileViewModel = editProfileViewModel,
+                        mainImageViewModel = mainImageViewModel,
+                        profileDetailViewModel= profileDetailViewModel,
+                        imageViewModel = imageViewModel,
+                        updateUserViewModel = updateUserViewModel,
+                        state = state,
+                        event = updateUserViewModel::onEvent,
+                        greetingViewModel = greetingViewModel
                     )
 
                 }
@@ -272,6 +311,7 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
                         text = text,
                         animatedVisibilityScope = this@composable,
                         viewModel = InfoViewModel,
+                        editProfileViewModel = editProfileViewModel,
                         navController = navController)
 
                 }
@@ -284,9 +324,10 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
                     )){
                     val text = it.arguments?.getString("t")?:""
                     EditBioScreen(
-                        text = text,
+                        trans_text = text,
                         animatedVisibilityScope = this@composable,
                         viewModel = InfoViewModel,
+                        editProfileViewModel = editProfileViewModel,
                         navController = navController)
 
                 }
@@ -303,7 +344,13 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
                     val state by viewModel.state.collectAsStateWithLifecycle()
                         GreetingScreen(navController = navController, greetingViewModel = viewModel,
                             state = state,
-                            event = viewModel::onEvent)
+                            event = viewModel::onEvent,
+                            profileDetailViewModel = profileDetailViewModel,
+                            editProfileViewModel = editProfileViewModel,
+                            jwtViewModel = jwtViewModel,
+                            imageViewModel = imageViewModel,
+                            mainImageViewModel = mainImageViewModel
+                        )
                 }
 
 

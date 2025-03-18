@@ -25,11 +25,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
+import com.krp.whoknows.Appui.Profile.presentation.ImageViewModel
 import com.krp.whoknows.Navigation.SetUpNavGraph
 import com.krp.whoknows.Auth.WelcomeScreen.presentation.WelcomeScreen
 import com.krp.whoknows.roomdb.DataStoreManager
 import com.krp.whoknows.roomdb.JWTViewModel
 import com.krp.whoknows.ui.theme.WhoknowsTheme
+import kotlinx.coroutines.delay
 import org.koin.android.ext.android.inject
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.KoinApplication.Companion.init
@@ -41,10 +45,14 @@ class MainActivity : ComponentActivity() {
         val splashScreen = installSplashScreen()
 
         setContent {
+
             val jwtViewModel: JWTViewModel by inject()
-//            val token by jwtViewModel.jwtToken.collectAsState(initial = null)
-            val p by jwtViewModel.userDetail.collectAsState(initial = null)
+            val greetingViewModel: GreetingViewModel by inject()
+            val p by greetingViewModel.userState.collectAsState()
+
+            val p1 by jwtViewModel.userDetail.collectAsState(initial = null)
             Log.d("userishere1111", p.toString())
+            Log.d("userishere1111", p1.toString())
 
             var startDest by remember { mutableStateOf<Any?>(null) }
             var timeoutReached by remember { mutableStateOf(false) }
@@ -52,6 +60,7 @@ class MainActivity : ComponentActivity() {
             splashScreen.setKeepOnScreenCondition { startDest == null && !timeoutReached }
 
             LaunchedEffect(p) {
+                delay(1000)
                 if (p?.username != null) {
                     startDest = if (p?.username!!.isEmpty()) {
                         com.krp.whoknows.Navigation.WelcomeScreen
@@ -62,7 +71,7 @@ class MainActivity : ComponentActivity() {
             }
 
             LaunchedEffect(Unit) {
-                kotlinx.coroutines.delay(3000)
+                kotlinx.coroutines.delay(2000)
                 if (startDest == null) {
                     timeoutReached = true
                     startDest = com.krp.whoknows.Navigation.WelcomeScreen

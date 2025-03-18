@@ -4,11 +4,15 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
 import com.krp.whoknows.model.UserResponse
+import com.krp.whoknows.roomdb.entity.GalleryImageEntity
 import com.krp.whoknows.roomdb.entity.InterUserDetail
 import com.krp.whoknows.roomdb.entity.JWTToken
+import com.krp.whoknows.roomdb.entity.ProfileImageEntity
 import com.krp.whoknows.roomdb.entity.UserPhoneNumber
 import com.krp.whoknows.roomdb.entity.UserResponseEntity
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Created by KUSHAL RAJ PAREEK on 03,February,2025
@@ -18,10 +22,31 @@ import com.krp.whoknows.roomdb.entity.UserResponseEntity
 interface Dao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertProfileImage(profileImage: ProfileImageEntity)
+
+    @Query("SELECT * FROM profile_image LIMIT 1")
+    suspend fun getProfileImage(): ProfileImageEntity?
+
+    @Query("DELETE FROM profile_image")
+    suspend fun deleteProfileImage()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertGalleryImage(galleryImage: GalleryImageEntity)
+
+    @Query("SELECT * FROM gallery_images WHERE id = :id")
+    suspend fun getGalleryImageById(id: String): GalleryImageEntity?
+
+    @Query("SELECT * FROM gallery_images ORDER BY id DESC")
+    suspend fun getGalleryImages(): List<GalleryImageEntity>
+
+    @Query("DELETE FROM gallery_images WHERE id = :id")
+    suspend fun deleteGalleryImageById(id: String)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveUser(user: UserResponseEntity)
 
     @Query("SELECT * FROM userdetails LIMIT 1")
-    suspend fun getUser(): UserResponseEntity?
+    fun getUser(): Flow<UserResponseEntity?>
 
     @Query("DELETE FROM userdetails WHERE id = :userId")
     suspend fun deleteUser(userId: String)
@@ -36,13 +61,13 @@ interface Dao {
     suspend fun insertUser(user: InterUserDetail)
 
     @Query("SELECT * FROM jwt_token WHERE id = 1")
-    suspend fun getToken(): JWTToken?
+     fun getToken():  Flow<JWTToken?>
 
     @Query("DELETE FROM jwt_token")
     suspend fun deleteToken()
 
     @Query("SELECT * FROM user_phone WHERE id = 1")
-    suspend fun getPhoneNumber(): UserPhoneNumber?
+     fun getPhoneNumber(): Flow<UserPhoneNumber?>
 
     @Query("UPDATE user_detail SET id = :id, username = :username, gender = :gender, dob = :dob, latitude = :latitude, longitude = :longitude, bio = :bio, interests = :interests, posts = :posts, geoRadiusRange = :geoRadiusRange, preferredGender = :preferredGender, ageGap = :ageGap, pnumber = :pnumber WHERE uid = 1")
     suspend fun updateUser(

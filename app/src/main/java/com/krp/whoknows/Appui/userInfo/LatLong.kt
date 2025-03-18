@@ -37,9 +37,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,17 +61,22 @@ import androidx.navigation.NavController
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.LocalTextStyle
 import androidx.xr.compose.testing.toDp
+import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
 import com.krp.whoknows.Navigation.MapScreen
 import com.krp.whoknows.R
 import com.krp.whoknows.Utils.checkForPermission
 import com.krp.whoknows.Utils.getLocationName
 import com.krp.whoknows.model.LatLongs
 import com.krp.whoknows.model.User
-import com.krp.whoknows.model.UserResponse
 import com.krp.whoknows.roomdb.JWTViewModel
 import com.krp.whoknows.roomdb.entity.InterUserDetail
 import com.krp.whoknows.ui.theme.ordColor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Created by KUSHAL RAJ PAREEK on 10,February,2025
@@ -84,14 +91,15 @@ import kotlinx.coroutines.flow.StateFlow
 fun LatLong(viewModel: InfoViewModel,
             event : (CreateUserEvent) -> Unit,
             jwtViewModel: JWTViewModel,
+            greetingViewModel: GreetingViewModel,
             state :CreateUserState,
             navController: NavController,
-            latLong: LatLongs
+            latLong: LatLongs,
 ) {
 
 
-    val pNumber: StateFlow<String?> = jwtViewModel.phoneNumber
-
+    var pNumber= greetingViewModel.pNumber.collectAsState()
+    var jwt= greetingViewModel.jwtToken.collectAsState()
     val context = LocalContext.current
     var hasLocationPermission by remember {
         mutableStateOf(checkForPermission(context))
@@ -127,7 +135,7 @@ LaunchedEffect(state.isLoading) {
             preferredGender = details.preferredGender!!,
             geoRadiusRange = details.geoRadiusRange.toString(),
             dob = details.dob!!,
-            bio = details.bio!!,
+            bio = details.bio?:"hey",
             latitude = details.latitude!!,
             longitude = details.longitude!!,
             pnumber = details.pnumber!!
@@ -158,6 +166,8 @@ LaunchedEffect(state.isLoading) {
             text = TextFieldValue(loc.toString())
         }
     }
+    val coroutineScope = rememberCoroutineScope()
+
     var isFocused by remember { mutableStateOf(false) }
     val imeHeight = WindowInsets.ime.getBottom(LocalDensity.current).toDp()
     BackHandler {
@@ -247,24 +257,31 @@ LaunchedEffect(state.isLoading) {
         ) {
             FloatingActionButton(
                 onClick = {
+
                     if (text.text.isBlank()) {
                         Toast.makeText(context, "Click to select Location", Toast.LENGTH_SHORT).show()
                     } else {
-//                        if(pNumber.value == null){
-//                            Log.d("asfddffffffffffff", "null")
-//
-//                        }else{
-//                            Log.d("asfddffffffffffff", pNumber.value.toString())
-//                        }
-                        val user = User(pNumber =  pNumber.value!!,
-                            geoRadiusRange = viewModel.geoRadiusRange.value,
-                            preferredGender = viewModel.preGender.value,
-                            preferredAgeRange = viewModel.preAgeRange.value,
-                            latitude = latLong.latitude,
-                            longitude = latLong.longitude,
-                            userDob = viewModel.dob.value,
-                            userGender = viewModel.gender.value)
-                        event(CreateUserEvent.CreateUser(user, jwtViewModel.jwtToken.value!!))
+                        if(pNumber?.value == null){
+                            Log.d("asfddffffffffffff", "null")
+
+                        }else{
+                            Log.d("asfddffffffffffff", pNumber.value.toString())
+                        }
+                        coroutineScope.launch {
+                            withContext(Dispatchers.IO) {
+                                delay(1000)
+                                Log.d("asfddffffffffffff", jwt.value.toString())
+                                val user = User(pNumber =  pNumber?.value!!,
+                                    geoRadiusRange = viewModel.geoRadiusRange.value,
+                                    preferredGender = viewModel.preGender.value,
+                                    preferredAgeRange = viewModel.preAgeRange.value,
+                                    latitude = latLong.latitude,
+                                    longitude = latLong.longitude,
+                                    userDob = viewModel.dob.value,
+                                    userGender = viewModel.gender.value)
+                                event(CreateUserEvent.CreateUser(user, jwt.value.toString()))
+                            }
+                        }
                     }
                 },
                 shape = CircleShape,
