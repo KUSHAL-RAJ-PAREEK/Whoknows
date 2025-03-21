@@ -672,9 +672,8 @@ fun SharedTransitionScope.ProfileEditScreen(
                 Spacer(modifier = Modifier.height(10.dp))
                 // dropdown
                 RemDropDownMenu(listOf("MALE", "FEMALE"), editProfileViewModel.preGender.value) {
-                    if (editProfileViewModel.preGender.value.isBlank()) {
-                        editProfileViewModel.updatePreGender(it)
-                    }
+                    Log.d("precoming",it)
+                    editProfileViewModel.updatePreGender(it)
                     preferredGender = TextFieldValue(editProfileViewModel.preGender.value)
                 }
             }
@@ -700,7 +699,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                         value = fPre,
                         onValueChange = {
                             fPre = it
-                            editProfileViewModel.updatePreAgeRange(it.text)
+                            editProfileViewModel.updateFPreAgeRange(it.text)
                         },
                         modifier = Modifier
                             .weight(1f)
