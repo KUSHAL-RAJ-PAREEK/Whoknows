@@ -20,6 +20,9 @@ class ProfileDetailViewModel: ViewModel() {
     private val _dobs = MutableStateFlow("")
     val dobs: StateFlow<String> = _dobs
 
+    private val _isMatch = MutableStateFlow(false)
+    val isMatch: StateFlow<Boolean> = _isMatch
+
     private val _id = MutableStateFlow("")
     val id: StateFlow<String> = _id
 
@@ -44,6 +47,8 @@ val fImage : StateFlow<String> = _fImage
     private val _imgUrl = MutableStateFlow("")
     val imgUrl: StateFlow<String> = _imgUrl
 
+    private val _jwt = MutableStateFlow("")
+    val jwt: StateFlow<String> = _jwt
 
     private val _gender = MutableStateFlow("")
     val gender: StateFlow<String> = _gender
@@ -128,6 +133,13 @@ val fImage : StateFlow<String> = _fImage
         _longitude.value = long
     }
 
+    fun updateMatch(flag : Boolean) {
+        _isMatch.value = flag
+    }
+
+    fun updateJwt(jwt : String){
+        _jwt.value = jwt
+    }
     fun updateLocation(location: String) {
         _location.value = location
     }
@@ -164,5 +176,8 @@ val fImage : StateFlow<String> = _fImage
     fun updateGeoRadiusRange(geoRadiusRange: String) {
         _geoRadiusRange.value = geoRadiusRange
     }
+
+
+
 
 }

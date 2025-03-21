@@ -107,13 +107,13 @@ UserGender(InfoViewModel(),
                     Text(
                         text = "What's your Gender ?",
                         fontFamily = FontFamily(Font(R.font.noto_sans_khanada)),
-                        fontSize = 25.sp
+                        fontSize = 20.sp
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
 
                     // dropdown
-                    DropDownMenu(listOf("MALE", "FEMALE"), viewModel.gender.value) {
+                    DropDownMenu(listOf("MALE", "FEMALE"), viewModel.gender.value, flag = true) {
                         if (viewModel.gender.value.isBlank()) {
                             viewModel.updateGender(it)
                         }

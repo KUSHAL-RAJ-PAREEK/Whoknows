@@ -129,6 +129,7 @@ import com.krp.whoknows.SupabaseClient.supabaseClient
 import com.krp.whoknows.Utils.CustomMultilineHintTextField
 import com.krp.whoknows.Utils.Dialogs
 import com.krp.whoknows.Utils.RemDropDownMenu
+import com.krp.whoknows.Utils.calculateAge
 import com.krp.whoknows.Utils.checkForPermission
 import com.krp.whoknows.Utils.drawableToBitmap
 import com.krp.whoknows.Utils.getImageBitmapOrPlaceholder
@@ -204,7 +205,7 @@ fun SharedTransitionScope.ProfileEditScreen(
     val G3 by imageViewModel.thirdGalleryImage.collectAsState()
 
 
-    val PimageBitmap = getImageBitmapOrPlaceholder(profileImage)
+    val PimageBitmap = getImageBitmapOrPlaceholder(profileImage,gender = profileDetailViewModel.gender.value)
 
     val FimageBitmap = getImageBitmapOrPlaceholder(G1)
     val SimageBitmap = getImageBitmapOrPlaceholder(G2)
@@ -363,7 +364,7 @@ fun SharedTransitionScope.ProfileEditScreen(
 
 
     var date by remember {
-        mutableStateOf(LocalDate.now())
+        mutableStateOf(editProfileViewModel.dob.value)
     }
 
     LaunchedEffect(Unit) {
@@ -459,10 +460,10 @@ fun SharedTransitionScope.ProfileEditScreen(
             Log.d("sucesssssss", "dasdssadsd")
         }
         if (state.statusCode == 200) {
-            Log.d("dasdasdasd",Pimg_url.toString())
-            Log.d("dasdasdasd",g1img_url.toString())
-            Log.d("dasdasdasd",g2img_url.toString())
-            Log.d("dasdasdasd",g3img_url.toString())
+            Log.d("dasdasdasd", Pimg_url.toString())
+            Log.d("dasdasdasd", g1img_url.toString())
+            Log.d("dasdasdasd", g2img_url.toString())
+            Log.d("dasdasdasd", g3img_url.toString())
             val user = UserResponseEntity(
                 imgUrl = Pimg_url,
                 posts = galleryList,
@@ -482,35 +483,38 @@ fun SharedTransitionScope.ProfileEditScreen(
             Log.d("saveUser", user.toString())
 
 //            withContext(Dispatchers.IO) {
-                greetingViewModel.saveUser(user)
+            greetingViewModel.saveUser(user)
 
-                profileDetailViewModel.updatePnumber(editProfileViewModel.pnumber.value)
-                profileDetailViewModel.updateId(editProfileViewModel.id.value)
-                profileDetailViewModel.updateImgUrl(Pimg_url.toString())
-                profileDetailViewModel.updatePosts(galleryList ?: emptyList())
-                profileDetailViewModel.updatePreAgeRange("${editProfileViewModel.preAgeFRange.value}-${editProfileViewModel.preAgeTRange.value}")
-                profileDetailViewModel.updateBio(editProfileViewModel.bio.value)
-                profileDetailViewModel.updateDOB(editProfileViewModel.dob.value)
-                profileDetailViewModel.updateGender(editProfileViewModel.gender.value)
-                profileDetailViewModel.updateGeoRadiusRange(editProfileViewModel.geoRadiusRange.value)
-                profileDetailViewModel.updateLatitude(editProfileViewModel.latitude.value)
-                profileDetailViewModel.updateLongitude(editProfileViewModel.longitude.value)
-                profileDetailViewModel.updatePnumber(editProfileViewModel.pnumber.value)
-                profileDetailViewModel.updatePreGender(editProfileViewModel.preGender.value)
-                profileDetailViewModel.updateUsername(editProfileViewModel.username.value)
-                profileDetailViewModel.updateInterest(editProfileViewModel.interests.value!!)
-                Log.d("saveUser", "User saved successfully in background")
+            profileDetailViewModel.updatePnumber(editProfileViewModel.pnumber.value)
+            profileDetailViewModel.updateId(editProfileViewModel.id.value)
+            profileDetailViewModel.updateImgUrl(Pimg_url.toString())
+            profileDetailViewModel.updatePosts(galleryList ?: emptyList())
+            profileDetailViewModel.updatePreAgeRange("${editProfileViewModel.preAgeFRange.value}-${editProfileViewModel.preAgeTRange.value}")
+            profileDetailViewModel.updateBio(editProfileViewModel.bio.value)
+            profileDetailViewModel.updateDOB(editProfileViewModel.dob.value)
+            profileDetailViewModel.updateGender(editProfileViewModel.gender.value)
+            profileDetailViewModel.updateGeoRadiusRange(editProfileViewModel.geoRadiusRange.value)
+            profileDetailViewModel.updateLatitude(editProfileViewModel.latitude.value)
+            profileDetailViewModel.updateLongitude(editProfileViewModel.longitude.value)
+            profileDetailViewModel.updatePnumber(editProfileViewModel.pnumber.value)
+            profileDetailViewModel.updatePreGender(editProfileViewModel.preGender.value)
+            profileDetailViewModel.updateUsername(editProfileViewModel.username.value)
+            profileDetailViewModel.updateInterest(editProfileViewModel.interests.value!!)
+            profileDetailViewModel.updateDobs(calculateAge(date.toString()).toString())
+            profileDetailViewModel.updateLocation(editProfileViewModel.location.value)
+            Log.d("saveUser", "User saved successfully in background")
 //            }
             Log.d("asdasdasdsadsa", galleryList.toString())
-                        Toast.makeText(context, "data saved", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context, "data saved", Toast.LENGTH_SHORT).show()
+            Log.d("asdasdasdsadsa","data saved")
 
             delay(4000)
-            uploading  = false
+            uploading = false
             navController.popBackStack()
             navController.navigate("profileScreen")
 //            navController.navigate(HomeScreen)
         } else {
-           Log.d("profileEditScreen","error");
+            Log.d("profileEditScreen", "error");
         }
     }
 
@@ -645,7 +649,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                             }
                         )
                     },
-                    textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+                    textStyle = LocalTextStyle.current.copy(fontSize = 18.sp, color = Color.Black),
                     placeholder = { Text("Enter your Date of Birth") },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = ordColor,
@@ -701,7 +705,10 @@ fun SharedTransitionScope.ProfileEditScreen(
                         modifier = Modifier
                             .weight(1f)
                             .onFocusChanged { isFocusedList[0] = it.isFocused },
-                        textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+                        textStyle = LocalTextStyle.current.copy(
+                            fontSize = 18.sp,
+                            color = Color.Black
+                        ),
                         placeholder = { Text("Min") },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = ordColor,
@@ -725,7 +732,10 @@ fun SharedTransitionScope.ProfileEditScreen(
                         modifier = Modifier
                             .weight(1f)
                             .onFocusChanged { isFocusedList[0] = it.isFocused },
-                        textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+                        textStyle = LocalTextStyle.current.copy(
+                            fontSize = 18.sp,
+                            color = Color.Black
+                        ),
                         placeholder = { Text("Max") },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = ordColor,
@@ -766,7 +776,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                         .fillMaxWidth()
                         .clickable {}
                         .onFocusChanged { isFocusedList[2] = it.isFocused },
-                    textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+                    textStyle = LocalTextStyle.current.copy(fontSize = 18.sp, color = Color.Black),
                     placeholder = { Text("Enter range in KM") },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = ordColor,
@@ -833,7 +843,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                             }
                         )
                         .onFocusChanged { isFocusedList[3] = it.isFocused },
-                    textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+                    textStyle = LocalTextStyle.current.copy(fontSize = 18.sp, color = Color.Black),
                     placeholder = { Text("Enter your Location") },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = ordColor,
@@ -886,7 +896,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                                 }
                         )
                     },
-                    textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+                    textStyle = LocalTextStyle.current.copy(fontSize = 18.sp, color = Color.Black),
                     placeholder = { Text("Write About yourself") },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = ordColor,
@@ -1152,17 +1162,25 @@ fun SharedTransitionScope.ProfileEditScreen(
                             "You must be at least 18 years old",
                             Toast.LENGTH_SHORT
                         ).show()
-                    }else if(fPre.text.toInt() > tPre.text.toInt()){
-                        Toast.makeText(context, "min range should be small from max range", Toast.LENGTH_SHORT).show()
-                    }else{
+                    } else if (fPre.text.toInt() > tPre.text.toInt()) {
+                        Toast.makeText(
+                            context,
+                            "min range should be small from max range",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
                         coroutineScope.launch {
                             uploading = true
                             val deleteProfileTask = async {
                                 if (isProfileDeleted) {
-                                    val success = imageViewModel.deleteImageSupabase("profile_images",editProfileViewModel.id.value)
+                                    val success = imageViewModel.deleteImageSupabase(
+                                        "profile_images",
+                                        editProfileViewModel.id.value
+                                    )
                                     if (success) {
                                         imageViewModel.deleteProfile()
                                         imageViewModel.updateProfile(null)
+                                        mainImageViewModel.updateProfile(null)
                                         true
                                     } else {
                                         Log.e("DeleteError", "Profile deletion failed!")
@@ -1175,10 +1193,16 @@ fun SharedTransitionScope.ProfileEditScreen(
 
                             val deleteG1Task = async {
                                 if (isG1Deleted) {
-                                    val success = imageViewModel.deleteImageSupabase("gallery_images",editProfileViewModel.id.value)
+
+                                    val success = imageViewModel.deleteImageSupabase(
+                                        "gallery_images",
+                                        "${editProfileViewModel.id.value}_g1"
+                                    )
                                     if (success) {
+                                        Log.d("hello99999", "g1")
                                         imageViewModel.deleteGalleryImage("${editProfileViewModel.id.value}_g1")
                                         imageViewModel.updateG1(null)
+                                        mainImageViewModel.updateG1(null)
                                         true
                                     } else {
                                         Log.e("DeleteError", "Profile deletion failed!")
@@ -1191,10 +1215,16 @@ fun SharedTransitionScope.ProfileEditScreen(
 
                             val deleteG2Task = async {
                                 if (isG2Deleted) {
-                                    val success = imageViewModel.deleteImageSupabase("gallery_images",editProfileViewModel.id.value)
+
+                                    val success = imageViewModel.deleteImageSupabase(
+                                        "gallery_images",
+                                        "${editProfileViewModel.id.value}_g2"
+                                    )
                                     if (success) {
+                                        Log.d("hello99999", "g2")
                                         imageViewModel.deleteGalleryImage("${editProfileViewModel.id.value}_g2")
                                         imageViewModel.updateG2(null)
+                                        mainImageViewModel.updateG2(null)
                                         true
                                     } else {
                                         Log.e("DeleteError", "Profile deletion failed!")
@@ -1206,10 +1236,16 @@ fun SharedTransitionScope.ProfileEditScreen(
                             }
                             val deleteG3Task = async {
                                 if (isG3Deleted) {
-                                    val success = imageViewModel.deleteImageSupabase("gallery_images",editProfileViewModel.id.value)
+
+                                    val success = imageViewModel.deleteImageSupabase(
+                                        "gallery_images",
+                                        "${editProfileViewModel.id.value}_g3"
+                                    )
                                     if (success) {
+                                        Log.d("hello99999", "g3")
                                         imageViewModel.deleteGalleryImage("${editProfileViewModel.id.value}_g3")
                                         imageViewModel.updateG3(null)
+                                        mainImageViewModel.updateG3(null)
                                         true
                                     } else {
                                         Log.e("DeleteError", "Profile deletion failed!")
@@ -1220,7 +1256,12 @@ fun SharedTransitionScope.ProfileEditScreen(
                                 }
                             }
 
-                            val result = awaitAll(deleteProfileTask, deleteG1Task, deleteG2Task, deleteG3Task)
+                            val result = awaitAll(
+                                deleteProfileTask,
+                                deleteG1Task,
+                                deleteG2Task,
+                                deleteG3Task
+                            )
 
                             Log.d("Debug", "awaitAll completed with results: $result")
 
@@ -1259,7 +1300,11 @@ fun SharedTransitionScope.ProfileEditScreen(
 
                             var profileUpload = async {
                                 mImage?.let { uri ->
-                                    val success = imageViewModel.saveProfiletoSupabase(context, uri, editProfileViewModel.id.value)
+                                    val success = imageViewModel.saveProfiletoSupabase(
+                                        context,
+                                        uri,
+                                        editProfileViewModel.id.value
+                                    )
                                     if (success) {
                                         imageViewModel.saveProfileImage(context, uri)
                                         val base64String = uriToBase64(context, uri)
@@ -1270,7 +1315,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                                         Log.e("UploadError", "Profile image upload failed!")
                                     }
                                     success
-                                }?:true
+                                } ?: true
                             }
 
 //                        mImage?.let { uri ->
@@ -1293,8 +1338,8 @@ fun SharedTransitionScope.ProfileEditScreen(
 //                        }
 
 
-                            var G1Upload = async{
-                                Log.d("ggggggg1","afsfasfafsafa")
+                            var G1Upload = async {
+                                Log.d("ggggggg1", "afsfasfafsafa")
 
                                 fImage?.let { uri ->
                                     val success = imageViewModel.saveGallerytoSupabase(
@@ -1303,7 +1348,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                                         "${editProfileViewModel.id.value}_g1"
                                     )
 
-                                    if(success){
+                                    if (success) {
                                         imageViewModel.saveGalleryImage(
                                             context,
                                             uri,
@@ -1317,11 +1362,11 @@ fun SharedTransitionScope.ProfileEditScreen(
                                         Log.e("UploadError", "Profile image upload failed!")
                                     }
                                     success
-                                }?:true
+                                } ?: true
                             }
 
-                            var G2Upload = async{
-                                Log.d("ggggggg2","afsfasfafsafa")
+                            var G2Upload = async {
+                                Log.d("ggggggg2", "afsfasfafsafa")
                                 sImage?.let { uri ->
                                     val success = imageViewModel.saveGallerytoSupabase(
                                         context,
@@ -1329,7 +1374,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                                         "${editProfileViewModel.id.value}_g2"
                                     )
 
-                                    if(success){
+                                    if (success) {
                                         imageViewModel.saveGalleryImage(
                                             context,
                                             uri,
@@ -1343,11 +1388,11 @@ fun SharedTransitionScope.ProfileEditScreen(
                                         Log.e("UploadError", "Profile image upload failed!")
                                     }
                                     success
-                                }?:true
+                                } ?: true
                             }
 
-                            var G3Upload = async{
-                                Log.d("ggggggg3","afsfasfafsafa")
+                            var G3Upload = async {
+                                Log.d("ggggggg3", "afsfasfafsafa")
                                 tImage?.let { uri ->
                                     val success = imageViewModel.saveGallerytoSupabase(
                                         context,
@@ -1355,7 +1400,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                                         "${editProfileViewModel.id.value}_g3"
                                     )
 
-                                    if(success){
+                                    if (success) {
                                         imageViewModel.saveGalleryImage(
                                             context,
                                             uri,
@@ -1369,63 +1414,75 @@ fun SharedTransitionScope.ProfileEditScreen(
                                         Log.e("UploadError", "Profile image upload failed!")
                                     }
                                     success
-                                }?:true
+                                } ?: true
                             }
 
 
+                            val results = awaitAll(
+                                profileUpload,
+                                G1Upload,
+                                G2Upload,
+                                G3Upload
+                            ).toMutableList()
 
-                            val results = awaitAll(profileUpload, G1Upload, G2Upload, G3Upload).toMutableList()
 
-
-                            if(isProfileDeleted){
+                            if (isProfileDeleted) {
                                 results[0] = true
                             }
-                            if(isG1Deleted){
+                            if (isG1Deleted) {
                                 results[1] = true
                             }
-                            if(isG2Deleted){
+                            if (isG2Deleted) {
                                 results[2] = true
                             }
-                            if(isG3Deleted){
+                            if (isG3Deleted) {
                                 results[3] = true
                             }
-                            results.map { Log.d("asdasdasd",it.toString()) }
+                            results.map { Log.d("asdasdasd", it.toString()) }
                             var flag = true
 
-                            for(r in results){
-                                if(r != true){
+                            for (r in results) {
+                                if (r != true) {
                                     flag = false;
                                     break;
                                 }
                             }
 
                             if (flag) {
-                                if(isProfileDeleted){
+                                if (isProfileDeleted) {
                                     Pimg_url = null
-                                }else{
-                                    Pimg_url = "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/profile_images//${editProfileViewModel.id.value}.jpg"
+                                } else {
+                                    Pimg_url =
+                                        "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/profile_images//${editProfileViewModel.id.value}.jpg"
                                 }
-                                if(isG1Deleted){
+                                if (isG1Deleted) {
                                     g1img_url = null
-                                }else{
-                                    g1img_url = "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/gallery_images//${editProfileViewModel.id.value}_g1.jpg"
+                                } else {
+                                    g1img_url =
+                                        "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/gallery_images//${editProfileViewModel.id.value}_g1.jpg"
                                 }
-                                if(isG2Deleted){
+                                if (isG2Deleted) {
                                     g2img_url = null
-                                }else{
-                                    g2img_url = "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/gallery_images//${editProfileViewModel.id.value}_g2.jpg"
+                                } else {
+                                    g2img_url =
+                                        "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/gallery_images//${editProfileViewModel.id.value}_g2.jpg"
                                 }
-                                if(isG3Deleted){
+                                if (isG3Deleted) {
                                     g3img_url = null
-                                }else{
-                                    g3img_url = "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/gallery_images//${editProfileViewModel.id.value}_g3.jpg"
+                                } else {
+                                    g3img_url =
+                                        "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/gallery_images//${editProfileViewModel.id.value}_g3.jpg"
                                 }
 
-                                galleryList = listOfNotNull(g1img_url, g2img_url, g3img_url).takeIf { it.isNotEmpty() }
-                                Log.d("hello",Pimg_url.toString())
-                                Log.d("hello",g1img_url.toString())
-                                Log.d("hello",g2img_url.toString())
-                                Log.d("hello",g3img_url.toString())
+                                galleryList = listOfNotNull(
+                                    g1img_url,
+                                    g2img_url,
+                                    g3img_url
+                                ).takeIf { it.isNotEmpty() }
+                                Log.d("hello", Pimg_url.toString())
+                                Log.d("hello", g1img_url.toString())
+                                Log.d("hello", g2img_url.toString())
+                                Log.d("hello", g3img_url.toString())
                                 val user = UserResponseEntity(
                                     imgUrl = Pimg_url,
                                     posts = galleryList,
@@ -1447,7 +1504,10 @@ fun SharedTransitionScope.ProfileEditScreen(
 
                                 event(UpdateUserEvent.UpdateUser(user, jwt.toString()))
                             } else {
-                                Log.e("UploadError", "One or more image uploads failed. Skipping API call.")
+                                Log.e(
+                                    "UploadError",
+                                    "One or more image uploads failed. Skipping API call."
+                                )
                             }
 
 //
@@ -1550,12 +1610,14 @@ suspend fun uploadProfileImage(
 @Composable
 fun UploadingDialog(showDialog: Boolean) {
     if (showDialog) {
-        Dialog(onDismissRequest = { },
+        Dialog(
+            onDismissRequest = { },
             properties = DialogProperties(
                 dismissOnBackPress = false,
                 dismissOnClickOutside = false,
                 usePlatformDefaultWidth = false
-            )) {
+            )
+        ) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier

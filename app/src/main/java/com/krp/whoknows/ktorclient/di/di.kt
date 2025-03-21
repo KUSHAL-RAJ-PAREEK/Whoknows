@@ -11,6 +11,7 @@ import com.krp.whoknows.Appui.Profile.presentation.ImageViewModel
 import com.krp.whoknows.Appui.Profile.presentation.MainImageViewModel
 import com.krp.whoknows.Appui.Profile.presentation.ProfileDetailViewModel
 import com.krp.whoknows.Appui.Profile.presentation.ProfileViewModel
+import com.krp.whoknows.Appui.Profile.presentation.UpdateMatchViewModel
 import com.krp.whoknows.Appui.Profile.presentation.UpdateUserViewModel
 import com.krp.whoknows.Appui.userInfo.CreateUserViewModel
 import com.krp.whoknows.Appui.userInfo.InfoViewModel
@@ -74,6 +75,7 @@ val appModule: Module = module {
     viewModel{EditProfileViewModel()}
     viewModel{ProfileDetailViewModel()}
     viewModel{UpdateUserViewModel()}
+    viewModel{UpdateMatchViewModel()}
 }
 
 fun provideHttpClient(): HttpClient {

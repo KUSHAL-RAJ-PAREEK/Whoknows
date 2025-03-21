@@ -55,6 +55,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.krp.whoknows.Appui.Profile.presentation.EditProfileViewModel
+import com.krp.whoknows.Appui.Profile.presentation.ProfileDetailViewModel
 import com.krp.whoknows.Appui.userInfo.InfoViewModel
 import com.krp.whoknows.Appui.userInfo.MyMap
 import com.krp.whoknows.Appui.userInfo.SearchBar

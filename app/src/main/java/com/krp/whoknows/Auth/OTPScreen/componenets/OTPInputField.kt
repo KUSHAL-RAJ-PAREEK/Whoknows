@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation.Companion.keyboardOptions
@@ -42,6 +43,11 @@ import androidx.compose.ui.unit.dp
  * Created by KUSHAL RAJ PAREEK on 01,February,2025
  */
 
+@Preview
+@Composable
+private fun run() {
+    OTPInputField("afsfasfa",{})
+}
 @Composable
 fun OTPInputField(
     otpText: String,
@@ -76,8 +82,8 @@ fun OTPInputField(
                         modifier = Modifier
                             .width(40.dp)
                             .height(40.dp)
-                            .background(Color.Transparent, shape = CircleShape)
-                            .border(width = 1.dp, color = borderColor, shape = CircleShape),
+                            .background(Color.Transparent, shape = RoundedCornerShape(7.dp))
+                            .border(width = 1.dp, color = borderColor, shape = RoundedCornerShape(7.dp)),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(

@@ -47,6 +47,7 @@ import com.krp.whoknows.Appui.Profile.presentation.ProfileDetailViewModel
 import com.krp.whoknows.Appui.Profile.presentation.ProfileEditScreen
 import com.krp.whoknows.Appui.Profile.presentation.ProfileScreen
 import com.krp.whoknows.Appui.Profile.presentation.ProfileViewModel
+import com.krp.whoknows.Appui.Profile.presentation.UpdateMatchViewModel
 import com.krp.whoknows.Appui.Profile.presentation.UpdateUserViewModel
 import com.krp.whoknows.Appui.userInfo.CreateUserViewModel
 import com.krp.whoknows.Appui.userInfo.DOBScreen
@@ -87,6 +88,7 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
     val imageViewModel : ImageViewModel = koinViewModel()
     val mainImageViewModel: MainImageViewModel = koinViewModel()
     val greetingViewModel: GreetingViewModel = koinViewModel()
+    val updateMatchViewModel :UpdateMatchViewModel = koinViewModel()
 
     SharedTransitionLayout {
             val navController = rememberNavController()
@@ -183,6 +185,8 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
                 }
 
                 composable<HomeScreen> {
+                    val state by updateMatchViewModel.state.collectAsStateWithLifecycle()
+
 //                    val greetingViewModel: GreetingViewModel = koinViewModel()
                     HomeScreen(
                         videoUri = getVideoUri(),
@@ -196,7 +200,12 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
                         onChatClick={
                             navController.navigate(ChatScreen)
                         },
-                        greetingViewModel =greetingViewModel)
+                        greetingViewModel =greetingViewModel,
+                        updateMatchViewModel= updateMatchViewModel,
+                        profileDetailViewModel = profileDetailViewModel,
+                        state = state,
+                        event = updateMatchViewModel::onEvent
+                        )
 
                 }
 

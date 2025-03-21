@@ -39,7 +39,6 @@ import com.krp.whoknows.R
  * Created by KUSHAL RAJ PAREEK on 28,January,2025
  */
 @RequiresApi(Build.VERSION_CODES.Q)
-@Preview
 @Composable
 fun LoginScreen(modifier: Modifier = Modifier,onPhoneSlide :() -> Unit) {
    var isLoading by remember { mutableStateOf(false) }
@@ -51,7 +50,7 @@ fun LoginScreen(modifier: Modifier = Modifier,onPhoneSlide :() -> Unit) {
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
       ) {
-Spacer(modifier = modifier.height(150.dp))
+Spacer(modifier = modifier.height(90.dp))
         Image(
             painter = painterResource(id = R.drawable.circle_image),
             contentDescription = "Landing Image",
@@ -59,7 +58,7 @@ Spacer(modifier = modifier.height(150.dp))
                 .size(380.dp)
                 .fillMaxSize()
         )
-        Spacer(modifier = modifier.height(55.dp))
+        Spacer(modifier = modifier.height(40.dp))
        Text(
           text = "Let's meeting new \n people around you",
           fontSize = 28.sp,
@@ -76,5 +75,11 @@ Spacer(modifier = modifier.height(150.dp))
     }
    }
 }
+//
+//@Preview
+//@Composable
+//private fun run() {
+//    LoginScreen(onPhoneSlide = {})
+//}
 
 

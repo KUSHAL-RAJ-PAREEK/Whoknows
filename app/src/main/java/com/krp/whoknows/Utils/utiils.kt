@@ -707,10 +707,19 @@ fun String.toBitmap(): Bitmap? {
 }
 
 @Composable
-fun getImageBitmapOrPlaceholder(image: Bitmap?): ImageBitmap {
+fun getImageBitmapOrPlaceholder(image: Bitmap?, gender :String? = null): ImageBitmap {
     return image?.asImageBitmap() ?: run {
         val context = LocalContext.current
-        val drawable = ContextCompat.getDrawable(context, R.drawable.add_file_button)
+var placeholder: Int? = null
+
+        if(gender == "MALE"){
+            placeholder = R.drawable.bp_img_placeholder
+        }else if(gender == "FEMALE"){
+            placeholder = R.drawable.p_img_placeholder
+        }else{
+            placeholder = R.drawable.add_file_button
+        }
+        val drawable = ContextCompat.getDrawable(context, placeholder)
 
         if (drawable is BitmapDrawable) {
             drawable.bitmap.asImageBitmap()

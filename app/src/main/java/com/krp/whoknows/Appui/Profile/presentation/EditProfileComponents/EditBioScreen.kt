@@ -127,7 +127,7 @@ val context = LocalContext.current
                         textAlign = TextAlign.End,
                     )
                 },
-                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp,color = Color.Black),
                 placeholder = { Text("Enter the Bio") },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = ordColor,
@@ -135,7 +135,6 @@ val context = LocalContext.current
                 ),
                 shape = RoundedCornerShape(20.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
                 )
             )
@@ -224,7 +223,7 @@ fun SharedTransitionScope.EditBioScreen(modifier: Modifier = Modifier,
                         textAlign = TextAlign.End,
                     )
                 },
-                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp, color = Color.Black),
                 placeholder = { Text("Enter the Bio") },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = ordColor,
@@ -232,7 +231,6 @@ fun SharedTransitionScope.EditBioScreen(modifier: Modifier = Modifier,
                 ),
                 shape = RoundedCornerShape(20.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
                 )
             )

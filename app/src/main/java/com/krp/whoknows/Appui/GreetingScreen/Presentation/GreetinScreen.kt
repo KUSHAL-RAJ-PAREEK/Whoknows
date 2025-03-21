@@ -15,7 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -83,6 +86,7 @@ fun GreetingScreen(modifier: Modifier = Modifier,
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
+    var animated by remember{ mutableStateOf(false) }
 
     LaunchedEffect(user?.username) {
         delay(4000)
@@ -143,6 +147,7 @@ fun GreetingScreen(modifier: Modifier = Modifier,
             profileDetailViewModel.updateLatitude(user?.latitude.toString())
             profileDetailViewModel.updateLongitude(user?.longitude.toString())
             profileDetailViewModel.updatePnumber(user?.pnumber.toString())
+            profileDetailViewModel.updateJwt(jwtViewModel.jwtToken.value.toString())
 
             val  location = getLocationCityState(
                 user?.latitude?.toDouble() ?: 26.9124,
@@ -222,6 +227,7 @@ fun GreetingScreen(modifier: Modifier = Modifier,
             profileDetailViewModel.updateLatitude(user?.latitude.toString())
             profileDetailViewModel.updateLongitude(user?.longitude.toString())
             profileDetailViewModel.updatePnumber(user?.pnumber.toString())
+            profileDetailViewModel.updateJwt(jwtViewModel.jwtToken.value.toString())
 
             val imgUrl = user?.imgUrl.toString()
             val list = user?.posts ?: emptyList()

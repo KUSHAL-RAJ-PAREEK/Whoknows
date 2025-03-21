@@ -10,6 +10,7 @@ import com.krp.whoknows.roomdb.entity.GalleryImageEntity
 import com.krp.whoknows.roomdb.entity.InterUserDetail
 import com.krp.whoknows.roomdb.entity.JWTToken
 import com.krp.whoknows.roomdb.entity.ProfileImageEntity
+import com.krp.whoknows.roomdb.entity.UserMatch
 import com.krp.whoknows.roomdb.entity.UserPhoneNumber
 import com.krp.whoknows.roomdb.entity.UserResponseEntity
 import kotlinx.coroutines.flow.Flow
@@ -47,6 +48,12 @@ interface Dao {
 
     @Query("SELECT * FROM userdetails LIMIT 1")
     fun getUser(): Flow<UserResponseEntity?>
+
+    @Query("SELECT * FROM matchTable WHERE id = 1")
+    fun getMatch():Flow<UserMatch>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveMatch(match: UserMatch)
 
     @Query("DELETE FROM userdetails WHERE id = :userId")
     suspend fun deleteUser(userId: String)

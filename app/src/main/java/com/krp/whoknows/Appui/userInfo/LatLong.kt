@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.OutlinedTextField
@@ -190,7 +191,11 @@ LaunchedEffect(state.isLoading) {
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack, contentDescription = "Back arrow",
-                Modifier.size(35.dp),
+                Modifier.size(35.dp).clickable{
+                    navController.navigate(com.krp.whoknows.Navigation.DOBScreen){
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
                 tint = ordColor
             )
         }
@@ -201,7 +206,7 @@ LaunchedEffect(state.isLoading) {
             .padding(top = 10.dp)){
             Text(text = "What's your location ?",
                 fontFamily = FontFamily(Font(R.font.noto_sans_khanada)),
-                fontSize = 25.sp)
+                fontSize = 20.sp)
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -237,7 +242,7 @@ LaunchedEffect(state.isLoading) {
 
                     }
                     .onFocusChanged { isFocused = it.isFocused },
-                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp,color = Color.Black),
                 placeholder = { Text("Enter your Location") },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = ordColor,
@@ -290,12 +295,19 @@ LaunchedEffect(state.isLoading) {
                     .padding(bottom = if (imeHeight > 0.dp) imeHeight + 20.dp else 40.dp)
                     .size(56.dp)
                     .shadow(8.dp, CircleShape)
+                    .clickable(enabled = !state.isLoading) {}
             ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowForward,
-                    contentDescription = "Next",
-                    tint = Color.White
-                )
+                if (state.isLoading) {
+                    CircularProgressIndicator(
+                        color = Color.White,
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = "Next",
+                        tint = Color.White
+                    )
+                }
             }
         }
     }

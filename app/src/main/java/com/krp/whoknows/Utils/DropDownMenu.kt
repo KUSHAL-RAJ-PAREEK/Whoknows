@@ -61,7 +61,8 @@ import kotlin.math.log
 fun DropDownMenu(
     list: List<String>,
     value : String,
-    onItemSelected: (String) -> Unit
+    flag : Boolean,
+    onItemSelected: (String) -> Unit,
 ) {
     Log.d("insidedropdown", value)
     var selectedItem by remember { mutableStateOf(value) }
@@ -93,8 +94,8 @@ fun DropDownMenu(
                     isFocused = expanded
                 })
             },
-            textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
-            placeholder = { Text("Enter preferred Gender") },
+            textStyle = LocalTextStyle.current.copy(fontSize = 18.sp,color = Color.Black),
+            placeholder = { if(flag) Text("Enter your Gender") else Text("Enter preferred Gender") },
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = if (isFocused) ordColor else Color.Gray,
                 unfocusedBorderColor = Color.Gray
@@ -184,7 +185,7 @@ fun RemDropDownMenu(
                     isFocused = expanded
                 })
             },
-            textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+            textStyle = LocalTextStyle.current.copy(fontSize = 18.sp,color = Color.Black),
             placeholder = { Text("Enter preferred Gender") },
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = if (isFocused) ordColor else Color.Gray,

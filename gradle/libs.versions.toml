@@ -38,6 +38,7 @@ composeTesting = "1.0.0-alpha01"
 composeAnimation = "1.7.0-alpha07"
 rules = "1.6.1"
 runner = "1.6.2"
+media3CommonKtx = "1.5.1"
 
 [libraries]
 accompanist-insets = { module = "com.google.accompanist:accompanist-insets", version.ref = "accompanistInsets" }
@@ -95,6 +96,7 @@ protolite-well-known-types = { group = "com.google.firebase", name = "protolite-
 firebase-appdistribution-gradle = { group = "com.google.firebase", name = "firebase-appdistribution-gradle", version.ref = "firebaseAppdistributionGradle" }
 androidx-compose-testing = { group = "androidx.xr.compose", name = "compose-testing", version.ref = "composeTesting" }
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "composeAnimation" }
+androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", version.ref = "media3CommonKtx" }
 
 
 [plugins]

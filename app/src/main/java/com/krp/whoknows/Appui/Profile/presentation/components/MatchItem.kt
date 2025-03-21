@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.krp.whoknows.Appui.Profile.presentation.InterestItem
+import com.krp.whoknows.ui.theme.Bpink
 import com.krp.whoknows.ui.theme.heartColor
 import com.krp.whoknows.ui.theme.ordColor
 
@@ -38,7 +39,7 @@ import com.krp.whoknows.ui.theme.ordColor
 //    MatchItem(icon = Icons.Default.Cookie, status = "match")
 //}
 @Composable
-fun MatchItem(modifier: Modifier = Modifier, icon: ImageVector, status: String) {
+fun MatchItem(modifier: Modifier = Modifier, icon: ImageVector, status: Boolean) {
     Box(
         modifier = modifier
             .border(1.dp, ordColor, RoundedCornerShape(13.dp))
@@ -51,13 +52,13 @@ fun MatchItem(modifier: Modifier = Modifier, icon: ImageVector, status: String) 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 imageVector = icon,
-                contentDescription = "${status} Icon",
-                tint = heartColor,
+                contentDescription = "match Icon",
+                tint =  if(status) heartColor else Bpink,
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = status,
+                text = if(status) "matched" else "single",
                 color = ordColor,
                 maxLines = 1
             )

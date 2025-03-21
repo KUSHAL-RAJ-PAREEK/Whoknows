@@ -21,9 +21,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
@@ -45,7 +49,6 @@ class MainActivity : ComponentActivity() {
         val splashScreen = installSplashScreen()
 
         setContent {
-
             val jwtViewModel: JWTViewModel by inject()
             val greetingViewModel: GreetingViewModel by inject()
             val p by greetingViewModel.userState.collectAsState()
@@ -63,18 +66,19 @@ class MainActivity : ComponentActivity() {
                 delay(1000)
                 if (p?.username != null) {
                     startDest = if (p?.username!!.isEmpty()) {
-                        com.krp.whoknows.Navigation.WelcomeScreen
+                        com.krp.whoknows.Navigation.LoginScreen
                     } else {
                         com.krp.whoknows.Navigation.GreetingScreen
                     }
                 }
             }
 
+
             LaunchedEffect(Unit) {
                 kotlinx.coroutines.delay(2000)
                 if (startDest == null) {
                     timeoutReached = true
-                    startDest = com.krp.whoknows.Navigation.WelcomeScreen
+                    startDest = com.krp.whoknows.Navigation.LoginScreen
                 }
             }
 
@@ -85,10 +89,31 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .background(color = colorResource(id = R.color.splashScreenColor))
                     ) {
-                        SetUpNavGraph(startDest = startDest!!)
+
+                            SetUpNavGraph(startDest = startDest!!)
+
                     }
                 }
             }
+        }
+    }
+
+
+    @Composable
+    fun SplashScreenUI(content: @Composable () -> Unit) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = colorResource(id = R.color.splashScreenColor))
+        ) {
+            content()
+            Text(
+                text = "Whoknows",
+                fontSize = 17.sp,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 32.dp)
+            )
         }
     }
 }

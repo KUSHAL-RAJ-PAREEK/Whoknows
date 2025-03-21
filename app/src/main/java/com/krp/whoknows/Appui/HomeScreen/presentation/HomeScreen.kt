@@ -54,6 +54,7 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.filled.ChatBubble
 import androidx.compose.material.icons.filled.Person
@@ -68,15 +69,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.Scaffold
+import app.rive.runtime.kotlin.RiveAnimationView
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
@@ -84,8 +89,13 @@ import com.google.android.exoplayer2.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
 import com.krp.whoknows.Appui.Profile.presentation.ProfileDetailViewModel
+import com.krp.whoknows.Appui.Profile.presentation.UpdateMatchEvent
+import com.krp.whoknows.Appui.Profile.presentation.UpdateMatchState
+import com.krp.whoknows.Appui.Profile.presentation.UpdateMatchViewModel
+import com.krp.whoknows.Appui.Profile.presentation.UpdateUserEvent
 import com.krp.whoknows.Navigation.FAB_KEY
 import com.krp.whoknows.Navigation.HomeScreen
+import com.krp.whoknows.RiveComponents.ComposableRiveAnimationView
 import com.krp.whoknows.Utils.times
 import com.krp.whoknows.Utils.transform
 import org.koin.androidx.compose.getViewModel
@@ -133,7 +143,11 @@ fun SharedTransitionScope.HomeScreen(
     onFabClick: ()-> Unit,
     onProfileClick:()-> Unit,
     onChatClick:()-> Unit,
-    greetingViewModel: GreetingViewModel){
+    greetingViewModel: GreetingViewModel,
+    updateMatchViewModel:UpdateMatchViewModel,
+    profileDetailViewModel : ProfileDetailViewModel,
+    state: UpdateMatchState,
+    event :(UpdateMatchEvent) -> Unit){
     val context = LocalContext.current
 //    val exoPlayer = remember { context.buildExoPlayer(videoUri) }
 //
@@ -147,6 +161,28 @@ fun SharedTransitionScope.HomeScreen(
 //            exoPlayer.release()
 //        }
 //    }
+
+    LaunchedEffect(state.isLoading) {
+
+        if(state.isSuccess ){
+            Log.d("inhomescreen",state.statusCode.toString())
+            if(!updateMatchViewModel.called.value){
+                val res = state.statusCode
+                if(res == 200){
+                    profileDetailViewModel.updateMatch(true)
+                }else if(res == 204){
+                    profileDetailViewModel.updateMatch(false)
+                }
+                updateMatchViewModel.updateCalled(true)
+            }
+        }
+    }
+    LaunchedEffect(Unit) {
+        if(updateMatchViewModel.called.value == false){
+            Log.d("afasfaf","${profileDetailViewModel.id.value}, ${profileDetailViewModel.jwt.value}")
+            event(UpdateMatchEvent.UpdateMatch(profileDetailViewModel.id.value,profileDetailViewModel.jwt.value))
+        }
+    }
 
     val isMenuExtended = remember { mutableStateOf(false) }
 
@@ -165,11 +201,31 @@ fun SharedTransitionScope.HomeScreen(
             easing = LinearEasing
         )
     )
+    var animation: RiveAnimationView? = null
+    var clicked by remember { mutableStateOf(false) }
 
+    LaunchedEffect(clicked) {
+        if(!clicked){
+            animation?.reset()
+        }else{
+            Log.d("afsfafasfsafas","fasasfas")
+            animation?.setBooleanState(
+                "GirlState", "MouseOver",
+                clicked)
+//            animation?.setNumberState(
+//                "GirlState", "Look_up",
+//                value = 1f
+//            )
+        }
+    }
     val renderEffect = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         getRenderEffect().asComposeRenderEffect()
     } else {
         null
+    }
+    ComposableRiveAnimationView(modifier = Modifier,animation = R.raw.phone_girl,
+        stateMachineName = "GirlState"){view ->
+        animation = view
     }
 
     MainScreen(
@@ -182,7 +238,11 @@ fun SharedTransitionScope.HomeScreen(
         clickAnimationProgress = clickAnimationProgress,
         onFabClick = onFabClick,
         onProfileClick = onProfileClick,
-        onChatClick = onChatClick
+        onChatClick = onChatClick,
+clicked = clicked,
+        onToggle = {
+            clicked = !clicked
+        }
     ) {
         isMenuExtended.value = isMenuExtended.value.not()
     }
@@ -220,6 +280,8 @@ fun MainScreen(
     renderEffect: androidx.compose.ui.graphics.RenderEffect?,
     fabAnimationProgress: Float = 0f,
     clickAnimationProgress: Float = 0f,
+    onToggle: () -> Unit,
+    clicked :Boolean,
     onFabClick: () -> Unit,
     onProfileClick:()-> Unit,
     onChatClick:()-> Unit,
@@ -237,13 +299,14 @@ fun MainScreen(
             animationProgress = 0.5f
         )
 
-        FabGroup(modifier = Modifier,renderEffect = renderEffect, animationProgress = fabAnimationProgress)
+        FabGroup(modifier = Modifier,renderEffect = renderEffect,   onToggle = onToggle, animationProgress = fabAnimationProgress)
         FabGroup(
            onFabClick= onFabClick,
             onProfileClick = onProfileClick,
             onChatClick = onChatClick,
             modifier = modifier,
             renderEffect = null,
+            onToggle = onToggle,
             animationProgress = fabAnimationProgress,
             toggleAnimation = toggleAnimation
         )
@@ -304,6 +367,7 @@ fun FabGroup(
     onFabClick: (() -> Unit)? = null,
     onProfileClick:(() -> Unit)? = null,
     onChatClick:(() -> Unit)? = null,
+    onToggle :() -> Unit,
     toggleAnimation: () -> Unit = { }
 ) {
     Box(
@@ -371,7 +435,8 @@ fun FabGroup(
                     225 * FastOutSlowInEasing
                         .transform(0.35f, 0.65f, animationProgress)
                 ),
-            onClick = toggleAnimation,
+            onClick = { toggleAnimation()
+                onToggle()},
             backgroundColor = Color.Transparent
         )
     }
@@ -393,7 +458,7 @@ fun AnimatedFab(
         modifier = modifier.scale(1.1f)
     ) {
         icon?.let {
-            androidx.compose.material3.Icon(
+            Icon(
                 imageVector = it,
                 contentDescription = null,
                 tint = Color.White.copy(alpha = opacity)

@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.constraintlayout.compose.android)
     implementation(libs.androidx.compose.testing)
+    implementation(libs.androidx.media3.common.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -145,6 +146,13 @@ dependencies {
 
     implementation("com.airbnb.android:lottie-compose:6.3.0")
     implementation("com.google.code.gson:gson:2.10.1")
+
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.31.3-beta")
+    implementation ("app.rive:rive-android:9.6.5")
+    // During initialization, you may need to add a dependency
+    // for Jetpack Startup
+    implementation ("androidx.startup:startup-runtime:1.1.1")
+
 
 
 }

@@ -155,4 +155,23 @@ class KtorClient : KoinComponent {
         return statusCode
     }
 
+
+
+    suspend fun updateMatch(id : String, jwt : String): Int{
+        Log.d("inupdate", "$id $jwt")
+        val response = client.get("/match/check"){
+            contentType(ContentType.Application.Json)
+            bearerAuth(jwt)
+            url{
+                parameters.append("userId",id)
+            }
+        }
+
+        val statusCode = response.status.value
+
+        Log.d("insideupdate",statusCode.toString())
+
+        return statusCode
+    }
+
 }

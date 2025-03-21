@@ -101,7 +101,11 @@ fun DOBScreen(
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack, contentDescription = "Back arrow",
-                Modifier.size(35.dp),
+                Modifier.size(35.dp).clickable{
+                    navController.navigate(com.krp.whoknows.Navigation.PreferredGender){
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
                 tint = ordColor
             )
         }
@@ -115,7 +119,7 @@ fun DOBScreen(
             Text(
                 text = "What's your date of birth ?",
                 fontFamily = FontFamily(Font(R.font.noto_sans_khanada)),
-                fontSize = 25.sp
+                fontSize = 20.sp
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -150,7 +154,7 @@ fun DOBScreen(
                         }
                     )
                 },
-                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp,color = Color.Black),
                 placeholder = { Text("Enter your Date of Birth") },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = ordColor,

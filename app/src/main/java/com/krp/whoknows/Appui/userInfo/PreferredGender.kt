@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -89,7 +90,11 @@ LaunchedEffect(Unit) {
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack, contentDescription = "Back arrow",
-                Modifier.size(35.dp),
+                Modifier.size(35.dp).clickable{
+                    navController.navigate(UserGender){
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
                 tint = ordColor
             )
         }
@@ -100,12 +105,12 @@ LaunchedEffect(Unit) {
             .padding(top = 10.dp)){
             Text(text = "What's your preferred Gender ?",
                 fontFamily = FontFamily(Font(R.font.noto_sans_khanada)),
-                fontSize = 25.sp)
+                fontSize = 20.sp)
 
             Spacer(modifier = Modifier.height(10.dp))
 
             // dropdown
-            DropDownMenu(listOf("MALE","FEMALE"),viewModel.preGender.value){
+            DropDownMenu(listOf("MALE","FEMALE"),viewModel.preGender.value, flag = false){
                 if(viewModel.preGender.value.isBlank()){
                     viewModel.updatePreGender(it)
                 }

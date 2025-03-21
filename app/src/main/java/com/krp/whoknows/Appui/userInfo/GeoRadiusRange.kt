@@ -97,8 +97,12 @@ fun GeoRadiusRange(viewModel: InfoViewModel,
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack, contentDescription = "Back arrow",
-                Modifier.size(35.dp),
-                tint = ordColor
+                Modifier.size(35.dp).clickable{
+                    navController.navigate(com.krp.whoknows.Navigation.PreferredAgeRange){
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                tint = ordColor,
             )
         }
 
@@ -108,7 +112,7 @@ fun GeoRadiusRange(viewModel: InfoViewModel,
             .padding(top = 10.dp)){
             Text(text = "What's your Preferred Range ?",
                 fontFamily = FontFamily(Font(R.font.noto_sans_khanada)),
-                fontSize = 25.sp)
+                fontSize = 20.sp)
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -120,12 +124,13 @@ fun GeoRadiusRange(viewModel: InfoViewModel,
                     .fillMaxWidth()
                     .clickable {}
                     .onFocusChanged { isFocused = it.isFocused },
-                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp,color = Color.Black),
                 placeholder = { Text("Enter range in KM") },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = ordColor,
                     unfocusedBorderColor = Color.Gray
                 ),
+                maxLines = 1,
                 shape = RoundedCornerShape(20.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
