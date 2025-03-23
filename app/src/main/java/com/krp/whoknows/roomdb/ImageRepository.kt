@@ -7,6 +7,8 @@ import android.util.Log
 import com.krp.whoknows.SupabaseClient.supabaseClient
 import com.krp.whoknows.roomdb.entity.GalleryImageEntity
 import com.krp.whoknows.roomdb.entity.ProfileImageEntity
+import com.krp.whoknows.roomdb.entity.UserGalleryImageEntity
+import com.krp.whoknows.roomdb.entity.UserProfileImage
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.Dispatchers
@@ -185,6 +187,26 @@ class ImageRepository(private val imageDao: Dao) {
         }
     }
 
+
+    suspend fun saveMatchProfileImage(context: Context, uri: Uri?) {
+        val imageString = ImageConverter.uriToBase64(context, uri)
+        if (imageString != null) {
+            imageDao.upsertMatchUserProfileImage(UserProfileImage(imageString = imageString))
+        }
+    }
+
+    suspend fun saveMatchProfileImageD(imageString :String?) {
+        if (imageString != null) {
+            imageDao.upsertMatchUserProfileImage(UserProfileImage(imageString = imageString))
+        }
+    }
+
+    suspend fun saveMatchGalleryImageD(id : String,imageString :String?) {
+        if (imageString != null) {
+            imageDao.upsertMatchUserGalleryImage(UserGalleryImageEntity(id = id, imageString = imageString))
+        }
+    }
+
     suspend fun saveGalleryImage(context: Context, uri: Uri?, id: String): Boolean {
         return try {
             val imageString = ImageConverter.uriToBase64(context, uri)
@@ -214,5 +236,16 @@ class ImageRepository(private val imageDao: Dao) {
 
     suspend fun getGalleryImages(): List<GalleryImageEntity> {
         return imageDao.getGalleryImages()
+    }
+
+
+
+    suspend fun getMatchProfileImage(): UserProfileImage? {
+        return imageDao.getMatchUserProfileImage()
+    }
+
+
+    suspend fun getMatchGalleryImages(): List<UserGalleryImageEntity> {
+        return imageDao.getMatchUserGalleryImages()
     }
 }

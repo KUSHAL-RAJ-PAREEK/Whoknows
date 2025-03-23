@@ -10,6 +10,8 @@ import com.krp.whoknows.model.OtpResponse
 import com.krp.whoknows.model.SendOTP
 import com.krp.whoknows.model.User
 import com.krp.whoknows.model.UserResponse
+import com.krp.whoknows.model.checkMatchModel
+import com.krp.whoknows.roomdb.entity.MatchUserEntity
 import com.krp.whoknows.roomdb.entity.UserResponseEntity
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -173,5 +175,50 @@ class KtorClient : KoinComponent {
 
         return statusCode
     }
+
+    suspend fun checkMatch(id : String, jwt : String): checkMatchModel {
+        Log.d("inupdate", "$id $jwt")
+        val response = client.get("/match/check"){
+            contentType(ContentType.Application.Json)
+            bearerAuth(jwt)
+            url{
+                parameters.append("userId",id)
+            }
+        }
+
+        val statusCode = response.status.value
+        val user = response.body<MatchUserEntity>()
+
+        val res = checkMatchModel(statusCode = statusCode,user = user)
+
+        Log.d("insideupdatedddd",res.toString())
+
+        return res
+    }
+
+
+    suspend fun createMatch(user: UserResponseEntity,jwt : String) :Int{
+        val response = client.post("/match/create"){
+            contentType(ContentType.Application.Json)
+            bearerAuth(jwt)
+            setBody(user)
+        }
+        val statusCode = response.status.value
+        Log.d("create_Match", statusCode.toString())
+        return statusCode
+    }
+
+
+    suspend fun cancelMatch(user: UserResponseEntity,jwt : String) :Int{
+        val response = client.post("/match/cancel-matching"){
+            contentType(ContentType.Application.Json)
+            bearerAuth(jwt)
+            setBody(user)
+        }
+        val statusCode = response.status.value
+        Log.d("cancel_Match", statusCode.toString())
+        return statusCode
+    }
+
 
 }

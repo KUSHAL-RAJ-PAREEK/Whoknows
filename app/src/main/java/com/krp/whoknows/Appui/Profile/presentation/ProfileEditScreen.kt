@@ -55,6 +55,7 @@ import androidx.compose.material.icons.filled.Games
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.ModeEdit
 import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Sports
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.TravelExplore
@@ -398,6 +399,7 @@ fun SharedTransitionScope.ProfileEditScreen(
 //    val selectedStates =
 //        remember { mutableStateListOf<Boolean>().apply { repeat(205) { add(false) } } }
 
+    var searchisfocused by remember{ mutableStateOf(false) }
     if (isInterestSheetOpen) {
         val searchText by viewModel.searchText.collectAsState()
         val interestSea by viewModel.interest.collectAsState()
@@ -416,12 +418,32 @@ fun SharedTransitionScope.ProfileEditScreen(
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                TextField(
+                OutlinedTextField(
                     value = searchText,
                     onValueChange = viewModel::onSearchTextChange,
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text(text = "Search") }
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onFocusChanged { searchisfocused = !searchisfocused },
+                    textStyle = LocalTextStyle.current.copy(fontSize = 18.sp,color = Color.Black),
+                    placeholder = { Text("Search") },
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = ordColor,
+                        unfocusedBorderColor = Color.Gray
+                    ),
+                    trailingIcon = {  Icon(
+                        imageVector = Icons.Filled.Search,
+                        tint = ordColor,
+                        contentDescription = "Search Icon")},
+                    maxLines = 1,
+                    shape = RoundedCornerShape(20.dp),
                 )
+
+//                TextField(
+//                    value = searchText,
+//                    onValueChange = viewModel::onSearchTextChange,
+//                    modifier = Modifier.fillMaxWidth(),
+//                    placeholder = { Text(text = "Search") }
+//                )
                 Spacer(modifier = Modifier.height(16.dp))
                 FlowRow(
                     modifier = Modifier.fillMaxWidth()
@@ -578,7 +600,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                                     imageViewModel.updateProfile(
                                         drawableToBitmap(
                                             context,
-                                            R.drawable.p_image
+                                            if(profileDetailViewModel.gender.value == "MALE") R.drawable.bp_img_placeholder else R.drawable.p_img_placeholder
                                         )
                                     )
                                     mImage = null
@@ -871,8 +893,10 @@ fun SharedTransitionScope.ProfileEditScreen(
                 OutlinedTextField(
                     value = bio,
                     onValueChange = {},
+                    readOnly = true,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .clickable {}
                         .sharedElement(
                             state = rememberSharedContentState(
                                 key = "text/${bio.text}",
@@ -882,7 +906,6 @@ fun SharedTransitionScope.ProfileEditScreen(
                                 tween(durationMillis = 1000)
                             }
                         )
-                        .clickable {}
                         .onFocusChanged { isFocusedList[2] = it.isFocused },
                     trailingIcon = {
                         Icon(
@@ -903,12 +926,9 @@ fun SharedTransitionScope.ProfileEditScreen(
                     ),
                     shape = RoundedCornerShape(20.dp),
                     keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Done
                     )
                 )
-
-
             }
 
             Spacer(modifier = Modifier.height(20.dp))

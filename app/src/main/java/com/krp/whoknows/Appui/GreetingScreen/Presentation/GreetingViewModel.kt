@@ -74,6 +74,7 @@ class GreetingViewModel(
             userRepository.savePhone(pnumber)
         }
     }
+
      fun loadJwtToken() {
         viewModelScope.launch {
             userRepository.getToken()

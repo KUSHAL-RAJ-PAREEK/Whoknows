@@ -9,9 +9,12 @@ import com.krp.whoknows.model.UserResponse
 import com.krp.whoknows.roomdb.entity.GalleryImageEntity
 import com.krp.whoknows.roomdb.entity.InterUserDetail
 import com.krp.whoknows.roomdb.entity.JWTToken
+import com.krp.whoknows.roomdb.entity.MatchUserEntity
 import com.krp.whoknows.roomdb.entity.ProfileImageEntity
+import com.krp.whoknows.roomdb.entity.UserGalleryImageEntity
 import com.krp.whoknows.roomdb.entity.UserMatch
 import com.krp.whoknows.roomdb.entity.UserPhoneNumber
+import com.krp.whoknows.roomdb.entity.UserProfileImage
 import com.krp.whoknows.roomdb.entity.UserResponseEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -44,6 +47,21 @@ interface Dao {
     suspend fun deleteGalleryImageById(id: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertMatchUserProfileImage(profileImage: UserProfileImage)
+
+    @Query("SELECT * FROM userprofile_image LIMIT 1")
+    suspend fun getMatchUserProfileImage(): UserProfileImage?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertMatchUserGalleryImage(galleryImage: UserGalleryImageEntity)
+
+    @Query("SELECT * FROM usergallery_images WHERE id = :id")
+    suspend fun geMatchUsertGalleryImageById(id: String): UserGalleryImageEntity?
+
+    @Query("SELECT * FROM usergallery_images ORDER BY id DESC")
+    suspend fun getMatchUserGalleryImages(): List<UserGalleryImageEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveUser(user: UserResponseEntity)
 
     @Query("SELECT * FROM userdetails LIMIT 1")
@@ -54,6 +72,16 @@ interface Dao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveMatch(match: UserMatch)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveMatchUser(user: MatchUserEntity)
+
+    @Query("SELECT * FROM matchuser LIMIT 1")
+    fun getMatchUser(): Flow<MatchUserEntity?>
+
+    @Query("DELETE FROM matchuser")
+    suspend fun deleteAllMatchUsers()
+
 
     @Query("DELETE FROM userdetails WHERE id = :userId")
     suspend fun deleteUser(userId: String)

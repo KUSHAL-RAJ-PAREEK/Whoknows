@@ -2,6 +2,8 @@ package com.krp.whoknows.roomdb
 
 import com.krp.whoknows.model.UserResponse
 import com.krp.whoknows.roomdb.entity.JWTToken
+import com.krp.whoknows.roomdb.entity.MatchUserEntity
+import com.krp.whoknows.roomdb.entity.UserMatch
 import com.krp.whoknows.roomdb.entity.UserPhoneNumber
 import com.krp.whoknows.roomdb.entity.UserResponseEntity
 import kotlinx.coroutines.flow.Flow
@@ -29,6 +31,17 @@ class UserRepository(private val dao: Dao) {
         dao.saveNumber(UserPhoneNumber(id = 1,userPhoneNumber = pNumber))
     }
 
+    suspend fun saveMatchUser(user : MatchUserEntity){
+        dao.saveMatchUser(user)
+    }
+
+    suspend fun deleteMatchUser(){
+        dao.deleteAllMatchUsers()
+    }
+
+     fun getMatchUser() : Flow<MatchUserEntity?>{
+        return dao.getMatchUser()
+    }
 
      fun getPnumber() : Flow<UserPhoneNumber?>{
         return dao.getPhoneNumber()

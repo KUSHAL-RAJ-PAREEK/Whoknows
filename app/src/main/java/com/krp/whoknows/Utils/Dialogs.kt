@@ -2,6 +2,7 @@ package com.krp.whoknows.Utils
 
 import android.app.DatePickerDialog
 import android.content.Context
+import com.krp.whoknows.R
 import java.time.LocalDate
 import java.util.Locale
 
@@ -18,6 +19,7 @@ class Dialogs {
         Locale.setDefault(Locale.ENGLISH)
         val datePickerDialog = DatePickerDialog(
            context,
+            R.style.DatePickerTheme,
         onDateSetListener,
             date.year,
             date.monthValue,

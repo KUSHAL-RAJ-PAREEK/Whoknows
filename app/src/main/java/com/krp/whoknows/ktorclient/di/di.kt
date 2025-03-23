@@ -6,6 +6,10 @@ package com.krp.whoknows.ktorclient.di
 
 import androidx.room.Room
 import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
+import com.krp.whoknows.Appui.MatchingScreen.presentation.CancelMatchViewModel
+import com.krp.whoknows.Appui.MatchingScreen.presentation.CheckMatchViewModel
+import com.krp.whoknows.Appui.MatchingScreen.presentation.CreateMatchViewModel
+import com.krp.whoknows.Appui.MatchingScreen.presentation.MatchUserViewModel
 import com.krp.whoknows.Appui.Profile.presentation.EditProfileViewModel
 import com.krp.whoknows.Appui.Profile.presentation.ImageViewModel
 import com.krp.whoknows.Appui.Profile.presentation.MainImageViewModel
@@ -63,6 +67,7 @@ val ktorModule = module {
     single { ImageRepository(get()) }
     single { ImageViewModel(get()) }
     single{MainImageViewModel(get())}
+    single { MatchUserViewModel(get()) }
 }
 val appModule: Module = module {
     viewModel { PhoneAuthViewModel() }
@@ -76,6 +81,9 @@ val appModule: Module = module {
     viewModel{ProfileDetailViewModel()}
     viewModel{UpdateUserViewModel()}
     viewModel{UpdateMatchViewModel()}
+    viewModel{CheckMatchViewModel()}
+    viewModel{CreateMatchViewModel()}
+    viewModel{CancelMatchViewModel()}
 }
 
 fun provideHttpClient(): HttpClient {

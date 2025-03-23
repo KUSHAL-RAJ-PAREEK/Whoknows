@@ -155,6 +155,7 @@ fun SharedTransitionScope.EditProfileMapScreen(
                 editProfileViewModel.updateLongitude(location.longitude.toString())
                 editProfileViewModel.updateLocation(getLocationCityState(location.latitude,location.longitude,context))
                 navController.popBackStack()
+                navController.popBackStack()
                 navController.navigate("profileEditScreen/123/whoknows")
             },
             shape = CircleShape,

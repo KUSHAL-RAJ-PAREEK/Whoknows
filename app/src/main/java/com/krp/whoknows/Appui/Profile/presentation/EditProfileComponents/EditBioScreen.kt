@@ -246,6 +246,7 @@ fun SharedTransitionScope.EditBioScreen(modifier: Modifier = Modifier,
                 onClick = {
                     editProfileViewModel.updateBio(text)
                     navController.popBackStack()
+                    navController.popBackStack()
                     navController.navigate("profileEditScreen/123/whoknows")
                 }
             ) {

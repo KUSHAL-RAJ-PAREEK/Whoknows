@@ -38,6 +38,12 @@ import com.google.android.gms.maps.model.LatLng
 import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingScreen
 import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
 import com.krp.whoknows.Appui.HomeScreen.presentation.HomeScreen
+import com.krp.whoknows.Appui.MatchingScreen.presentation.CancelMatchViewModel
+import com.krp.whoknows.Appui.MatchingScreen.presentation.CheckMatchState
+import com.krp.whoknows.Appui.MatchingScreen.presentation.CheckMatchViewModel
+import com.krp.whoknows.Appui.MatchingScreen.presentation.CreateMatchState
+import com.krp.whoknows.Appui.MatchingScreen.presentation.CreateMatchViewModel
+import com.krp.whoknows.Appui.MatchingScreen.presentation.MatchUserViewModel
 import com.krp.whoknows.Appui.Profile.presentation.EditProfileComponents.EditBioScreen
 import com.krp.whoknows.Appui.Profile.presentation.EditProfileComponents.EditProfileMapScreen
 import com.krp.whoknows.Appui.Profile.presentation.EditProfileViewModel
@@ -89,6 +95,10 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
     val mainImageViewModel: MainImageViewModel = koinViewModel()
     val greetingViewModel: GreetingViewModel = koinViewModel()
     val updateMatchViewModel :UpdateMatchViewModel = koinViewModel()
+    val checkMatchViewModel : CheckMatchViewModel = koinViewModel()
+    val createMatchViewModel: CreateMatchViewModel = koinViewModel()
+    val matchUserViewModel : MatchUserViewModel = koinViewModel()
+    val cancelMatchViewModel : CancelMatchViewModel = koinViewModel()
 
     SharedTransitionLayout {
             val navController = rememberNavController()
@@ -206,10 +216,12 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
                         state = state,
                         event = updateMatchViewModel::onEvent
                         )
-
                 }
 
                 composable<MatchingScreen> {
+                    val match_state by createMatchViewModel.state.collectAsStateWithLifecycle()
+                    val check_state by checkMatchViewModel.state.collectAsStateWithLifecycle()
+                    val cancel_state by cancelMatchViewModel.state.collectAsStateWithLifecycle()
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -223,7 +235,18 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
                         contentAlignment = Alignment.Center
                     ) {
                         com.krp.whoknows.Appui.MatchingScreen.presentation
-                            .MatchingScreen()
+                            .MatchingScreen(
+                                check_state = check_state,
+                                match_state = match_state,
+                                cancel_state = cancel_state,
+                                cancel_event = cancelMatchViewModel::onEvent,
+                                check_event = checkMatchViewModel::onEvent,
+                                match_event = createMatchViewModel::onEvent,
+                                profileDetailViewModel = profileDetailViewModel,
+                                matchUserViewModel = matchUserViewModel,
+                                mainImageViewModel = mainImageViewModel,
+                                navcontroller = navController
+                            )
                     }
                 }
 

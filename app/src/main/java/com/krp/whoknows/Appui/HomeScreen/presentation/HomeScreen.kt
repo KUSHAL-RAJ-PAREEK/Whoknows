@@ -79,6 +79,7 @@ import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.Scaffold
 import app.rive.runtime.kotlin.RiveAnimationView
@@ -161,10 +162,11 @@ fun SharedTransitionScope.HomeScreen(
 //            exoPlayer.release()
 //        }
 //    }
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
 
+Log.d("adasdasdjnfasjvnsjkv",state.toString())
     LaunchedEffect(state.isLoading) {
-
-        if(state.isSuccess ){
+        if(state.isSuccess){
             Log.d("inhomescreen",state.statusCode.toString())
             if(!updateMatchViewModel.called.value){
                 val res = state.statusCode
@@ -173,12 +175,13 @@ fun SharedTransitionScope.HomeScreen(
                 }else if(res == 204){
                     profileDetailViewModel.updateMatch(false)
                 }
-                updateMatchViewModel.updateCalled(true)
+                updateMatchViewModel.updateCalled(false)
             }
         }
     }
-    LaunchedEffect(Unit) {
-        if(updateMatchViewModel.called.value == false){
+
+    LaunchedEffect(currentBackStackEntry) {
+        if(!updateMatchViewModel.called.value){
             Log.d("afasfaf","${profileDetailViewModel.id.value}, ${profileDetailViewModel.jwt.value}")
             event(UpdateMatchEvent.UpdateMatch(profileDetailViewModel.id.value,profileDetailViewModel.jwt.value))
         }

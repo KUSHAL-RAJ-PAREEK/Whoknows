@@ -1,6 +1,8 @@
 package com.krp.whoknows.RiveComponents
 
+import android.util.Log
 import androidx.annotation.RawRes
+import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier

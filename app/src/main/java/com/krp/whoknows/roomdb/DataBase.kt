@@ -11,12 +11,15 @@ import androidx.room.TypeConverters
 import com.krp.whoknows.roomdb.entity.GalleryImageEntity
 import com.krp.whoknows.roomdb.entity.InterUserDetail
 import com.krp.whoknows.roomdb.entity.JWTToken
+import com.krp.whoknows.roomdb.entity.MatchUserEntity
 import com.krp.whoknows.roomdb.entity.ProfileImageEntity
+import com.krp.whoknows.roomdb.entity.UserGalleryImageEntity
 import com.krp.whoknows.roomdb.entity.UserMatch
 import com.krp.whoknows.roomdb.entity.UserPhoneNumber
+import com.krp.whoknows.roomdb.entity.UserProfileImage
 import com.krp.whoknows.roomdb.entity.UserResponseEntity
 
-@Database(entities = [UserMatch::class,UserResponseEntity::class,JWTToken::class, UserPhoneNumber::class,InterUserDetail::class, ProfileImageEntity::class, GalleryImageEntity::class], version = 1, exportSchema = false)
+@Database(entities = [UserProfileImage::class,UserGalleryImageEntity::class,MatchUserEntity::class,UserMatch::class,UserResponseEntity::class,JWTToken::class, UserPhoneNumber::class,InterUserDetail::class, ProfileImageEntity::class, GalleryImageEntity::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class DataBase : RoomDatabase() {
     abstract fun dao(): Dao

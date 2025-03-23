@@ -6,4 +6,13 @@
     <item name="postSplashScreenTheme">@style/Theme.Whoknows</item>
 </style>
     <style name="Theme.Whoknows" parent="android:Theme.Material.Light.NoActionBar" />
+
+
+    <style name="DatePickerTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowBackground">@drawable/rounded_dialog</item>
+    <item name="android:colorSecondary">@color/white</item>
+    <item name="android:colorAccent">@color/ordColor</item>
+    <item name="colorAccent">@color/ordColor</item>
+</style>
+
 </resources>
