@@ -5,6 +5,7 @@ package com.krp.whoknows.ktorclient.di
  */
 
 import androidx.room.Room
+import com.krp.whoknows.Appui.Chat.presentation.ChatViewModel
 import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
 import com.krp.whoknows.Appui.MatchingScreen.presentation.CancelMatchViewModel
 import com.krp.whoknows.Appui.MatchingScreen.presentation.CheckMatchViewModel
@@ -84,6 +85,8 @@ val appModule: Module = module {
     viewModel{CheckMatchViewModel()}
     viewModel{CreateMatchViewModel()}
     viewModel{CancelMatchViewModel()}
+    viewModel{ChatViewModel()}
+    viewModel{ChatViewModel()}
 }
 
 fun provideHttpClient(): HttpClient {

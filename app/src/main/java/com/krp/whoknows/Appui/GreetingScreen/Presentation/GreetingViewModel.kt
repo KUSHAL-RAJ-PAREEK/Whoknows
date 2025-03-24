@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.krp.whoknows.ktorclient.KtorClient
 import com.krp.whoknows.model.UserResponse
 import com.krp.whoknows.roomdb.UserRepository
+import com.krp.whoknows.roomdb.entity.MatchUserEntity
 import com.krp.whoknows.roomdb.entity.UserResponseEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,6 +34,10 @@ class GreetingViewModel(
     private val _userState = MutableStateFlow<UserResponseEntity?>(null)
     val userState: StateFlow<UserResponseEntity?> = _userState.asStateFlow()
 
+    private val _matchUserState = MutableStateFlow<MatchUserEntity?>(null)
+    val matchUserState: StateFlow<MatchUserEntity?> = _matchUserState.asStateFlow()
+
+
     private val _pNumber = MutableStateFlow<String?>(null)
     val pNumber: StateFlow<String?> get() = _pNumber
 
@@ -44,6 +49,12 @@ class GreetingViewModel(
                 _userState.value = user
             }
         }
+
+//        viewModelScope.launch {
+//            userRepository.getMatchUser().collectLatest { user ->
+//                _matchUserState.value = user
+//            }
+//        }
 
     }
 

@@ -250,8 +250,8 @@ LaunchedEffect(state.isLoading) {
                 ),
                 shape = RoundedCornerShape(20.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done)
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Search)
             )
         }
         Box(

@@ -88,7 +88,10 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM
 import com.google.android.exoplayer2.ui.StyledPlayerView
+import com.krp.whoknows.Appui.Chat.presentation.ChatViewModel
 import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
+import com.krp.whoknows.Appui.MatchingScreen.presentation.MatchUserViewModel
+import com.krp.whoknows.Appui.Profile.presentation.MainImageViewModel
 import com.krp.whoknows.Appui.Profile.presentation.ProfileDetailViewModel
 import com.krp.whoknows.Appui.Profile.presentation.UpdateMatchEvent
 import com.krp.whoknows.Appui.Profile.presentation.UpdateMatchState
@@ -97,6 +100,10 @@ import com.krp.whoknows.Appui.Profile.presentation.UpdateUserEvent
 import com.krp.whoknows.Navigation.FAB_KEY
 import com.krp.whoknows.Navigation.HomeScreen
 import com.krp.whoknows.RiveComponents.ComposableRiveAnimationView
+import com.krp.whoknows.Utils.calculateAge
+import com.krp.whoknows.Utils.convertImageUrlToBase64
+import com.krp.whoknows.Utils.createChatRoomId
+import com.krp.whoknows.Utils.getLocationCityState
 import com.krp.whoknows.Utils.times
 import com.krp.whoknows.Utils.transform
 import org.koin.androidx.compose.getViewModel
@@ -147,7 +154,10 @@ fun SharedTransitionScope.HomeScreen(
     greetingViewModel: GreetingViewModel,
     updateMatchViewModel:UpdateMatchViewModel,
     profileDetailViewModel : ProfileDetailViewModel,
+    matchUserViewModel : MatchUserViewModel,
     state: UpdateMatchState,
+    chatViewModel: ChatViewModel,
+    mainImageViewModel : MainImageViewModel,
     event :(UpdateMatchEvent) -> Unit){
     val context = LocalContext.current
 //    val exoPlayer = remember { context.buildExoPlayer(videoUri) }
@@ -164,14 +174,86 @@ fun SharedTransitionScope.HomeScreen(
 //    }
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
 
+
 Log.d("adasdasdjnfasjvnsjkv",state.toString())
     LaunchedEffect(state.isLoading) {
         if(state.isSuccess){
             Log.d("inhomescreen",state.statusCode.toString())
             if(!updateMatchViewModel.called.value){
                 val res = state.statusCode
+
                 if(res == 200){
                     profileDetailViewModel.updateMatch(true)
+                    val matchUser = state.user
+                    Log.d("adsdasdasdsadasdasdas",matchUser.toString())
+                    matchUserViewModel.saveMatchUser(matchUser)
+                    val dobString = matchUser?.dob ?: "2004-12-12"
+                    val localDate = LocalDate.parse(dobString, DateTimeFormatter.ISO_LOCAL_DATE)
+                    matchUserViewModel.updateId(matchUser?.id.toString())
+                    matchUserViewModel.updateUsername(matchUser?.username.toString())
+                    matchUserViewModel.updateImgUrl(matchUser?.imgUrl.toString())
+                    matchUserViewModel.updateGeoRadiusRange(matchUser?.geoRadiusRange.toString())
+                    matchUserViewModel.updatePreGender(matchUser?.preferredGender.toString())
+                    matchUserViewModel.updateGender(matchUser?.gender.toString())
+                    matchUserViewModel.updateDobs(calculateAge(localDate.toString()).toString())
+                    matchUserViewModel.updateDOB(localDate)
+                    matchUserViewModel.updatePreAgeRange(matchUser?.ageGap.toString())
+                    matchUserViewModel.updateBio(matchUser?.bio?:"hey, I am using whoknows.")
+                    matchUserViewModel.updateInterest(matchUser?.interests ?: emptyList())
+                    matchUserViewModel.updatePosts(matchUser?.posts ?: emptyList())
+//        profileDetailViewModel.updateFPreAgeRange(parts[0].toString())
+//        profileDetailViewModel.updateTPreAgeRange(parts[1].toString())
+                    matchUserViewModel.updateLatitude(matchUser?.latitude.toString())
+                    matchUserViewModel.updateLongitude(matchUser?.longitude.toString())
+                    matchUserViewModel.updatePnumber(matchUser?.pnumber.toString())
+
+                    val imgUrl = matchUser?.imgUrl.toString()
+                    val list = matchUser?.posts ?: emptyList()
+
+                    val  location = getLocationCityState(
+                        matchUser?.latitude?.toDouble() ?: 26.9124,
+                        matchUser?.longitude?.toDouble() ?: 75.7873,
+                        context
+                    )
+                    matchUserViewModel.updateLocation(location)
+
+                    matchUserViewModel.updatemImage(imgUrl)
+
+                    if (list.isNotEmpty()) {
+                        val firstElement = list[0]
+                        matchUserViewModel.updatefImage(firstElement)
+                    }
+
+                    if (list.size > 1) {
+                        val secondElement = list[1]
+                        matchUserViewModel.updatesImage(secondElement)
+
+                    }
+
+                    if (list.size > 2) {
+                        val thirdlement = list[2]
+                        matchUserViewModel.updatetImage(thirdlement)
+
+                    }
+
+//        coroutineScope.launch {
+                    mainImageViewModel.saveMatchProfileImage(convertImageUrlToBase64(matchUser?.imgUrl.toString()))
+                    val size = matchUser?.posts?.size ?: 0
+                    for (i in 0 until size) {
+                        val imgUrl = matchUser?.posts?.get(i) ?: continue
+                        val base64String = convertImageUrlToBase64(imgUrl)
+                        Log.d("imgusdasdsdrl",imgUrl)
+                        if (base64String != null) {
+                            Log.d("converted",i.toString())
+                            mainImageViewModel.saveMatchGalleryImage("${matchUser?.id}_g${i+1}",base64String)
+                        } else {
+                            Log.e("ProfileImage", "Failed to convert image to Base64")
+                        }
+//            }
+                    }
+
+                    chatViewModel.getMessages(chatRoomID = createChatRoomId(profileDetailViewModel.id.value,matchUserViewModel.id.value))
+
                 }else if(res == 204){
                     profileDetailViewModel.updateMatch(false)
                 }

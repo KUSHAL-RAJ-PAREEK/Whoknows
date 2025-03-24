@@ -154,6 +154,7 @@ dependencies {
     implementation ("androidx.startup:startup-runtime:1.1.1")
 
 
+    implementation("io.socket:socket.io-client:2.0.0")
 
 }
 

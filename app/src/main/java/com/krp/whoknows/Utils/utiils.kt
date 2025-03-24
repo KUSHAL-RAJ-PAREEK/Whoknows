@@ -786,3 +786,9 @@ fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
         }
     )
 }
+
+fun createChatRoomId(id1: String, id2: String): String{
+    val ids = listOf(id1,id2).sorted()
+//    Log.d("askfjaslkfjakls",ids.toString())
+    return ids.joinToString(separator = "_")
+}

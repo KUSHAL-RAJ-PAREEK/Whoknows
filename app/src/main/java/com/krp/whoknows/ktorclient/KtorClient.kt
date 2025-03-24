@@ -5,6 +5,7 @@ package com.krp.whoknows.ktorclient
  */
 
 import android.util.Log
+import com.krp.whoknows.model.Message
 import com.krp.whoknows.model.OtpDetail
 import com.krp.whoknows.model.OtpResponse
 import com.krp.whoknows.model.SendOTP
@@ -27,6 +28,9 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.isSuccess
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 
 class KtorClient : KoinComponent {
@@ -220,5 +224,33 @@ class KtorClient : KoinComponent {
         return statusCode
     }
 
+    suspend fun sendMessage(message : Message) :Int{
 
+        val response = client.post{
+            url("https://whoknowschatbackend.onrender.com/send-message")
+            contentType(ContentType.Application.Json)
+            setBody(message)
+        }
+
+        return response.status.value
+    }
+
+    suspend fun fetchMessage(chatRoomId: String): Flow<List<Message>> = flow {
+        try {
+            val response = client.get {
+                url("https://whoknowschatbackend.onrender.com/message/$chatRoomId")
+                contentType(ContentType.Application.Json)
+            }
+
+            if (response.status.isSuccess()) {
+                emit(response.body())
+            } else {
+                Log.d("errorwhilefetch", "Error: ${response.status.value}")
+                emit(emptyList())
+            }
+        } catch (e: Exception) {
+            Log.d("errorwhilefetch", "Exception: ${e.message}")
+            emit(emptyList())
+        }
+    }
 }

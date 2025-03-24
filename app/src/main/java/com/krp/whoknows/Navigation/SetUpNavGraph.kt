@@ -35,6 +35,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.toRoute
 import com.google.android.gms.maps.model.LatLng
+import com.krp.whoknows.Appui.Chat.presentation.ChatViewModel
 import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingScreen
 import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
 import com.krp.whoknows.Appui.HomeScreen.presentation.HomeScreen
@@ -99,6 +100,7 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
     val createMatchViewModel: CreateMatchViewModel = koinViewModel()
     val matchUserViewModel : MatchUserViewModel = koinViewModel()
     val cancelMatchViewModel : CancelMatchViewModel = koinViewModel()
+    val chatViewModel : ChatViewModel = koinViewModel()
 
     SharedTransitionLayout {
             val navController = rememberNavController()
@@ -213,6 +215,9 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
                         greetingViewModel =greetingViewModel,
                         updateMatchViewModel= updateMatchViewModel,
                         profileDetailViewModel = profileDetailViewModel,
+                        matchUserViewModel = matchUserViewModel,
+                        mainImageViewModel = mainImageViewModel,
+                        chatViewModel = chatViewModel,
                         state = state,
                         event = updateMatchViewModel::onEvent
                         )
@@ -277,6 +282,9 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
                 }
 
                 composable<ChatScreen> {
+                    val state by chatViewModel.state.collectAsStateWithLifecycle()
+                    val chatState by chatViewModel.Liststate.collectAsStateWithLifecycle()
+
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -289,7 +297,13 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        com.krp.whoknows.Appui.Chat.presentation.ChatScreen()
+                        com.krp.whoknows.Appui.Chat.presentation.ChatScreen(
+                            matchUserViewModel = matchUserViewModel,
+                            userDetailViewModel = profileDetailViewModel,
+                            state= state,
+                            chatState =chatState,
+                            event = chatViewModel::onEvent
+                        )
                     }
                 }
 
