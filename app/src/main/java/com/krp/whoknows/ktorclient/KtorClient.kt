@@ -253,4 +253,19 @@ class KtorClient : KoinComponent {
             emit(emptyList())
         }
     }
+
+    suspend fun editMessage(charId: String): Int {
+        try {
+            val response = client.put {
+                url("https://whoknowschatbackend.onrender.com/edit-message/$charId")
+                contentType(ContentType.Application.Json)
+            }
+
+            return response.status.value
+
+        } catch (e: Exception) {
+            Log.d("errorwhilefetch", "Exception: ${e.message}")
+        }
+        return 500
+    }
 }

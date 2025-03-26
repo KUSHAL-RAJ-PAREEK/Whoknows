@@ -32,11 +32,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,8 +53,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -513,36 +518,22 @@ import kotlinx.coroutines.withContext
 //}
 
 
-
 @Composable
-fun BlurredSquareDialog(
-    onDismissRequest: () -> Unit,
-    content: @Composable () -> Unit
-) {
-    Dialog(
-        onDismissRequest = onDismissRequest,
-        properties = DialogProperties(
-            dismissOnClickOutside = true
-        )
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Transparent.copy(alpha = 0.3f)) // Semi-transparent overlay
-                .clickable(onClick = onDismissRequest)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(200.dp) // Square shape
-                    .clip(RoundedCornerShape(16.dp))
-                    .align(Alignment.Center)
-                    .background(Color.Transparent.copy(alpha = 0.1f)) // Transparent background
-                    .blur(20.dp) // Apply blur effect
-                    .border(2.dp, Color.Transparent, shape = RoundedCornerShape(4.dp)) // Square shape with slightly rounded edges
-                    .padding(16.dp)
-            ) {
-                content()
+fun MyAlertDialog(onDismiss: () -> Unit) {
+    AlertDialog(
+        containerColor = colorResource(R.color.ordColor),
+        onDismissRequest = { onDismiss() },
+        confirmButton = {
+            TextButton(onClick = { onDismiss() }) {
+                Text("OK")
             }
-        }
-    }
+        },
+        dismissButton = {
+            Button(onClick = { onDismiss() }) {
+                Text("Cancel")
+            }
+        },
+        title = { Text("Alert") },
+        text = { Text("This is an alert dialog.") }
+    )
 }
