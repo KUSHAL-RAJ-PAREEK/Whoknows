@@ -302,6 +302,7 @@ fun SetUpNavGraph(modifier: Modifier = Modifier,startDest : Any) {
                             userDetailViewModel = profileDetailViewModel,
                             state= state,
                             chatState =chatState,
+                            imageViewModel = imageViewModel,
                             event = chatViewModel::onEvent
                         )
                     }

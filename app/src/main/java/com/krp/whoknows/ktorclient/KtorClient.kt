@@ -235,7 +235,7 @@ class KtorClient : KoinComponent {
         return response.status.value
     }
 
-    suspend fun fetchMessage(chatRoomId: String): Flow<List<Message>> = flow {
+     fun fetchMessage(chatRoomId: String): Flow<List<Message>> = flow {
         try {
             val response = client.get {
                 url("https://whoknowschatbackend.onrender.com/message/$chatRoomId")

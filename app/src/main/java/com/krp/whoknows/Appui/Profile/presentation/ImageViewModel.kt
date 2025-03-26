@@ -62,6 +62,11 @@ class ImageViewModel(private val repository: ImageRepository) : ViewModel() {
            return repository.saveGalleryImageToSupabase(context, uri, id)
     }
 
+     suspend fun saveChatImagetoSupabase(context: Context, uri: Uri?, id: String):Boolean {
+        Log.d("afdasfafasfasfsf",uri.toString())
+        return repository.saveChatImageToSupabase(context, uri, id)
+    }
+
     fun deleteProfile(){
         viewModelScope.launch {
             repository.deleteProfileImage()

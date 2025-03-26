@@ -68,6 +68,41 @@ class ImageRepository(private val imageDao: Dao) {
     }
 
 
+     suspend fun saveChatImageToSupabase(context: Context, uri: Uri?, id: String): Boolean {
+        if (uri == null) return true
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+                val byteArray = inputStream?.readBytes()
+                inputStream?.close()
+
+                if (byteArray != null) {
+                    val fileName = "$id.jpg"
+
+                    val response = supabase.storage
+                        .from("chat-images")
+                        .upload(fileName, byteArray, upsert = true)
+
+                    return@withContext if (response.isNotEmpty()) {
+                        Log.d("SupabaseUpload", "Profile image uploaded successfully: $fileName")
+                        true
+                    } else {
+                        Log.e("SupabaseUpload", "Error uploading image: Upload failed")
+                        false
+                    }
+                } else {
+                    Log.e("SupabaseUpload", "Error reading image bytes")
+                    false
+                }
+            } catch (e: Exception) {
+                Log.e("SupabaseUpload", "Exception: ${e.message}")
+                false
+            }
+        }
+    }
+
+
 
 
     suspend fun deleteProfileImageFromSupabase(id: String): Boolean {

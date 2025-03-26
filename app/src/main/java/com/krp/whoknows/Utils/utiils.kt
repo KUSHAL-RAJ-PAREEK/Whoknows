@@ -22,7 +22,11 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -35,6 +39,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Article
@@ -165,6 +170,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -176,6 +182,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -206,11 +213,13 @@ import java.time.Period
 import java.time.format.DateTimeFormatter
 import kotlin.collections.mutableListOf
 import androidx.core.graphics.createBitmap
+import com.krp.whoknows.ui.theme.ordColor
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.readBytes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 
 /**
@@ -701,11 +710,13 @@ fun getProfileImageUrl(userId: String): String {
 
 fun String.toBitmap(): Bitmap? {
     return try {
+        Log.d("insidebitmap",this)
         val byteArray = ImageConverter.base64ToByteArray(this)
         val inputStream = ByteArrayInputStream(byteArray)
       BitmapFactory.decodeStream(inputStream)
         } catch (e: Exception) {
         e.printStackTrace()
+        Log.d("exceptioninside",e.toString())
         null
     }
 }
@@ -792,3 +803,43 @@ fun createChatRoomId(id1: String, id2: String): String{
 //    Log.d("askfjaslkfjakls",ids.toString())
     return ids.joinToString(separator = "_")
 }
+
+
+@Composable
+fun ShinyText(text : String) {
+    val shimmerColors = listOf(
+        Cyan.copy(alpha = 0.4f),
+        ordColor,
+        Cyan.copy(alpha = 0.3f)
+    )
+
+    val transition = rememberInfiniteTransition()
+    val shimmerOffset by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1000f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1500, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+
+    val brush = Brush.linearGradient(
+        colors = shimmerColors,
+        start = Offset(shimmerOffset, 0f),
+        end = Offset(shimmerOffset + 500f, 0f)
+    )
+
+    Text(
+        text = text,
+        fontSize = 24.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(16.dp),
+        style = TextStyle(brush = brush)
+    )
+}
+
+fun generateUniqueFileName(): String {
+    return "${System.currentTimeMillis()}_${UUID.randomUUID()}.jpg"
+}
+
+

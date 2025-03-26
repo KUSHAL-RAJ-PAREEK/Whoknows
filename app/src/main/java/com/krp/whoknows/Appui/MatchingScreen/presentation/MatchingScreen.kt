@@ -1,6 +1,5 @@
 package com.krp.whoknows.Appui.MatchingScreen.presentation
 
-import ShinyText
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.compose.BackHandler
@@ -43,6 +42,7 @@ import com.krp.whoknows.Navigation.ChatScreen
 import com.krp.whoknows.Navigation.HomeScreen
 import com.krp.whoknows.R
 import com.krp.whoknows.RiveComponents.ComposableRiveAnimationView
+import com.krp.whoknows.Utils.ShinyText
 import com.krp.whoknows.Utils.calculateAge
 import com.krp.whoknows.Utils.convertImageUrlToBase64
 import com.krp.whoknows.Utils.getLocationCityState

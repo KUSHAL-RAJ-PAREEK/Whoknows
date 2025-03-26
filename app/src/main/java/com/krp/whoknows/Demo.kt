@@ -1,12 +1,19 @@
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,12 +25,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,10 +43,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -55,6 +71,7 @@ import com.airbnb.lottie.RenderMode
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.krp.whoknows.Appui.Chat.components.MessageInputField
 import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
 import com.krp.whoknows.Auth.OTPScreen.OTPVerificationEvent
 import com.krp.whoknows.Auth.OTPScreen.OTPVerificationState
@@ -63,11 +80,15 @@ import com.krp.whoknows.Navigation.GreetingScreen
 import com.krp.whoknows.Navigation.LatLong
 import com.krp.whoknows.Navigation.PhoneScreen
 import com.krp.whoknows.R
+import com.krp.whoknows.Utils.drawableToBitmap
 import com.krp.whoknows.model.OtpDetail
 import com.krp.whoknows.model.SendOTP
+import com.krp.whoknows.roomdb.ImageConverter.base64ToBitmap
+import com.krp.whoknows.roomdb.ImageConverter.uriToBase64
 import com.krp.whoknows.roomdb.JWTViewModel
 import com.krp.whoknows.ui.theme.Cyan
 import com.krp.whoknows.ui.theme.Purple
+import com.krp.whoknows.ui.theme.lightOrdColor
 import com.krp.whoknows.ui.theme.ordColor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -417,41 +438,111 @@ import kotlinx.coroutines.withContext
 //    }
 //}
 
-
-@Composable
-fun ShinyText(text : String) {
-    val shimmerColors = listOf(
-        Cyan.copy(alpha = 0.4f),
-        ordColor,
-        Cyan.copy(alpha = 0.3f)
-    )
-
-    val transition = rememberInfiniteTransition()
-    val shimmerOffset by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1000f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1500, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        )
-    )
-
-    val brush = Brush.linearGradient(
-        colors = shimmerColors,
-        start = Offset(shimmerOffset, 0f),
-        end = Offset(shimmerOffset + 500f, 0f)
-    )
-
-    Text(
-        text = text,
-        fontSize = 24.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(16.dp),
-        style = TextStyle(brush = brush)
-    )
-}
-
+//
 //@Preview
 //@Composable
 //private fun run() {
+//
+//
+//    val listState = rememberLazyListState()
+//
+////    LaunchedEffect(chatState.messageList.size) {
+////        if (chatState.messageList.isNotEmpty()) {
+////            listState.animateScrollToItem(chatState.messageList.size - 1)
+////        }
+////    }
+//
+////    LaunchedEffect(state.isLoading) {
+////
+////        if (state.isSuccess) {
+////            Log.d("messageaagaya", state.statusCode.toString())
+////        }
+////    }
+//
+////    var mImage by remember {
+////        mutableStateOf<Uri?>(null)
+////    }
+////    var mBitmap by remember { mutableStateOf<Bitmap?>(null) }
+////
+////    var mPhotoPickerLauncher = rememberLauncherForActivityResult(
+////        contract = ActivityResultContracts.PickVisualMedia(),
+////        onResult = { uri ->
+////            mImage = uri
+////            mBitmap = uri?.let { getBitmapFromUri(context, it) }
+////
+////        }
+////    )
+//
+//    Box(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .background(lightOrdColor)
+//    ) {
+//        Image(
+//            painter = painterResource(id = R.drawable.chat_background),
+//            contentDescription = null,
+//            modifier = Modifier.fillMaxSize(),
+//            contentScale = ContentScale.Crop
+//        )
+//
+//        Column(
+//            modifier = Modifier
+//                .padding(horizontal = 14.dp)
+//                .fillMaxSize()
+//        ) {
+//            Spacer(modifier = Modifier.height(10.dp))
+//
+//
+//            LazyColumn(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .weight(1f),
+//                state = listState,
+//                reverseLayout = false
+//            ) {
+//                items(1){
+//
+//                }
+//            }
+//
+//            MessageInputField { message ->
+//
+//            }
+//        }
+//    }
 //}
+
+
+
+@Composable
+fun BlurredSquareDialog(
+    onDismissRequest: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(
+            dismissOnClickOutside = true
+        )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Transparent.copy(alpha = 0.3f)) // Semi-transparent overlay
+                .clickable(onClick = onDismissRequest)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(200.dp) // Square shape
+                    .clip(RoundedCornerShape(16.dp))
+                    .align(Alignment.Center)
+                    .background(Color.Transparent.copy(alpha = 0.1f)) // Transparent background
+                    .blur(20.dp) // Apply blur effect
+                    .border(2.dp, Color.Transparent, shape = RoundedCornerShape(4.dp)) // Square shape with slightly rounded edges
+                    .padding(16.dp)
+            ) {
+                content()
+            }
+        }
+    }
+}
