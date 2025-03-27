@@ -68,6 +68,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.graphics.alpha
 import androidx.navigation.NavController
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
@@ -519,21 +520,47 @@ import kotlinx.coroutines.withContext
 
 
 @Composable
-fun MyAlertDialog(onDismiss: () -> Unit) {
-    AlertDialog(
-        containerColor = colorResource(R.color.ordColor),
-        onDismissRequest = { onDismiss() },
-        confirmButton = {
-            TextButton(onClick = { onDismiss() }) {
-                Text("OK")
-            }
-        },
-        dismissButton = {
-            Button(onClick = { onDismiss() }) {
-                Text("Cancel")
-            }
-        },
-        title = { Text("Alert") },
-        text = { Text("This is an alert dialog.") }
-    )
+fun MyAlertDialog(onDismiss: () -> Unit, isDownload: Boolean,onConfirmD: () -> Unit,
+                  onConfirmDe: () -> Unit) {
+    if(isDownload){
+        AlertDialog(
+            modifier = Modifier,
+            containerColor = colorResource(R.color.ordColor),
+            onDismissRequest = { onDismiss() },
+            confirmButton = {
+                TextButton(onClick = {
+                    onConfirmD()
+                    onDismiss()}) {
+                    Text("download")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { onDismiss() }) {
+                    Text("Cancel")
+                }
+            },
+//            title = { Text("Alert") },
+            text = { Text("Do you want to download?") }
+        )
+    }else{
+        AlertDialog(
+            containerColor = colorResource(R.color.ordColor),
+            onDismissRequest = { onDismiss() },
+            confirmButton = {
+                TextButton(onClick = {
+                    onConfirmDe()
+                    onDismiss()}) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { onDismiss() }) {
+                    Text("Cancel")
+                }
+            },
+//            title = { Text("Alert") },
+            text = { Text("Do you want to delete?") }
+        )
+    }
+
 }

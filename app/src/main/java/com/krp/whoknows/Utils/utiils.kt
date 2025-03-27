@@ -2,6 +2,7 @@ package com.krp.whoknows.Utils
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.DownloadManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -12,7 +13,9 @@ import android.graphics.drawable.Drawable
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
+import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.util.Base64
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -219,6 +222,10 @@ import io.ktor.client.request.get
 import io.ktor.client.statement.readBytes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.UUID
 
 
@@ -843,3 +850,30 @@ fun generateUniqueFileName(): String {
 }
 
 
+
+fun downloadImageFromUrl(context: Context, imageUrl: String) {
+    try {
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault()).format(
+            Date()
+        )
+        val fileExtension = imageUrl.substringAfterLast('.', "png")
+        val fileName = "image_$timeStamp.$fileExtension"
+
+        val request = DownloadManager.Request(Uri.parse(imageUrl))
+            .setTitle("Downloading Image")
+            .setDescription("Image is being saved to Downloads")
+            .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            .setAllowedOverMetered(true)
+            .setAllowedOverRoaming(true)
+
+        val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        downloadManager.enqueue(request)
+
+        Log.d("DownloadManager", "Download started for: $imageUrl with filename: $fileName")
+
+    } catch (e: Exception) {
+        e.printStackTrace()
+        Log.e("DownloadManager", "Error downloading image: ${e.message}")
+    }
+}
