@@ -115,7 +115,7 @@ var inside by remember { mutableStateOf(false) }
                delay(2000)
 //               backstack = true
                navcontroller.popBackStack()
-               navcontroller.navigate(ChatScreen)
+               navcontroller.navigate("chatScreen")
            }
        }
        LaunchedEffect(reached) {
@@ -373,8 +373,12 @@ var inside by remember { mutableStateOf(false) }
                }
 
                delay(7000)
+
                navcontroller.popBackStack()
-               navcontroller.navigate(ChatScreen)
+               navcontroller.navigate("chatScreen")
+
+               delay(200)
+               profileDetailViewModel.updateMatch(true)
                Log.d("hereiam",check_state.user.toString())
                Log.d("matchornot", "matched")
            }

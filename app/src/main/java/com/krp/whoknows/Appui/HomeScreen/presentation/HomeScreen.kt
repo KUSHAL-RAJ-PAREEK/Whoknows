@@ -106,6 +106,11 @@ import com.krp.whoknows.Utils.createChatRoomId
 import com.krp.whoknows.Utils.getLocationCityState
 import com.krp.whoknows.Utils.times
 import com.krp.whoknows.Utils.transform
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.getViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -173,7 +178,6 @@ fun SharedTransitionScope.HomeScreen(
 //        }
 //    }
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
-
 
 Log.d("adasdasdjnfasjvnsjkv",state.toString())
     LaunchedEffect(state.isLoading) {
@@ -252,8 +256,25 @@ Log.d("adasdasdjnfasjvnsjkv",state.toString())
 //            }
                     }
 
-                    chatViewModel.getMessages(chatRoomID = createChatRoomId(profileDetailViewModel.id.value,matchUserViewModel.id.value))
+//                    val id = createChatRoomId(profileDetailViewModel.id.value, matchUserViewModel.id.value)
+Log.d("hereitisisisi","hello")
+                    withContext(Dispatchers.IO) {
+                        val id = createChatRoomId(profileDetailViewModel.id.value, matchUserViewModel.id.value)
 
+                        val messagesDeferred = async { chatViewModel.getMessages(chatRoomID = id) }
+                        val statusDeferred = async { matchUserViewModel.getStatus(id) }
+                        val updateDeferred = async { matchUserViewModel.updateClicked(accid = id, id = profileDetailViewModel.id.value) }
+
+                        messagesDeferred.await()
+                        statusDeferred.await()
+                        updateDeferred.await()
+                    }
+
+//
+//                    val id = createChatRoomId(profileDetailViewModel.id.value,matchUserViewModel.id.value)
+//                    chatViewModel.getMessages(chatRoomID = id)
+//                    matchUserViewModel.getStatus(id)
+//                    matchUserViewModel.updateClicked(accid = id, id =profileDetailViewModel.id.value)
                 }else if(res == 204){
                     profileDetailViewModel.updateMatch(false)
                 }

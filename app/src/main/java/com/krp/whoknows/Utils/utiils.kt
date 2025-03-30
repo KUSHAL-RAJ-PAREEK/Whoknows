@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.location.Address
@@ -26,6 +27,7 @@ import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.StartOffset
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -35,14 +37,21 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Article
@@ -162,22 +171,27 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Water
 import androidx.compose.material.icons.filled.Waves
 import androidx.compose.material.icons.filled.WorkOutline
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.Font
@@ -216,6 +230,10 @@ import java.time.Period
 import java.time.format.DateTimeFormatter
 import kotlin.collections.mutableListOf
 import androidx.core.graphics.createBitmap
+import com.krp.whoknows.ui.theme.Bpink
+import com.krp.whoknows.ui.theme.chat_dark
+import com.krp.whoknows.ui.theme.chat_light
+import com.krp.whoknows.ui.theme.light_red
 import com.krp.whoknows.ui.theme.ordColor
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -876,4 +894,189 @@ fun downloadImageFromUrl(context: Context, imageUrl: String) {
         e.printStackTrace()
         Log.e("DownloadManager", "Error downloading image: ${e.message}")
     }
+}
+
+
+@Composable
+fun DotsWaveAnimation(dotColor: androidx.compose.ui.graphics.Color) {
+
+    val modifier = Modifier
+        .padding(
+            start =  8.dp,
+            end =  16.dp,
+            top = 0.dp,
+            bottom = 0.dp
+        )
+//        .defaultMinSize(minHeight = .dp)
+        .clip(
+            RoundedCornerShape(
+                bottomEnd = 10.dp,
+                bottomStart = 10.dp,
+                topStart = 0.dp,
+                topEnd =  10.dp
+            )
+        )
+        .background(
+
+
+                    chat_light
+
+
+        )
+    val transition = rememberInfiniteTransition()
+
+    val dotOffsets = List(3) { index ->
+        transition.animateFloat(
+            initialValue = 0f,
+            targetValue = 12f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 700, easing = LinearEasing),
+                repeatMode = RepeatMode.Reverse,
+                initialStartOffset = StartOffset(index * 150)
+            )
+        )
+    }
+
+    Row(
+        verticalAlignment = Alignment.Bottom
+    ) {
+        Box(
+            modifier = modifier
+        ) {
+            Column(
+                modifier = Modifier.padding(2.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 2.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+//                    verticalAlignment = Alignment.Bottom
+                ) {
+                    dotOffsets.forEach { offset ->
+                        Text(
+                            text = ".",
+                            fontSize = 25.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = dotColor,
+                            modifier = Modifier.offset(y = -offset.value.dp)
+                        )
+                    }
+                }
+            }
+        }
+        }
+
+}
+
+fun formatDate(date: String): String {
+    return try {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val parsedDate = LocalDate.parse(date, formatter)
+        DateTimeFormatter.ofPattern("dd MMM yyyy").format(parsedDate)
+    } catch (e: Exception) {
+        date
+    }
+}
+
+
+
+@Composable
+fun MyAlertDialog(onDismiss: () -> Unit, isDownload: Boolean,onConfirmD: () -> Unit,
+                  onConfirmDe: () -> Unit) {
+    if(isDownload){
+        AlertDialog(
+            modifier = Modifier,
+            containerColor = colorResource(R.color.ordColor),
+            onDismissRequest = { onDismiss() },
+            confirmButton = {
+                TextButton(onClick = {
+                    onConfirmD()
+                    onDismiss()}) {
+                    Text("download")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { onDismiss() }) {
+                    Text("Cancel")
+                }
+            },
+//            title = { Text("Alert") },
+            text = { Text("Do you want to download?") }
+        )
+    }else{
+        AlertDialog(
+            containerColor = colorResource(R.color.ordColor),
+            onDismissRequest = { onDismiss() },
+            confirmButton = {
+                TextButton(onClick = {
+                    onConfirmDe()
+                    onDismiss()}) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { onDismiss() }) {
+                    Text("Cancel")
+                }
+            },
+//            title = { Text("Alert") },
+            text = { Text("Do you want to delete?") }
+        )
+    }
+
+}
+
+
+
+@Composable
+fun MyAlertDialogAcc(onDismiss: () -> Unit, onConfirm :() -> Unit){
+
+    AlertDialog(
+        modifier = Modifier,
+        containerColor = Bpink,
+        onDismissRequest = { onDismiss() },
+        confirmButton = {
+            TextButton(onClick = {
+                onConfirm()
+                onDismiss()}) {
+                Text("yes")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onDismiss() }) {
+                Text("no")
+            }
+        },
+//            title = { Text("Alert") },
+        text = { Text("Do you want to take your relationship to the next level?") }
+    )
+
+
+}
+
+
+@Composable
+fun MyAlertDialogDel(onDismiss: () -> Unit, onConfirm :() -> Unit){
+
+    AlertDialog(
+        modifier = Modifier,
+        containerColor = colorResource(R.color.ordColor),
+        onDismissRequest = { onDismiss() },
+        confirmButton = {
+            TextButton(onClick = {
+                onConfirm()
+                onDismiss()}) {
+                Text("yes")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onDismiss() }) {
+                Text("no")
+            }
+        },
+//            title = { Text("Alert") },
+        text = { Text("Do you want to go over it?") }
+    )
+
+
 }

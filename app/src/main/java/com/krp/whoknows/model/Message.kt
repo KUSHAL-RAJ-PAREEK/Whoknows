@@ -13,8 +13,10 @@ data class Message(
     @SerialName("_id") val _id: String? = null,
     val message: String? = null,
     val imgUrl: String? = null,
-    val senderId: String,
-    val receiverId: String,
+    val senderId: String?= null,
+    val receiverId: String?= null,
     val timeStamp: String? = null,
-    val imgStr : String? = null
+    val imgStr : String? = null,
+    val chatRoomId : String?= null,
+    val typingUsers: Set<String?> = emptySet()
 )

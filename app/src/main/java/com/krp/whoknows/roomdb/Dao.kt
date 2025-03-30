@@ -61,6 +61,12 @@ interface Dao {
     @Query("SELECT * FROM usergallery_images ORDER BY id DESC")
     suspend fun getMatchUserGalleryImages(): List<UserGalleryImageEntity>
 
+    @Query("DELETE FROM userprofile_image")
+    suspend fun deleteProfile()
+
+    @Query("DELETE FROM usergallery_images")
+    suspend fun deleteAllGalleryImages()
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveUser(user: UserResponseEntity)
 

@@ -257,6 +257,16 @@ class ImageRepository(private val imageDao: Dao) {
         }
     }
 
+    suspend fun deleteProfile(){
+        return imageDao.deleteProfile()
+    }
+
+
+    suspend fun deleteGallery(){
+        return imageDao.deleteAllGalleryImages()
+    }
+
+
     suspend fun getProfileImage(): ProfileImageEntity? {
         return imageDao.getProfileImage()
     }

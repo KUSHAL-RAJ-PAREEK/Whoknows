@@ -4,6 +4,9 @@ import android.util.Log
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.xr.compose.testing.toDp
+import com.krp.whoknows.Appui.Profile.presentation.UpdateMatchState
+import com.krp.whoknows.ktorclient.KtorClient
 import com.krp.whoknows.roomdb.UserRepository
 import com.krp.whoknows.roomdb.entity.MatchUserEntity
 import com.krp.whoknows.roomdb.entity.UserResponseEntity
@@ -11,14 +14,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.time.LocalDate
+import kotlin.getValue
 
 /**
  * Created by Kushal Raj Pareek on 22-03-2025 23:04
  */
 
-class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(){
+class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(),KoinComponent{
 
+    private val ktorClient: KtorClient by inject()
     private val _dob = MutableStateFlow(LocalDate.now())
     val dob: StateFlow<LocalDate> = _dob
 
@@ -91,6 +98,14 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
 
     private val _posts =  MutableStateFlow<List<String>?>(null)
     val posts: StateFlow<List<String>?> = _posts
+
+    private  val _acceptStatus = MutableStateFlow(0)
+    val acceptStatus  = _acceptStatus
+
+    private  val _clicked = MutableStateFlow(false)
+    val clicked  = _clicked
+
+
 
     fun updateInterest(interests : List<String>) {
         _interests.value = interests
@@ -182,11 +197,20 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
         _geoRadiusRange.value = geoRadiusRange
     }
 
+    fun updateAcceptStatus(count : Int){
+        _acceptStatus.value = count
+    }
+
+    fun updateClicked(flag: Boolean){
+        _clicked.value = flag
+    }
+
     fun saveMatchUser(user: MatchUserEntity?) {
         viewModelScope.launch {
             userRepository.saveMatchUser(user!!)
         }
     }
+
 
     suspend fun getUser(): MatchUserEntity? {
         return userRepository.getMatchUser().firstOrNull()
@@ -197,4 +221,86 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
             userRepository.deleteMatchUser()
         }
     }
+
+    fun getStatus(id : String) {
+        Log.d("afsdsffs","$id")
+        viewModelScope.launch {
+            try {
+                val response = ktorClient.getAcceptation(id = id)
+
+                if(response.status == 200){
+                    Log.d("hellogotStatus",response.status.toString())
+                    updateAcceptStatus(response.count)
+                }
+            } catch (e: Exception) {
+                Log.d("erroringetstatus",e.message.toString())
+
+            }
+        }
+    }
+
+    fun updateStatus(id : String, count : Int,userId : String) {
+        Log.d("afsdsffs","$id")
+        viewModelScope.launch {
+            try {
+                val response = ktorClient.updateAcceptation(id = id,count = count, userId = userId)
+                if(response == 200){
+                   updateAcceptStatus(acceptStatus.value+1)
+                    updateClicked(true)
+                    Log.d("gotthething",response.toString())
+                }
+            } catch (e: Exception) {
+                Log.d("erroringetstatus",e.message.toString())
+
+            }
+        }
+    }
+
+    fun updateClicked(accid: String,id : String) {
+        Log.d("afsdsffs","$id")
+        viewModelScope.launch {
+            try {
+                val response = ktorClient.getClickStatus(accid = accid, id = id)
+                if(response == 200){
+                    updateClicked(true)
+                }else{
+                    updateClicked(false)
+                }
+            } catch (e: Exception) {
+                Log.d("erroringetstatus",e.message.toString())
+
+            }
+        }
+    }
+
+
+    fun clearAll() {
+        _dob.value = LocalDate.now()
+        _dobs.value = ""
+        _isMatch.value = false
+        _id.value = ""
+        _mImage.value = ""
+        _fImage.value = ""
+        _sImage.value = ""
+        _tImage.value = ""
+        _pnumber.value = ""
+        _username.value = ""
+        _imgUrl.value = ""
+        _jwt.value = ""
+        _gender.value = ""
+        _preGender.value = ""
+        _geoRadiusRange.value = ""
+        _longitude.value = ""
+        _latitude.value = ""
+        _preAgeRange.value = ""
+        _preAgeFRange.value = ""
+        _preAgeTRange.value = ""
+        _location.value = ""
+        _bio.value = ""
+        _interests.value = null
+        _posts.value = null
+        _acceptStatus.value = 0
+        _clicked.value = false
+    }
+
 }

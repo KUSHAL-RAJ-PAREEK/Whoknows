@@ -59,19 +59,17 @@ class MainImageViewModel(private val repository: ImageRepository) : ViewModel() 
     }
 
 
-    fun saveProfileImage(img : String?) {
+    fun saveProfileImage(img: String?) {
         viewModelScope.launch {
-           repository.saveProfileImageD(img)
+            repository.saveProfileImageD(img)
             fetchProfileImage()
         }
     }
 
 
-
-
-     fun saveGalleryImage(id : String,img : String?) {
+    fun saveGalleryImage(id: String, img: String?) {
         viewModelScope.launch {
-            repository.saveGalleryImageD(id,img)
+            repository.saveGalleryImageD(id, img)
             fetchGalleryImages()
         }
     }
@@ -85,17 +83,29 @@ class MainImageViewModel(private val repository: ImageRepository) : ViewModel() 
     }
 
 
-    fun saveMatchProfileImage(img : String?) {
+    fun saveMatchProfileImage(img: String?) {
         viewModelScope.launch {
             repository.saveMatchProfileImageD(img)
             fetchMatchProfileImage()
         }
     }
 
-    fun saveMatchGalleryImage(id : String,img : String?) {
+    fun saveMatchGalleryImage(id: String, img: String?) {
         viewModelScope.launch {
-            repository.saveMatchGalleryImageD(id,img)
+            repository.saveMatchGalleryImageD(id, img)
             fetchMatchGalleryImages()
+        }
+    }
+
+    fun deleteProfile() {
+        viewModelScope.launch {
+            repository.deleteProfile()
+        }
+    }
+
+    fun deleteGallery() {
+        viewModelScope.launch {
+            repository.deleteGallery()
         }
     }
 
@@ -103,12 +113,15 @@ class MainImageViewModel(private val repository: ImageRepository) : ViewModel() 
     fun updateProfile(bitmap: Bitmap?) {
         _profileImage.value = bitmap
     }
+
     fun updateG1(bitmap: Bitmap?) {
         _firstGalleryImage.value = bitmap
     }
+
     fun updateG2(bitmap: Bitmap?) {
         _secondGalleryImage.value = bitmap
     }
+
     fun updateG3(bitmap: Bitmap?) {
         _thirdGalleryImage.value = bitmap
     }
@@ -117,7 +130,8 @@ class MainImageViewModel(private val repository: ImageRepository) : ViewModel() 
     private fun fetchGalleryImages() {
         viewModelScope.launch {
             val images = repository.getGalleryImages()
-            val imageWithIds = images.mapNotNull { it.imageString.toBitmap()?.let { bitmap -> it.id to bitmap } }
+            val imageWithIds =
+                images.mapNotNull { it.imageString.toBitmap()?.let { bitmap -> it.id to bitmap } }
 
             _firstGalleryImage.value = imageWithIds.find { it.first.takeLast(2) == "g1" }?.second
             _secondGalleryImage.value = imageWithIds.find { it.first.takeLast(2) == "g2" }?.second
@@ -128,11 +142,26 @@ class MainImageViewModel(private val repository: ImageRepository) : ViewModel() 
     private fun fetchMatchGalleryImages() {
         viewModelScope.launch {
             val images = repository.getMatchGalleryImages()
-            val imageWithIds = images.mapNotNull { it.imageString.toBitmap()?.let { bitmap -> it.id to bitmap } }
+            val imageWithIds =
+                images.mapNotNull { it.imageString.toBitmap()?.let { bitmap -> it.id to bitmap } }
 
-            _matchfirstGalleryImage.value = imageWithIds.find { it.first.takeLast(2) == "g1" }?.second
-            _matchsecondGalleryImage.value = imageWithIds.find { it.first.takeLast(2) == "g2" }?.second
-            _matchthirdGalleryImage.value = imageWithIds.find { it.first.takeLast(2) == "g3" }?.second
+            _matchfirstGalleryImage.value =
+                imageWithIds.find { it.first.takeLast(2) == "g1" }?.second
+            _matchsecondGalleryImage.value =
+                imageWithIds.find { it.first.takeLast(2) == "g2" }?.second
+            _matchthirdGalleryImage.value =
+                imageWithIds.find { it.first.takeLast(2) == "g3" }?.second
         }
+    }
+
+
+    fun clearMatch() {
+        _matchprofileImage.value = null
+        _matchfirstGalleryImage.value = null
+        _matchsecondGalleryImage.value = null
+        _matchthirdGalleryImage.value = null
+        deleteProfile()
+        deleteGallery()
+
     }
 }

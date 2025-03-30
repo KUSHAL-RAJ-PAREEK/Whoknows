@@ -2,15 +2,25 @@ package com.krp.whoknows.Appui.MatchUser
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.krp.whoknows.Appui.Profile.presentation.UpdateMatchState
+import com.krp.whoknows.ktorclient.KtorClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.time.LocalDate
+import kotlin.getValue
 
 /**
  * Created by Kushal Raj Pareek on 24-03-2025 13:02
  */
 
-class MatchUserViewModel: ViewModel(){
+class MatchUserViewModels: ViewModel(), KoinComponent{
+
+    private val ktorClient: KtorClient by inject()
+
 
     private val _dob = MutableStateFlow(LocalDate.now())
     val dob: StateFlow<LocalDate> = _dob
@@ -174,6 +184,7 @@ class MatchUserViewModel: ViewModel(){
     fun updateGeoRadiusRange(geoRadiusRange: String) {
         _geoRadiusRange.value = geoRadiusRange
     }
+
 
 
 }

@@ -5,6 +5,9 @@ package com.krp.whoknows.ktorclient
  */
 
 import android.util.Log
+import com.krp.whoknows.model.AcceptationModel
+import com.krp.whoknows.model.AcceptationRequest
+import com.krp.whoknows.model.AcceptationResponse
 import com.krp.whoknows.model.Message
 import com.krp.whoknows.model.OtpDetail
 import com.krp.whoknows.model.OtpResponse
@@ -31,6 +34,10 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 
 class KtorClient : KoinComponent {
@@ -224,6 +231,20 @@ class KtorClient : KoinComponent {
         return statusCode
     }
 
+    suspend fun removeMatch(id : String, jwt : String): Int{
+        Log.d("insideit","smdfaskmaksldmads")
+val response = client.get("/match/remove"){
+    contentType(ContentType.Application.Json)
+    bearerAuth(jwt)
+    url{
+        parameters.append("userId",id)
+    }
+}
+        val statusCode = response.status.value
+        Log.d("statuscoderemove",statusCode.toString())
+        return statusCode
+    }
+
     suspend fun sendMessage(message : Message) :Int{
 
         val response = client.post{
@@ -265,6 +286,85 @@ class KtorClient : KoinComponent {
 
         } catch (e: Exception) {
             Log.d("errorwhilefetch", "Exception: ${e.message}")
+        }
+        return 500
+    }
+
+
+    suspend fun updateAcceptation(id: String, count: Int, userId: String): Int {
+        try {
+            val response = client.put {
+                url("https://whoknowschatbackend.onrender.com/accept/$id")
+                contentType(ContentType.Application.Json)
+                setBody(AcceptationRequest(count = count, userId = userId))
+            }
+
+            return response.status.value
+        } catch (e: Exception) {
+            Log.d("errorinacceptaionaaaaaaaaaaaaaaddddd", "Exception: ${e.message}")
+        }
+        return 500
+    }
+
+    suspend fun getAcceptation(id : String): AcceptationModel{
+        try{
+            val response = client.get{
+                url("https://whoknowschatbackend.onrender.com/accept/$id")
+                contentType(ContentType.Application.Json)
+            }
+            val responseBody: String = response.body()
+            if(response.status.value == 200){
+                val jsonObject = Json.parseToJsonElement(responseBody).jsonObject
+                val count = jsonObject["count"]?.jsonPrimitive?.int
+            Log.d("responseforAcceptance",jsonObject.toString())
+                return  AcceptationModel(response.status.value,count!!)
+            }else{
+                Log.d("errorinacceptaionaaaaaaaaaaaaaa","Exception: ${response.status.value}")
+            }
+
+        } catch (e : Exception){
+            Log.d("errorinacceptaionaaaaaaaaaaaaaa","Exception: ${e.message}")
+        }
+        return AcceptationModel(500,-1)
+    }
+
+    suspend fun getClickStatus(accid : String, id : String): Int{
+        try{
+            val response = client.get{
+                url("https://whoknowschatbackend.onrender.com/accept/$accid/user/$id")
+                contentType(ContentType.Application.Json)
+            }
+            return response.status.value
+        } catch (e : Exception){
+            Log.d("errorinacceptaion","Exception: ${e.message}")
+        }
+        return 500
+    }
+
+    suspend fun deleteChatRoom(chat_id : String): Int{
+        try{
+            val response = client.delete {
+                url("https://whoknowschatbackend.onrender.com/chatroom/$chat_id")
+                contentType(ContentType.Application.Json)
+            }
+
+            return response.status.value
+        }catch(e : Exception){
+            Log.d("errorindeltechatroom","Exception: ${e.message}")
+        }
+        return 500
+    }
+
+
+    suspend fun deleteAcceptation(id : String) : Int{
+        try{
+            val response = client.delete {
+                url("https://whoknowschatbackend.onrender.com/accept/$id")
+                contentType(ContentType.Application.Json)
+            }
+            return response.status.value
+        }catch(e : Exception){
+            Log.d("errorInDelAcc","${e.message}")
         }
         return 500
     }

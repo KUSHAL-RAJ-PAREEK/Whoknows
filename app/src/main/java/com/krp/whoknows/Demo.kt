@@ -92,6 +92,7 @@ import com.krp.whoknows.model.SendOTP
 import com.krp.whoknows.roomdb.ImageConverter.base64ToBitmap
 import com.krp.whoknows.roomdb.ImageConverter.uriToBase64
 import com.krp.whoknows.roomdb.JWTViewModel
+import com.krp.whoknows.ui.theme.Bpink
 import com.krp.whoknows.ui.theme.Cyan
 import com.krp.whoknows.ui.theme.Purple
 import com.krp.whoknows.ui.theme.lightOrdColor
@@ -517,50 +518,3 @@ import kotlinx.coroutines.withContext
 //        }
 //    }
 //}
-
-
-@Composable
-fun MyAlertDialog(onDismiss: () -> Unit, isDownload: Boolean,onConfirmD: () -> Unit,
-                  onConfirmDe: () -> Unit) {
-    if(isDownload){
-        AlertDialog(
-            modifier = Modifier,
-            containerColor = colorResource(R.color.ordColor),
-            onDismissRequest = { onDismiss() },
-            confirmButton = {
-                TextButton(onClick = {
-                    onConfirmD()
-                    onDismiss()}) {
-                    Text("download")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { onDismiss() }) {
-                    Text("Cancel")
-                }
-            },
-//            title = { Text("Alert") },
-            text = { Text("Do you want to download?") }
-        )
-    }else{
-        AlertDialog(
-            containerColor = colorResource(R.color.ordColor),
-            onDismissRequest = { onDismiss() },
-            confirmButton = {
-                TextButton(onClick = {
-                    onConfirmDe()
-                    onDismiss()}) {
-                    Text("Delete")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { onDismiss() }) {
-                    Text("Cancel")
-                }
-            },
-//            title = { Text("Alert") },
-            text = { Text("Do you want to delete?") }
-        )
-    }
-
-}

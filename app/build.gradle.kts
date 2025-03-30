@@ -9,6 +9,8 @@ plugins {
     id("kotlinx-serialization")
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlinSerialization)
+    id("com.google.gms.google-services")
+
 }
 
 android {
@@ -149,12 +151,25 @@ dependencies {
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.31.3-beta")
     implementation ("app.rive:rive-android:9.6.5")
-    // During initialization, you may need to add a dependency
-    // for Jetpack Startup
+
     implementation ("androidx.startup:startup-runtime:1.1.1")
 
+//    implementation ("com.onesignal:OneSignal:[5.0.0-beta, 5.99.99]")
 
     implementation("io.socket:socket.io-client:2.0.0")
+
+
+    implementation(platform("com.google.firebase:firebase-bom:33.11.0"))
+    implementation("com.google.firebase:firebase-messaging:24.1.1")
+
+    implementation("com.google.firebase:firebase-analytics")
+
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-moshi:2.9.0")
+
+
+
+
 
 }
 
