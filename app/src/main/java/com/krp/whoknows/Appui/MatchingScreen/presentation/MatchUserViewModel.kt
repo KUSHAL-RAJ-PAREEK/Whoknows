@@ -12,6 +12,8 @@ import com.krp.whoknows.roomdb.entity.MatchUserEntity
 import com.krp.whoknows.roomdb.entity.UserResponseEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -26,8 +28,16 @@ import kotlin.getValue
 class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(),KoinComponent{
 
     private val ktorClient: KtorClient by inject()
+
+    private val _matchUserState = MutableStateFlow<MatchUserEntity?>(null)
+    val matchUserState: StateFlow<MatchUserEntity?> = _matchUserState.asStateFlow()
+
+
     private val _dob = MutableStateFlow(LocalDate.now())
     val dob: StateFlow<LocalDate> = _dob
+
+    private val _vis = MutableStateFlow<Boolean?>(false)
+    val vis: StateFlow<Boolean?> = _vis
 
     private val _dobs = MutableStateFlow("")
     val dobs: StateFlow<String> = _dobs
@@ -211,8 +221,13 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
         }
     }
 
+    init{
+        viewModelScope.launch{
+            _matchUserState.value = getMUser()
+        }
+    }
 
-    suspend fun getUser(): MatchUserEntity? {
+    suspend fun getMUser(): MatchUserEntity? {
         return userRepository.getMatchUser().firstOrNull()
     }
 
@@ -256,6 +271,10 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
         }
     }
 
+
+    fun updateVis(flag : Boolean){
+        _vis.value = flag
+    }
     fun updateClicked(accid: String,id : String) {
         Log.d("afsdsffs","$id")
         viewModelScope.launch {
@@ -302,5 +321,7 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
         _acceptStatus.value = 0
         _clicked.value = false
     }
+
+
 
 }

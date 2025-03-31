@@ -73,6 +73,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.focusModifier
@@ -110,11 +111,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.getViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalQueries.localDate
+import kotlin.toString
 
 
 /**
@@ -177,9 +180,49 @@ fun SharedTransitionScope.HomeScreen(
 //            exoPlayer.release()
 //        }
 //    }
+    val coroutineScope = rememberCoroutineScope()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val mUser by matchUserViewModel.matchUserState.collectAsState()
+    var GoOn by remember { mutableStateOf(false) }
+//    val callIt by remember { mutableStateOf(false) }
 
-Log.d("adasdasdjnfasjvnsjkv",state.toString())
+    LaunchedEffect(mUser) {
+
+        val m_id : String? = mUser?.id
+        if(m_id != null){
+            Log.d("optinmize",m_id)
+
+            coroutineScope.launch(Dispatchers.IO) {
+                val id = createChatRoomId(profileDetailViewModel.id.value, m_id)
+
+                val messagesDeferred = async { chatViewModel.getMessages(chatRoomID = id) }
+                val statusDeferred = async { matchUserViewModel.getStatus(id) }
+                val updateDeferred = async { matchUserViewModel.updateClicked(accid = id, id = profileDetailViewModel.id.value) }
+
+                messagesDeferred.await()
+                statusDeferred.await()
+                updateDeferred.await()
+
+            }
+        }
+    }
+
+    LaunchedEffect(GoOn) {
+        if(GoOn == true){
+            val id = createChatRoomId(profileDetailViewModel.id.value, matchUserViewModel.id.value)
+
+            val messagesDeferred = async { chatViewModel.getMessages(chatRoomID = id) }
+            val statusDeferred = async { matchUserViewModel.getStatus(id) }
+            val updateDeferred = async { matchUserViewModel.updateClicked(accid = id, id = profileDetailViewModel.id.value) }
+
+            messagesDeferred.await()
+            statusDeferred.await()
+            updateDeferred.await()
+        }
+    }
+
+
+    Log.d("adasdasdjnfasjvnsjkv",state.toString())
     LaunchedEffect(state.isLoading) {
         if(state.isSuccess){
             Log.d("inhomescreen",state.statusCode.toString())
@@ -258,19 +301,11 @@ Log.d("adasdasdjnfasjvnsjkv",state.toString())
 
 //                    val id = createChatRoomId(profileDetailViewModel.id.value, matchUserViewModel.id.value)
 Log.d("hereitisisisi","hello")
-                    withContext(Dispatchers.IO) {
-                        val id = createChatRoomId(profileDetailViewModel.id.value, matchUserViewModel.id.value)
 
-                        val messagesDeferred = async { chatViewModel.getMessages(chatRoomID = id) }
-                        val statusDeferred = async { matchUserViewModel.getStatus(id) }
-                        val updateDeferred = async { matchUserViewModel.updateClicked(accid = id, id = profileDetailViewModel.id.value) }
-
-                        messagesDeferred.await()
-                        statusDeferred.await()
-                        updateDeferred.await()
+                    if(mUser?.id.toString() == null){
+                        Log.d("notoptimize","yesthis")
+                        GoOn = true
                     }
-
-//
 //                    val id = createChatRoomId(profileDetailViewModel.id.value,matchUserViewModel.id.value)
 //                    chatViewModel.getMessages(chatRoomID = id)
 //                    matchUserViewModel.getStatus(id)
@@ -282,6 +317,9 @@ Log.d("hereitisisisi","hello")
             }
         }
     }
+
+
+
 
     LaunchedEffect(currentBackStackEntry) {
         if(!updateMatchViewModel.called.value){
@@ -353,6 +391,7 @@ clicked = clicked,
         isMenuExtended.value = isMenuExtended.value.not()
     }
 }
+
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable

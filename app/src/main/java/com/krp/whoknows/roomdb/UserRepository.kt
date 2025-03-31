@@ -1,5 +1,6 @@
 package com.krp.whoknows.roomdb
 
+import android.util.Log
 import com.krp.whoknows.model.UserResponse
 import com.krp.whoknows.roomdb.entity.JWTToken
 import com.krp.whoknows.roomdb.entity.MatchUserEntity
@@ -36,12 +37,12 @@ class UserRepository(private val dao: Dao) {
     }
 
     suspend fun deleteMatchUser(){
+
         dao.deleteAllMatchUsers()
     }
 
-     fun getMatchUser() : Flow<MatchUserEntity?>{
-        return dao.getMatchUser()
-    }
+     fun getMatchUser() : Flow<MatchUserEntity?> =  dao.getMatchUser()
+
 
      fun getPnumber() : Flow<UserPhoneNumber?>{
         return dao.getPhoneNumber()

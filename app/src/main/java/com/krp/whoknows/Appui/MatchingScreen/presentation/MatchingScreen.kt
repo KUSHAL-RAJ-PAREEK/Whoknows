@@ -378,7 +378,11 @@ var inside by remember { mutableStateOf(false) }
                navcontroller.navigate("chatScreen")
 
                delay(200)
+
                profileDetailViewModel.updateMatch(true)
+               check_state.isLoading = false
+               check_state.isSuccess = false
+               check_state.statusCode = 500
                Log.d("hereiam",check_state.user.toString())
                Log.d("matchornot", "matched")
            }

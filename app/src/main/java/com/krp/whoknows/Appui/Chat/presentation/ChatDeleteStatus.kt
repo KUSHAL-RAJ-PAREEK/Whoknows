@@ -6,7 +6,7 @@ package com.krp.whoknows.Appui.Chat.presentation
 
 data class ChatDeleteStatus(
     val isLoading: Boolean = false,
-    val isSuccess: Boolean = false,
-    val statusCode : Int? = null,
+    var isSuccess: Boolean = false,
+    var statusCode : Int? = null,
     val errorMessage: String? = null,
 )
