@@ -76,6 +76,9 @@ interface Dao {
     @Query("SELECT * FROM matchTable WHERE id = 1")
     fun getMatch():Flow<UserMatch>
 
+    @Query("DELETE FROM userdetails")
+    suspend fun deleteUsers()
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveMatch(match: UserMatch)
 

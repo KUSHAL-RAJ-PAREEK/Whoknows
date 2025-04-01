@@ -72,6 +72,18 @@ class GreetingViewModel(
         }
     }
 
+    fun deleteUsers(){
+        viewModelScope.launch {
+            userRepository.deleteUsers()
+        }
+    }
+
+    fun deleteMatchUser(){
+        viewModelScope.launch {
+            userRepository.deleteMatchUser()
+        }
+    }
+
     fun saveToken(token : String){
         viewModelScope.launch {
             userRepository.saveToken(token)

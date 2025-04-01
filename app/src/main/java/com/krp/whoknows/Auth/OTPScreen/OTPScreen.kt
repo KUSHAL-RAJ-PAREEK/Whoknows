@@ -129,7 +129,9 @@ fun OTPScreen(
             }
 
             if(state.statusCode == 200){
-                    navController.navigate(GreetingScreen)
+                navController.navigate(GreetingScreen)
+            }else if(state.statusCode == 206){
+                navController.navigate(UserGender)
             }else{
                 onOTp()
             }

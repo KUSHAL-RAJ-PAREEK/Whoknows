@@ -27,6 +27,22 @@ class InfoViewModel: ViewModel() {
     private val _preAgeRange = MutableStateFlow("")
     val preAgeRange: StateFlow<String> = _preAgeRange
 
+    private val _interests = MutableStateFlow<List<String>?>(null)
+    val interests: StateFlow<List<String>?> = _interests
+
+
+    fun updateInterest(interests : List<String>) {
+        _interests.value = interests
+    }
+
+
+    fun removeInterest(interestToRemove: String) {
+        _interests.value = _interests.value?.filterNot { it == interestToRemove }?.toList()
+    }
+
+    fun addInterest(newInterest: String) {
+        _interests.value = (_interests.value ?: emptyList()) + newInterest
+    }
 
     fun updateDOB(dob: LocalDate) {
         _dob.value = dob

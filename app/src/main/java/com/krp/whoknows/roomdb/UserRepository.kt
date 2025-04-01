@@ -20,6 +20,10 @@ class UserRepository(private val dao: Dao) {
 
     fun getUser(): Flow<UserResponseEntity?> = dao.getUser()
 
+    suspend fun deleteUsers() {
+        dao.deleteUsers()
+    }
+
     suspend fun deleteUser(userId: String) {
         dao.deleteUser(userId)
     }

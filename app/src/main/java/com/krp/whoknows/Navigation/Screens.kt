@@ -53,6 +53,9 @@ data object GreetingScreen
 data object ProfileEditScreen
 
 @Serializable
+data object InterestScreen
+
+@Serializable
 data class OTPScreen(val phoneNumber: String)
 
 @Serializable

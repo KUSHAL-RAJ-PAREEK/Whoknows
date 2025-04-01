@@ -57,6 +57,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.filled.ChatBubble
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Person2
 import androidx.compose.material.icons.filled.PhotoCamera
@@ -100,13 +101,18 @@ import com.krp.whoknows.Appui.Profile.presentation.UpdateMatchViewModel
 import com.krp.whoknows.Appui.Profile.presentation.UpdateUserEvent
 import com.krp.whoknows.Navigation.FAB_KEY
 import com.krp.whoknows.Navigation.HomeScreen
+import com.krp.whoknows.Navigation.LoginScreen
+import com.krp.whoknows.Navigation.PhoneScreen
 import com.krp.whoknows.RiveComponents.ComposableRiveAnimationView
+import com.krp.whoknows.Utils.ExpandableLogoutFAB
 import com.krp.whoknows.Utils.calculateAge
 import com.krp.whoknows.Utils.convertImageUrlToBase64
 import com.krp.whoknows.Utils.createChatRoomId
 import com.krp.whoknows.Utils.getLocationCityState
 import com.krp.whoknows.Utils.times
 import com.krp.whoknows.Utils.transform
+import com.krp.whoknows.ui.theme.lightOrdColor
+import com.krp.whoknows.ui.theme.ordColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -208,7 +214,11 @@ fun SharedTransitionScope.HomeScreen(
     }
 
     LaunchedEffect(GoOn) {
+        Log.d("okokokokokokokoko","yesssss call")
+
         if(GoOn == true){
+            Log.d("okokokokokokokoko","yes call")
+
             val id = createChatRoomId(profileDetailViewModel.id.value, matchUserViewModel.id.value)
 
             val messagesDeferred = async { chatViewModel.getMessages(chatRoomID = id) }
@@ -218,6 +228,7 @@ fun SharedTransitionScope.HomeScreen(
             messagesDeferred.await()
             statusDeferred.await()
             updateDeferred.await()
+            Log.d("okokokokokokokoko","yes called")
         }
     }
 
@@ -300,9 +311,10 @@ fun SharedTransitionScope.HomeScreen(
                     }
 
 //                    val id = createChatRoomId(profileDetailViewModel.id.value, matchUserViewModel.id.value)
-Log.d("hereitisisisi","hello")
 
-                    if(mUser?.id.toString() == null){
+
+                    if(mUser?.id == null){
+                        Log.d("okokokokokokokoko","no call")
                         Log.d("notoptimize","yesthis")
                         GoOn = true
                     }
@@ -345,7 +357,10 @@ Log.d("hereitisisisi","hello")
             easing = LinearEasing
         )
     )
+
+
     var animation: RiveAnimationView? = null
+    var animation1: RiveAnimationView? = null
     var clicked by remember { mutableStateOf(false) }
 
     LaunchedEffect(clicked) {
@@ -367,10 +382,14 @@ Log.d("hereitisisisi","hello")
     } else {
         null
     }
+
+
     ComposableRiveAnimationView(modifier = Modifier,animation = R.raw.phone_girl,
         stateMachineName = "GirlState"){view ->
         animation = view
     }
+
+
 
     MainScreen(
         modifier = modifier.sharedBounds(
@@ -389,6 +408,16 @@ clicked = clicked,
         }
     ) {
         isMenuExtended.value = isMenuExtended.value.not()
+    }
+
+    ExpandableLogoutFAB{
+       coroutineScope.launch {
+           greetingViewModel.deleteUsers()
+           greetingViewModel.deleteMatchUser()
+       }
+        navController.popBackStack()
+        navController.navigate(LoginScreen)
+
     }
 }
 
@@ -438,7 +467,8 @@ fun MainScreen(
             .padding(bottom = 24.dp),
         contentAlignment = Alignment.BottomCenter
     ) {
-        CustomBottomNavigation()
+
+
         Circle(
             color = MaterialTheme.colors.primary.copy(alpha = 0.5f),
             animationProgress = 0.5f
@@ -460,6 +490,8 @@ fun MainScreen(
             animationProgress = clickAnimationProgress
         )
     }
+
+
 }
 
 @Composable
@@ -479,29 +511,7 @@ fun Circle(color: Color, animationProgress: Float) {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CustomBottomNavigation() {
-//    Row(
-//        horizontalArrangement = Arrangement.SpaceBetween,
-//        verticalAlignment = Alignment.CenterVertically,
-//        modifier = Modifier
-//            .height(80.dp)
-//            .paint(
-//                painter = painterResource(R.drawable.bottom_navigation),
-//                contentScale = ContentScale.FillHeight
-//            )
-//            .padding(horizontal = 40.dp)
-//    ) {
-//        listOf(Icons.Filled.ChatBubble, Icons.Filled.Person2).map { image ->
-//            IconButton(onClick = {
-//
-//            }) {
-//                androidx.wear.compose.material.Icon(imageVector = image, contentDescription = null, tint = Color.White)
-//            }
-//        }
-//    }
-}
+
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -524,6 +534,7 @@ fun FabGroup(
     ) {
 
         AnimatedFab1(
+            backgroundColor = ordColor,
             icon = Icons.Default.ChatBubble,
             modifier = Modifier
                 .padding(
@@ -540,6 +551,7 @@ fun FabGroup(
         }
 
        AnimatedFab1(
+           backgroundColor = ordColor,
             icon = Icons.Default.Search,
             modifier = modifier.padding(
                 PaddingValues(
@@ -554,6 +566,7 @@ fun FabGroup(
        }
 
         AnimatedFab1(
+            backgroundColor = ordColor,
             icon = Icons.Default.Person,
             modifier = Modifier.padding(
                 PaddingValues(
@@ -569,12 +582,13 @@ fun FabGroup(
         }
 
         AnimatedFab(
+            backgroundColor = ordColor,
             modifier = Modifier
                 .scale(1f - LinearEasing.transform(0.5f, 0.85f, animationProgress)),
         )
 
         AnimatedFab(
-            icon = Icons.Default.Add,
+            icon = Icons.Default.FavoriteBorder,
             modifier = Modifier
                 .rotate(
                     225 * FastOutSlowInEasing

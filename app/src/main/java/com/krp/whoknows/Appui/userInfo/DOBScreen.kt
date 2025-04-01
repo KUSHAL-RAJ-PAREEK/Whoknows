@@ -187,7 +187,7 @@ fun DOBScreen(
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
-                        navController.navigate(com.krp.whoknows.Navigation.PreferredAgeRange)
+                        navController.navigate(com.krp.whoknows.Navigation.InterestScreen)
                     }
                 }
                 },

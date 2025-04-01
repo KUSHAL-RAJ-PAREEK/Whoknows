@@ -14,6 +14,7 @@ data class User(
     val preferredAgeRange: String,
     val preferredGender: String,
     val userGender: String,
+    val interests: List<String>?= null,
     @Serializable(with = LocalDateSerializer::class)
     val userDob: LocalDate
 )

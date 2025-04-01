@@ -86,6 +86,7 @@ import com.krp.whoknows.Navigation.GreetingScreen
 import com.krp.whoknows.Navigation.LatLong
 import com.krp.whoknows.Navigation.PhoneScreen
 import com.krp.whoknows.R
+import com.krp.whoknows.Utils.ExpandableLogoutFAB
 import com.krp.whoknows.Utils.drawableToBitmap
 import com.krp.whoknows.model.OtpDetail
 import com.krp.whoknows.model.SendOTP
@@ -517,4 +518,14 @@ import kotlinx.coroutines.withContext
 //            }
 //        }
 //    }
+//}
+
+
+//@Preview
+//@Composable
+//private fun run() {
+//    ExpandableLogoutFAB{
+//
+//    }
+//
 //}

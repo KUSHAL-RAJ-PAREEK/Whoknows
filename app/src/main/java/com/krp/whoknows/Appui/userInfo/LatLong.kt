@@ -275,6 +275,7 @@ LaunchedEffect(state.isLoading) {
                         coroutineScope.launch {
                             withContext(Dispatchers.IO) {
                                 delay(1000)
+                                Log.d("afnasknfklsnfklasnfkls",viewModel.interests.value.toString())
                                 Log.d("asfddffffffffffff", jwt.value.toString())
                                 val user = User(pNumber =  pNumber?.value!!,
                                     geoRadiusRange = viewModel.geoRadiusRange.value,
@@ -283,6 +284,7 @@ LaunchedEffect(state.isLoading) {
                                     latitude = latLong.latitude,
                                     longitude = latLong.longitude,
                                     userDob = viewModel.dob.value,
+                                    interests = viewModel.interests.value,
                                     userGender = viewModel.gender.value)
                                 event(CreateUserEvent.CreateUser(user, jwt.value.toString()))
                             }

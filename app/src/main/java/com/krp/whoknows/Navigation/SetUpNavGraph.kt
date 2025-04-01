@@ -61,6 +61,7 @@ import com.krp.whoknows.Appui.Profile.presentation.UpdateUserViewModel
 import com.krp.whoknows.Appui.userInfo.CreateUserViewModel
 import com.krp.whoknows.Appui.userInfo.DOBScreen
 import com.krp.whoknows.Appui.userInfo.InfoViewModel
+import com.krp.whoknows.Appui.userInfo.InterestScreen
 import com.krp.whoknows.Auth.LoginScreen.Presentation.LoginScreen
 import com.krp.whoknows.Auth.OTPScreen.OTPVerificationViewModel
 import com.krp.whoknows.Auth.PhoneScreen.Presentation.PhoneAuthViewModel
@@ -201,6 +202,13 @@ fun SetUpNavGraph(modifier: Modifier = Modifier, startDest: Any) {
                 com.krp.whoknows.Appui.userInfo.MapScreen(
                     navController = navController,
                     context = LocalContext.current
+                )
+            }
+
+            composable<InterestScreen>{
+                InterestScreen(
+                    infoViewModel = InfoViewModel,
+                    navController = navController,
                 )
             }
 

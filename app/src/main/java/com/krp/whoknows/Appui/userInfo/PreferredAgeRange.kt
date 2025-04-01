@@ -83,7 +83,7 @@ fun PreferredAgeRange(viewModel: InfoViewModel,
     var isFocused by remember { mutableStateOf(false) }
     val imeHeight = WindowInsets.ime.getBottom(LocalDensity.current).toDp()
     BackHandler {
-        navController.navigate(com.krp.whoknows.Navigation.DOBScreen){
+        navController.navigate(com.krp.whoknows.Navigation.InterestScreen){
             popUpTo(0) { inclusive = true }
         }
     }

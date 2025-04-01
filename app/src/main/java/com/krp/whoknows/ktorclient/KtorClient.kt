@@ -262,6 +262,7 @@ val response = client.get("/match/remove"){
                 url("https://whoknowschatbackend.onrender.com/message/$chatRoomId")
                 contentType(ContentType.Application.Json)
             }
+            Log.d("fetchmessage",response.body())
 
             if (response.status.isSuccess()) {
                 emit(response.body())

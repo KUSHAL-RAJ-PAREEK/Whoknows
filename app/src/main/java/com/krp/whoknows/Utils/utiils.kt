@@ -22,6 +22,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.Easing
@@ -29,10 +30,12 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.StartOffset
 import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -46,11 +49,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -58,6 +67,7 @@ import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material.icons.automirrored.filled.DirectionsBike
 import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.Accessibility
@@ -118,6 +128,7 @@ import androidx.compose.material.icons.filled.LocalBar
 import androidx.compose.material.icons.filled.LocalFlorist
 import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Mic
@@ -172,7 +183,11 @@ import androidx.compose.material.icons.filled.Water
 import androidx.compose.material.icons.filled.Waves
 import androidx.compose.material.icons.filled.WorkOutline
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -233,8 +248,10 @@ import androidx.core.graphics.createBitmap
 import com.krp.whoknows.ui.theme.Bpink
 import com.krp.whoknows.ui.theme.chat_dark
 import com.krp.whoknows.ui.theme.chat_light
+import com.krp.whoknows.ui.theme.lightOrdColor
 import com.krp.whoknows.ui.theme.light_red
 import com.krp.whoknows.ui.theme.ordColor
+import com.krp.whoknows.ui.theme.t_color
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.readBytes
@@ -992,16 +1009,16 @@ fun MyAlertDialog(onDismiss: () -> Unit, isDownload: Boolean,onConfirmD: () -> U
                 TextButton(onClick = {
                     onConfirmD()
                     onDismiss()}) {
-                    Text("download")
+                    Text("download",color = t_color)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { onDismiss() }) {
-                    Text("Cancel")
+                    Text("Cancel",color = t_color)
                 }
             },
 //            title = { Text("Alert") },
-            text = { Text("Do you want to download?") }
+            text = { Text("Do you want to download?",color = androidx.compose.ui.graphics.Color.Black) }
         )
     }else{
         AlertDialog(
@@ -1011,16 +1028,16 @@ fun MyAlertDialog(onDismiss: () -> Unit, isDownload: Boolean,onConfirmD: () -> U
                 TextButton(onClick = {
                     onConfirmDe()
                     onDismiss()}) {
-                    Text("Delete")
+                    Text("Delete",color = t_color)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { onDismiss() }) {
-                    Text("Cancel")
+                    Text("Cancel",color = t_color)
                 }
             },
 //            title = { Text("Alert") },
-            text = { Text("Do you want to delete?") }
+            text = { Text("Do you want to delete?",color = androidx.compose.ui.graphics.Color.Black) }
         )
     }
 
@@ -1039,16 +1056,16 @@ fun MyAlertDialogAcc(onDismiss: () -> Unit, onConfirm :() -> Unit){
             TextButton(onClick = {
                 onConfirm()
                 onDismiss()}) {
-                Text("yes")
+                Text("yes",color = t_color)
             }
         },
         dismissButton = {
             TextButton(onClick = { onDismiss() }) {
-                Text("no")
+                Text("no",color = t_color)
             }
         },
 //            title = { Text("Alert") },
-        text = { Text("Do you want to take your relationship to the next level?") }
+        text = { Text("Do you want to take your relationship to the next level?",color = androidx.compose.ui.graphics.Color.Black) }
     )
 
 
@@ -1066,17 +1083,76 @@ fun MyAlertDialogDel(onDismiss: () -> Unit, onConfirm :() -> Unit){
             TextButton(onClick = {
                 onConfirm()
                 onDismiss()}) {
-                Text("yes")
+                Text("yes",
+                    color = t_color)
             }
         },
         dismissButton = {
             TextButton(onClick = { onDismiss() }) {
-                Text("no")
+                Text("no",color = t_color)
             }
         },
 //            title = { Text("Alert") },
-        text = { Text("Do you want to go over it?") }
+        text = { Text("Do you want to go over it?",
+            color = androidx.compose.ui.graphics.Color.Black) }
     )
 
 
+}
+
+
+@Composable
+fun ExpandableLogoutFAB(onLogout: () -> Unit) {
+    var isExpanded by remember { mutableStateOf(false) }
+    val transition = updateTransition(targetState = isExpanded, label = "FAB Transition")
+
+    val fabSize by transition.animateDp(label = "FAB Size") { expanded ->
+        if (expanded) 1000.dp else 40.dp
+    }
+
+    val fabColor by transition.animateColor(label = "FAB Color") { expanded ->
+        if (expanded) ordColor else lightOrdColor
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopEnd,
+    ) {
+        FloatingActionButton(
+            onClick = { isExpanded = !isExpanded },
+            shape = CircleShape,
+            containerColor = fabColor,
+            contentColor = androidx.compose.ui.graphics.Color.White,
+            modifier = Modifier.padding(top = 40.dp,end = 20.dp).size(fabSize),
+        ) {
+            if (!isExpanded) {
+                androidx.compose.material3.Icon(Icons.Default.Logout, contentDescription = "Logout")
+            }
+        }
+
+        if (isExpanded) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(ordColor)
+                    .padding(32.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Are you sure you want to logout?", color = androidx.compose.ui.graphics.Color.White, fontSize = 20.sp)
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row {
+                    Button(onClick = { isExpanded = false }) {
+                        Text("Cancel")
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Button(onClick = onLogout, colors = ButtonDefaults.buttonColors(androidx.compose.ui.graphics.Color.White)) {
+                        Text("Logout", color = ordColor)
+                    }
+                }
+            }
+        }
+    }
 }

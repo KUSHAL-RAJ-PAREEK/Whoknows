@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.Build.VERSION_CODES.P
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -47,6 +48,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val splashScreen = installSplashScreen()
+//        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         setContent {
             val jwtViewModel: JWTViewModel by inject()
@@ -63,7 +65,7 @@ class MainActivity : ComponentActivity() {
             splashScreen.setKeepOnScreenCondition { startDest == null && !timeoutReached }
 
             LaunchedEffect(p) {
-                delay(1000)
+                delay(1500)
                 if (p?.username != null) {
                     startDest = if (p?.username!!.isEmpty()) {
                         com.krp.whoknows.Navigation.LoginScreen
@@ -75,7 +77,7 @@ class MainActivity : ComponentActivity() {
 
 
             LaunchedEffect(Unit) {
-                kotlinx.coroutines.delay(2000)
+                kotlinx.coroutines.delay(3000)
                 if (startDest == null) {
                     timeoutReached = true
                     startDest = com.krp.whoknows.Navigation.LoginScreen
