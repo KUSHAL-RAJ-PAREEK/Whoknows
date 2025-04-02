@@ -6,9 +6,11 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Upsert
 import com.krp.whoknows.model.UserResponse
+import com.krp.whoknows.roomdb.entity.FcmEntity
 import com.krp.whoknows.roomdb.entity.GalleryImageEntity
 import com.krp.whoknows.roomdb.entity.InterUserDetail
 import com.krp.whoknows.roomdb.entity.JWTToken
+import com.krp.whoknows.roomdb.entity.MatchFcmEntity
 import com.krp.whoknows.roomdb.entity.MatchUserEntity
 import com.krp.whoknows.roomdb.entity.ProfileImageEntity
 import com.krp.whoknows.roomdb.entity.UserGalleryImageEntity
@@ -135,6 +137,25 @@ interface Dao {
 
     @Query("DELETE FROM user_detail WHERE uid = 1")
     suspend fun deleteUser()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveMatchFcm(matchFcm: MatchFcmEntity)
+
+    @Query("SELECT * FROM matchfcm WHERE id = 1")
+    fun getMatchFcm(): Flow<MatchFcmEntity?>
+
+
+    @Query("DELETE FROM matchfcm WHERE id = 1")
+    suspend fun deleteMatchFcm()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveFcm(fcm: FcmEntity)
+
+    @Query("SELECT * FROM userfcm WHERE id = 1")
+    fun getFcm(): Flow<FcmEntity?>
+
+    @Query("DELETE FROM userfcm WHERE id = 1")
+    suspend fun deleteFcm()
 
 
 }

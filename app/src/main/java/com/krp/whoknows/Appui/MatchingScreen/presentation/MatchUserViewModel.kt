@@ -36,6 +36,9 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
     private val _dob = MutableStateFlow(LocalDate.now())
     val dob: StateFlow<LocalDate> = _dob
 
+    private val _fcmToken= MutableStateFlow("")
+    val fcmToken: StateFlow<String> = _fcmToken
+
     private val _vis = MutableStateFlow<Boolean?>(false)
     val vis: StateFlow<Boolean?> = _vis
 
@@ -209,6 +212,10 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
 
     fun updateAcceptStatus(count : Int){
         _acceptStatus.value = count
+    }
+
+    fun updateFcm(fcm: String){
+        _fcmToken.value = fcm
     }
 
     fun updateClicked(flag: Boolean){

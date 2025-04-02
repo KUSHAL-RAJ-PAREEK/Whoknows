@@ -105,7 +105,7 @@ fun PreferredAgeRange(viewModel: InfoViewModel,
             Icon(
                 imageVector = Icons.Default.ArrowBack, contentDescription = "Back arrow",
                 Modifier.size(35.dp).clickable{
-                    navController.navigate(com.krp.whoknows.Navigation.DOBScreen){
+                    navController.navigate(com.krp.whoknows.Navigation.InterestScreen){
                         popUpTo(0) { inclusive = true }
                     }
                 },
@@ -153,7 +153,7 @@ fun PreferredAgeRange(viewModel: InfoViewModel,
                         .clickable {}
                         .weight(1f)
                         .onFocusChanged { isFocused = it.isFocused },
-                    textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+                    textStyle = LocalTextStyle.current.copy(fontSize = 18.sp,color = Color.Black),
                     placeholder = { Text("Max") },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = ordColor,

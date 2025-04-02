@@ -34,6 +34,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -78,8 +79,21 @@ fun InterestScreen(modifier: Modifier = Modifier,
         val searchText by viewModel.searchText.collectAsState()
         val interestSea by viewModel.interest.collectAsState()
         val isSearch by viewModel.isSearching.collectAsState()
-        val selectedStates by viewModel.selectedStates.collectAsState()
+//        val selectedStates by viewModel.selectedStates.collectAsState()
+
+
     val imeHeight = WindowInsets.ime.getBottom(LocalDensity.current).toDp()
+
+    val list by infoViewModel.interests.collectAsState()
+
+    val selectedStates = remember {
+        mutableStateMapOf<String, Boolean>().apply {
+            infoViewModel.interests.value?.forEach { interest ->
+                this[interest] = true
+            }
+        }
+    }
+
 
     Box(modifier = Modifier.fillMaxSize()
         .background(Color.White)){
@@ -159,8 +173,9 @@ fun InterestScreen(modifier: Modifier = Modifier,
                             modifier = Modifier.padding(6.dp),
                             name = interest.interest, filled = isSelected
                         ) {
-                            viewModel.toggleSelection(interest.interest)
-                            if (!isSelected) {
+                            val newState = !isSelected
+                            selectedStates[interest.interest] = newState
+                            if (newState) {
                                 infoViewModel.addInterest(interest.interest)
                             } else {
                                 infoViewModel.removeInterest(interest.interest)

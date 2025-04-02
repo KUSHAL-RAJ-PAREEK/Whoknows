@@ -62,4 +62,13 @@ class InfoViewModel: ViewModel() {
         _geoRadiusRange.value = geoRadiusRange
     }
 
+    fun resetData() {
+        _dob.value = LocalDate.now()
+        _gender.value = ""
+        _preGender.value = ""
+        _geoRadiusRange.value = ""
+        _preAgeRange.value = ""
+        _interests.value = null
+    }
+
 }

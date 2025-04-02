@@ -23,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import app.rive.runtime.kotlin.RiveAnimationView
 import app.rive.runtime.kotlin.core.Fit
+import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
 import com.krp.whoknows.Appui.Profile.presentation.MainImageViewModel
 import com.krp.whoknows.Appui.Profile.presentation.ProfileDetailViewModel
 import com.krp.whoknows.Appui.Profile.presentation.components.MatchItem
@@ -47,8 +49,12 @@ import com.krp.whoknows.Utils.calculateAge
 import com.krp.whoknows.Utils.convertImageUrlToBase64
 import com.krp.whoknows.Utils.getLocationCityState
 import com.krp.whoknows.Utils.noRippleClickable
+import com.krp.whoknows.roomdb.entity.MatchFcmEntity
 import com.krp.whoknows.roomdb.entity.UserResponseEntity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -70,6 +76,7 @@ fun MatchingScreen(
     profileDetailViewModel: ProfileDetailViewModel,
     matchUserViewModel : MatchUserViewModel,
     mainImageViewModel : MainImageViewModel,
+    greetingViewModel : GreetingViewModel,
     navcontroller : NavController
 ) {
 
@@ -220,6 +227,7 @@ var inside by remember { mutableStateOf(false) }
        var breakit by remember { mutableStateOf(false) }
        var backstack by remember { mutableStateOf(true) }
 
+val coroutineScope = rememberCoroutineScope()
 
        BackHandler(true) {
            if(backstack){
@@ -370,6 +378,14 @@ var inside by remember { mutableStateOf(false) }
                        Log.e("ProfileImage", "Failed to convert image to Base64")
                    }
 //            }
+               }
+               coroutineScope.launch {
+                   val response = greetingViewModel.getToken(matchUser!!.id)
+                   Log.d("sdasdasdasdasdadsdastoken",response.toString())
+                   if(response.statusCode == 200){
+                       greetingViewModel.saveMatchFcm(MatchFcmEntity(id = 1, fcm_token = response.token!!))
+                       matchUserViewModel.updateFcm(response.token!!)
+                   }
                }
 
                delay(7000)

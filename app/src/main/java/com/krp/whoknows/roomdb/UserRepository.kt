@@ -2,7 +2,9 @@ package com.krp.whoknows.roomdb
 
 import android.util.Log
 import com.krp.whoknows.model.UserResponse
+import com.krp.whoknows.roomdb.entity.FcmEntity
 import com.krp.whoknows.roomdb.entity.JWTToken
+import com.krp.whoknows.roomdb.entity.MatchFcmEntity
 import com.krp.whoknows.roomdb.entity.MatchUserEntity
 import com.krp.whoknows.roomdb.entity.UserMatch
 import com.krp.whoknows.roomdb.entity.UserPhoneNumber
@@ -58,5 +60,28 @@ class UserRepository(private val dao: Dao) {
 
     suspend fun deleteToken() {
         dao.deleteToken()
+    }
+    suspend fun saveMatchFcm(matchFcm: MatchFcmEntity) {
+        dao.saveMatchFcm(matchFcm)
+    }
+
+    fun getMatchFcm(): Flow<MatchFcmEntity?> {
+        return dao.getMatchFcm()
+    }
+
+    suspend fun deleteMatchFcm() {
+        dao.deleteMatchFcm()
+    }
+
+    suspend fun saveFcm(fcm: FcmEntity) {
+        dao.saveFcm(fcm)
+    }
+
+    fun getFcm(): Flow<FcmEntity?> {
+        return dao.getFcm()
+    }
+
+    suspend fun deleteFcm() {
+        dao.deleteFcm()
     }
 }

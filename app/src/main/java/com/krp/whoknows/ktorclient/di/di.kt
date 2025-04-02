@@ -87,6 +87,7 @@ val appModule: Module = module {
     viewModel{CancelMatchViewModel()}
     viewModel{ChatViewModel()}
     viewModel{ChatViewModel()}
+
 }
 
 fun provideHttpClient(): HttpClient {

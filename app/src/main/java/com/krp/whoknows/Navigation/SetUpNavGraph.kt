@@ -233,6 +233,7 @@ fun SetUpNavGraph(modifier: Modifier = Modifier, startDest: Any) {
                     matchUserViewModel = matchUserViewModel,
                     mainImageViewModel = mainImageViewModel,
                     chatViewModel = chatViewModel,
+                    infoViewModel = InfoViewModel,
                     state = state,
                     event = updateMatchViewModel::onEvent
                 )
@@ -265,6 +266,7 @@ fun SetUpNavGraph(modifier: Modifier = Modifier, startDest: Any) {
                             profileDetailViewModel = profileDetailViewModel,
                             matchUserViewModel = matchUserViewModel,
                             mainImageViewModel = mainImageViewModel,
+                            greetingViewModel = greetingViewModel,
                             navcontroller = navController
                         )
                 }

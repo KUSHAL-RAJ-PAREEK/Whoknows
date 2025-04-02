@@ -8,12 +8,16 @@ import android.util.Log
 import com.krp.whoknows.model.AcceptationModel
 import com.krp.whoknows.model.AcceptationRequest
 import com.krp.whoknows.model.AcceptationResponse
+import com.krp.whoknows.model.FcmModel
 import com.krp.whoknows.model.Message
+import com.krp.whoknows.model.NotificationModel
 import com.krp.whoknows.model.OtpDetail
 import com.krp.whoknows.model.OtpResponse
 import com.krp.whoknows.model.SendOTP
+import com.krp.whoknows.model.TokenModel
 import com.krp.whoknows.model.User
 import com.krp.whoknows.model.UserResponse
+import com.krp.whoknows.model.WaitlistRequest
 import com.krp.whoknows.model.checkMatchModel
 import com.krp.whoknows.roomdb.entity.MatchUserEntity
 import com.krp.whoknows.roomdb.entity.UserResponseEntity
@@ -38,6 +42,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import org.json.JSONObject
 
 
 class KtorClient : KoinComponent {
@@ -74,6 +79,9 @@ class KtorClient : KoinComponent {
                 return OtpResponse(response.status.value,response.body())
             }
             200 -> {
+                return OtpResponse(response.status.value,response.body())
+            }
+            206 -> {
                 return OtpResponse(response.status.value,response.body())
             }
             else -> {
@@ -366,6 +374,106 @@ val response = client.get("/match/remove"){
             return response.status.value
         }catch(e : Exception){
             Log.d("errorInDelAcc","${e.message}")
+        }
+        return 500
+    }
+
+
+    suspend fun getToken(id : String): FcmModel{
+        try{
+            val response = client.get{
+                url("https://whoknowschatbackend.onrender.com/fcm-token/$id")
+                contentType(ContentType.Application.Json)
+            }
+
+            if(response.status.value == 200){
+                val jsonResponse = response.body<String>()
+                val token = JSONObject(jsonResponse).getString("fcmToken")
+                return FcmModel(statusCode = response.status.value, token = token)
+            }
+        }catch (e : Exception){
+            Log.d("inFCMFetch","${e.message}")
+        }
+        return FcmModel(statusCode = 500, token = "")
+    }
+
+    suspend fun uploadToken(id : String, token : String): Int{
+        try{
+            Log.d("adsssssssssssssssssssssssd","$id $token")
+            val response = client.post{
+                url("https://whoknowschatbackend.onrender.com/fcm-token")
+                contentType(ContentType.Application.Json)
+                setBody(TokenModel(userId = id, fcmToken = token))
+            }
+            return response.status.value
+        }catch(e : Exception){
+            Log.d("inFCMUpload","${e.message}")
+
+        }
+        return 500
+    }
+
+    suspend fun deleteToken(id : String): Int{
+        try{
+            val response = client.delete{
+                url("https://whoknowschatbackend.onrender.com/fcm-token/$id")
+                contentType(ContentType.Application.Json)
+            }
+
+            if(response.status.value == 200){
+                return response.body()
+            }
+        }catch (e : Exception){
+            Log.d("inFCMFetch","${e.message}")
+        }
+        return 500
+    }
+
+
+    suspend fun sendNotification(notification : NotificationModel) : Int{
+
+        try{
+            val response = client.post {
+                url("https://whoknowschatbackend.onrender.com/send-notification")
+                contentType(ContentType.Application.Json)
+                setBody(notification)
+            }
+
+            return response.status.value
+        }catch(e : Exception){
+            Log.d("notificationerror","${e.message}")
+        }
+        return 500
+    }
+
+
+    suspend fun getWait(id : String) : Int{
+        try{
+            val response = client.get{
+                url("https://whoknowschatbackend.onrender.com/waitlist/$id")
+                contentType(ContentType.Application.Json)
+            }
+
+            return response.status.value
+        }catch(e : Exception){
+            Log.d("isinswait","${e.message}")
+
+        }
+        return 500
+    }
+
+    suspend fun postWait(id : String) : Int{
+        try{
+            val response = client.post{
+                url("https://whoknowschatbackend.onrender.com/waitlist")
+                contentType(ContentType.Application.Json)
+                setBody(WaitlistRequest(userId = id))
+            }
+
+            return response.status.value
+        }catch(e : Exception){
+            Log.d("isinswait","${e.message}")
+
         }
         return 500
     }

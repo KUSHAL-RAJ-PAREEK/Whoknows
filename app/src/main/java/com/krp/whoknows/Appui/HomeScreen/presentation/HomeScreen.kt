@@ -99,6 +99,7 @@ import com.krp.whoknows.Appui.Profile.presentation.UpdateMatchEvent
 import com.krp.whoknows.Appui.Profile.presentation.UpdateMatchState
 import com.krp.whoknows.Appui.Profile.presentation.UpdateMatchViewModel
 import com.krp.whoknows.Appui.Profile.presentation.UpdateUserEvent
+import com.krp.whoknows.Appui.userInfo.InfoViewModel
 import com.krp.whoknows.Navigation.FAB_KEY
 import com.krp.whoknows.Navigation.HomeScreen
 import com.krp.whoknows.Navigation.LoginScreen
@@ -111,12 +112,14 @@ import com.krp.whoknows.Utils.createChatRoomId
 import com.krp.whoknows.Utils.getLocationCityState
 import com.krp.whoknows.Utils.times
 import com.krp.whoknows.Utils.transform
+import com.krp.whoknows.roomdb.entity.MatchFcmEntity
 import com.krp.whoknows.ui.theme.lightOrdColor
 import com.krp.whoknows.ui.theme.ordColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.getViewModel
@@ -169,6 +172,7 @@ fun SharedTransitionScope.HomeScreen(
     updateMatchViewModel:UpdateMatchViewModel,
     profileDetailViewModel : ProfileDetailViewModel,
     matchUserViewModel : MatchUserViewModel,
+    infoViewModel: InfoViewModel,
     state: UpdateMatchState,
     chatViewModel: ChatViewModel,
     mainImageViewModel : MainImageViewModel,
@@ -191,6 +195,10 @@ fun SharedTransitionScope.HomeScreen(
     val mUser by matchUserViewModel.matchUserState.collectAsState()
     var GoOn by remember { mutableStateOf(false) }
 //    val callIt by remember { mutableStateOf(false) }
+    val fcmToken by greetingViewModel.matchFcmToken.collectAsState()
+
+
+
 
     LaunchedEffect(mUser) {
 
@@ -198,7 +206,9 @@ fun SharedTransitionScope.HomeScreen(
         if(m_id != null){
             Log.d("optinmize",m_id)
 
+
             coroutineScope.launch(Dispatchers.IO) {
+
                 val id = createChatRoomId(profileDetailViewModel.id.value, m_id)
 
                 val messagesDeferred = async { chatViewModel.getMessages(chatRoomID = id) }
@@ -208,7 +218,9 @@ fun SharedTransitionScope.HomeScreen(
                 messagesDeferred.await()
                 statusDeferred.await()
                 updateDeferred.await()
-
+                delay(200)
+                Log.d("adasdasdasdasdasdsadsadasd",fcmToken!!)
+                matchUserViewModel.updateFcm(fcmToken!!)
             }
         }
     }
@@ -219,6 +231,15 @@ fun SharedTransitionScope.HomeScreen(
         if(GoOn == true){
             Log.d("okokokokokokokoko","yes call")
 
+            coroutineScope.launch {
+                val response = greetingViewModel.getToken(matchUserViewModel.id.value)
+                if(response.statusCode == 200){
+                    greetingViewModel.saveMatchFcm(MatchFcmEntity(id = 1, fcm_token = response.token!!))
+                    matchUserViewModel.updateFcm(response.token!!)
+                    Log.d("adasdasdasdasdasdsssdsdsdsadsadasd",response.token!!)
+
+                }
+            }
             val id = createChatRoomId(profileDetailViewModel.id.value, matchUserViewModel.id.value)
 
             val messagesDeferred = async { chatViewModel.getMessages(chatRoomID = id) }
@@ -316,8 +337,10 @@ fun SharedTransitionScope.HomeScreen(
                     if(mUser?.id == null){
                         Log.d("okokokokokokokoko","no call")
                         Log.d("notoptimize","yesthis")
+
                         GoOn = true
                     }
+                    profileDetailViewModel.updateInWait(id = profileDetailViewModel.id.value)
 //                    val id = createChatRoomId(profileDetailViewModel.id.value,matchUserViewModel.id.value)
 //                    chatViewModel.getMessages(chatRoomID = id)
 //                    matchUserViewModel.getStatus(id)
@@ -414,6 +437,9 @@ clicked = clicked,
        coroutineScope.launch {
            greetingViewModel.deleteUsers()
            greetingViewModel.deleteMatchUser()
+           greetingViewModel.deleteFcm()
+           greetingViewModel.deleteMatchFcm()
+           infoViewModel.resetData()
        }
         navController.popBackStack()
         navController.navigate(LoginScreen)

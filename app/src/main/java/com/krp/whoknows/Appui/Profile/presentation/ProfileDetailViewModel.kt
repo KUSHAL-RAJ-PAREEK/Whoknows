@@ -2,17 +2,25 @@ package com.krp.whoknows.Appui.Profile.presentation
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.krp.whoknows.ktorclient.KtorClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import org.koin.core.Koin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.time.LocalDate
+import kotlin.getValue
 
 /**
  * Created by KUSHAL RAJ PAREEK on 13,March,2025
  */
 
 
-class ProfileDetailViewModel: ViewModel() {
+class ProfileDetailViewModel: ViewModel(), KoinComponent {
 
+    private val ktorClient: KtorClient by inject()
 
     private val _dob = MutableStateFlow(LocalDate.now())
     val dob: StateFlow<LocalDate> = _dob
@@ -20,8 +28,15 @@ class ProfileDetailViewModel: ViewModel() {
     private val _dobs = MutableStateFlow("")
     val dobs: StateFlow<String> = _dobs
 
+    private val _fcmToken= MutableStateFlow("")
+    val fcmToken: StateFlow<String> = _fcmToken
+
     private val _isMatch = MutableStateFlow(false)
     val isMatch: StateFlow<Boolean> = _isMatch
+
+
+    private val _inWait = MutableStateFlow(false)
+    val inWait: StateFlow<Boolean> = _inWait
 
     private val _id = MutableStateFlow("")
     val id: StateFlow<String> = _id
@@ -137,6 +152,10 @@ val fImage : StateFlow<String> = _fImage
         _isMatch.value = flag
     }
 
+    fun updateFcm(fcm: String){
+        _fcmToken.value = fcm
+    }
+
     fun updateJwt(jwt : String){
         _jwt.value = jwt
     }
@@ -160,6 +179,10 @@ val fImage : StateFlow<String> = _fImage
         _tImage.value = img
     }
 
+    fun updateInWaitInternal(flag : Boolean){
+        _inWait.value = flag
+    }
+
     fun updatePreGender(preGender: String) {
         _preGender.value = preGender
     }
@@ -176,6 +199,26 @@ val fImage : StateFlow<String> = _fImage
     fun updateGeoRadiusRange(geoRadiusRange: String) {
         _geoRadiusRange.value = geoRadiusRange
     }
+
+
+    suspend fun updateInWait(id : String): Int{
+
+            return try{
+                val response = ktorClient.getWait(id)
+
+                if(response == 200){
+                    _inWait.value = true
+                }else{
+                    _inWait.value = false
+                }
+                response
+            }catch (e : Exception){
+                Log.d("postit","${e.message}")
+                500
+            }
+
+    }
+
 
 
 

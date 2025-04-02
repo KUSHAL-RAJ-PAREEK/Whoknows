@@ -657,7 +657,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                             modifier = Modifier.clickable {
                                 val listener =
                                     DatePickerDialog.OnDateSetListener { _, year, month, day ->
-                                        date = LocalDate.of(year, month, day)
+                                        date = LocalDate.of(year, month+1, day)
                                         val formattedDate =
                                             date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
                                         dob = TextFieldValue(formattedDate)

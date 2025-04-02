@@ -136,12 +136,14 @@ import com.krp.whoknows.Utils.DotsWaveAnimation
 import com.krp.whoknows.Utils.MyAlertDialog
 import com.krp.whoknows.Utils.MyAlertDialogAcc
 import com.krp.whoknows.Utils.MyAlertDialogDel
+import com.krp.whoknows.Utils.MyAlertDialogWait
 import com.krp.whoknows.Utils.createChatRoomId
 import com.krp.whoknows.Utils.downloadImageFromUrl
 import com.krp.whoknows.Utils.drawableToBitmap
 import com.krp.whoknows.Utils.formatDate
 import com.krp.whoknows.Utils.generateUniqueFileName
 import com.krp.whoknows.model.Message
+import com.krp.whoknows.model.NotificationModel
 import com.krp.whoknows.roomdb.Dao
 import com.krp.whoknows.roomdb.DataBase
 import com.krp.whoknows.roomdb.ImageConverter.base64ToBitmap
@@ -306,6 +308,7 @@ fun SharedTransitionScope.ChatScreen(
             var isdownload by remember { mutableStateOf(false) }
             var showAccDialog by remember { mutableStateOf(false) }
             var showDelDialog by remember { mutableStateOf(false) }
+            var showWaitDialog by remember { mutableStateOf(false) }
 
             val imeIsShown = WindowInsets.isImeVisible
 
@@ -314,6 +317,8 @@ fun SharedTransitionScope.ChatScreen(
 
 
             var mId by remember { mutableStateOf<String?>(null) }
+
+            val inWait by userDetailViewModel.inWait.collectAsState()
 
             val chatId = createChatRoomId(userDetailViewModel.id.value, matchUserViewModel.id.value)
 
@@ -454,7 +459,7 @@ fun SharedTransitionScope.ChatScreen(
 
             LaunchedEffect(imeVisible, chatState.messageList) {
                 if (imeVisible) {
-                        listState.animateScrollToItem(chatState.messageList.size - 1)
+                    listState.animateScrollToItem(chatState.messageList.size - 1)
                 }
             }
 
@@ -588,7 +593,25 @@ fun SharedTransitionScope.ChatScreen(
                         Image(
                             painter = painterResource(R.drawable.ping_pong),
                             contentDescription = null,
-                            modifier = Modifier.size(30.dp)
+                            modifier = Modifier
+                                .size(30.dp)
+                                .clickable {
+                                    if (inWait) {
+                                        Toast.makeText(
+                                            context,
+                                            "You need to wait for 5 minutes before making another request.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        coroutineScope.launch {
+                                         val responses = userDetailViewModel.updateInWait(userDetailViewModel.id.value)
+                                            if(responses == 200){
+                                                showWaitDialog = true
+                                            }
+                                        }
+
+                                    }
+                                }
                         )
                     }
                 }
@@ -626,7 +649,7 @@ fun SharedTransitionScope.ChatScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .animateContentSize()
-                            .padding(bottom = if(imeVisible) 5.dp else 0.dp)
+                            .padding(bottom = if (imeVisible) 5.dp else 0.dp)
 //                            .padding(bottom = if (isScrollingUp.value) 0.dp else imePadding)
 
 //                                        .windowInsetsPadding(WindowInsets.ime)
@@ -674,13 +697,11 @@ fun SharedTransitionScope.ChatScreen(
                                 val canSwipeRight = message.imgUrl != null
                                 dismissState = rememberSwipeToDismissBoxState(
                                     confirmValueChange = {
-                                        if(it == SwipeToDismissBoxValue.EndToStart && message.senderId == matchUserViewModel.id.value){
+                                        if (it == SwipeToDismissBoxValue.EndToStart && message.senderId == matchUserViewModel.id.value) {
                                             false
-                                        }
-                                       else if(it == SwipeToDismissBoxValue.StartToEnd && message.senderId == userDetailViewModel.id.value){
+                                        } else if (it == SwipeToDismissBoxValue.StartToEnd && message.senderId == userDetailViewModel.id.value) {
                                             false
-                                        }
-                                       else if (it == SwipeToDismissBoxValue.StartToEnd && !canSwipeRight) {
+                                        } else if (it == SwipeToDismissBoxValue.StartToEnd && !canSwipeRight) {
                                             false
                                         } else if (it == SwipeToDismissBoxValue.EndToStart) {
                                             Toast.makeText(
@@ -720,21 +741,21 @@ fun SharedTransitionScope.ChatScreen(
                                     backgroundContent = {
                                         when (dismissState.targetValue) {
                                             SwipeToDismissBoxValue.EndToStart -> {
-                                                if(message.senderId == userDetailViewModel.id.value){
-                                                Box(
-                                                    modifier = Modifier
-                                                        .fillMaxSize()
-                                                        .padding(end = 16.dp),
-                                                    contentAlignment = Alignment.CenterEnd
-                                                ) {
-                                                    Icon(
-                                                        imageVector = Icons.Default.Delete,
-                                                        contentDescription = "Delete",
-                                                        tint = Color.Red,
-                                                        modifier = Modifier.size(32.dp)
-                                                    )
+                                                if (message.senderId == userDetailViewModel.id.value) {
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .fillMaxSize()
+                                                            .padding(end = 16.dp),
+                                                        contentAlignment = Alignment.CenterEnd
+                                                    ) {
+                                                        Icon(
+                                                            imageVector = Icons.Default.Delete,
+                                                            contentDescription = "Delete",
+                                                            tint = Color.Red,
+                                                            modifier = Modifier.size(32.dp)
+                                                        )
 
-                                               }
+                                                    }
                                                 }
                                             }
 
@@ -761,7 +782,7 @@ fun SharedTransitionScope.ChatScreen(
                                     }
                                 ) {
                                     MessageBox(
-                                    padding = bottomPadding,
+                                        padding = bottomPadding,
                                         message = message,
                                         profileDetailViewModel = userDetailViewModel,
                                     )
@@ -779,8 +800,11 @@ fun SharedTransitionScope.ChatScreen(
                                         matchUserViewModel.id.value
                                     ) == true
                                 ) {
-                                    Box(modifier = Modifier.fillMaxWidth()
-                                        .padding(vertical = 2.dp)) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 2.dp)
+                                    ) {
                                         DotsWaveAnimation(chat_dark)
                                         Spacer(modifier = Modifier.height(4.dp))
                                     }
@@ -844,8 +868,20 @@ fun SharedTransitionScope.ChatScreen(
                                         imgUrl = if (cimage != null) "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/chat-images//${id}.jpg" else null,
                                         imgStr = imgStr
                                     )
+
                                 )
                             )
+                            coroutineScope.launch {
+                                val notification = NotificationModel(
+                                    fcmToken = matchUserViewModel.fcmToken.value,
+                                    title = matchUserViewModel.username.value,
+                                    body = message.toString(),
+                                    type = "chat",
+                                    imgUrl = "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/chat-images//${id}.jpg" ?: "no"
+                                )
+
+                                chatViewModel.sendNotification(notification)
+                            }
                             bimage = null
                             cimage = null
                         }
@@ -918,6 +954,28 @@ fun SharedTransitionScope.ChatScreen(
                     backstack = false
                 })
             }
+
+
+            if (showWaitDialog) {
+                MyAlertDialogWait(onDismiss = { showWaitDialog = false }, onConfirm = {
+                    coroutineScope.launch {
+                        val response = chatViewModel.postWait(userDetailViewModel.id.value)
+                        if (response == 200) {
+                            val notification = NotificationModel(
+                                fcmToken = matchUserViewModel.fcmToken.value,
+                                title = matchUserViewModel.username.value,
+                                body = "❤ Don't leave me hanging—start chatting please!",
+                                type = "buzz",
+                                imgUrl = "no"
+                            )
+                            chatViewModel.sendNotification(notification)
+                            userDetailViewModel.updateInWaitInternal(flag = true)
+                        }
+                    }
+
+                })
+            }
+
             if (showDialog) {
                 MyAlertDialog(
                     onDismiss = { showDialog = false }, isdownload, onConfirmD = {

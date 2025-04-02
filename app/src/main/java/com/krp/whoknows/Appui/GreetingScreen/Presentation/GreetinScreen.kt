@@ -43,8 +43,10 @@ import com.krp.whoknows.Utils.TypewriteText
 import com.krp.whoknows.Utils.calculateAge
 import com.krp.whoknows.Utils.convertImageUrlToBase64
 import com.krp.whoknows.Utils.getLocationCityState
+import com.krp.whoknows.model.FcmModel
 import com.krp.whoknows.model.User
 import com.krp.whoknows.roomdb.JWTViewModel
+import com.krp.whoknows.roomdb.entity.FcmEntity
 import com.krp.whoknows.roomdb.entity.UserResponseEntity
 import com.krp.whoknows.ui.theme.Cyan
 import com.krp.whoknows.ui.theme.LightBlue
@@ -83,16 +85,21 @@ fun GreetingScreen(modifier: Modifier = Modifier,
     val user by greetingViewModel.userState.collectAsState()
     val pNumber by greetingViewModel.pNumber.collectAsState()
 
+    val fcmToken by greetingViewModel.fcmToken.collectAsState()
+
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
     var animated by remember{ mutableStateOf(false) }
 
+
     LaunchedEffect(user?.username) {
         delay(4000)
         Log.d("maalagaya", user.toString())
+        Log.d("tokenfsnasfasfa", fcmToken.toString())
         if (user != null) {
 //            delay(3000)
+            profileDetailViewModel.updateFcm(fcmToken!!)
             navController.popBackStack()
             navController.navigate(HomeScreen)
         } else {
@@ -103,8 +110,6 @@ fun GreetingScreen(modifier: Modifier = Modifier,
             }
         }
     }
-
-
 
     LaunchedEffect(state.isLoading) {
         Log.d("afkmaskfsmasfsa", state.isSuccess.toString())
@@ -195,6 +200,14 @@ fun GreetingScreen(modifier: Modifier = Modifier,
                 }
 //            }
 //            }
+
+            coroutineScope.launch {
+                val response = greetingViewModel.getToken(user?.id.toString())
+                if(response.statusCode == 200){
+                    greetingViewModel.saveFcm(FcmEntity(id = 1, fcm_token = response.token!!))
+                    profileDetailViewModel.updateFcm(response.token!!)
+                }
+            }
             greetingViewModel.saveUser(data)
             delay(4000)
             navController.popBackStack()
@@ -204,6 +217,7 @@ fun GreetingScreen(modifier: Modifier = Modifier,
             Log.d("itiscomingthere","hello after")
         }
     }
+
 
 
     LaunchedEffect(user) {

@@ -62,6 +62,7 @@ import androidx.navigation.NavController
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.LocalTextStyle
 import androidx.xr.compose.testing.toDp
+import com.google.firebase.messaging.FirebaseMessaging
 import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
 import com.krp.whoknows.Navigation.MapScreen
 import com.krp.whoknows.R
@@ -70,8 +71,10 @@ import com.krp.whoknows.Utils.getLocationName
 import com.krp.whoknows.model.LatLongs
 import com.krp.whoknows.model.User
 import com.krp.whoknows.roomdb.JWTViewModel
+import com.krp.whoknows.roomdb.entity.FcmEntity
 import com.krp.whoknows.roomdb.entity.InterUserDetail
 import com.krp.whoknows.ui.theme.ordColor
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -102,6 +105,11 @@ fun LatLong(viewModel: InfoViewModel,
     var pNumber= greetingViewModel.pNumber.collectAsState()
     var jwt= greetingViewModel.jwtToken.collectAsState()
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+
+    val fcmToken by greetingViewModel.fcmToken.collectAsState()
+
     var hasLocationPermission by remember {
         mutableStateOf(checkForPermission(context))
     }
@@ -142,6 +150,15 @@ LaunchedEffect(state.isLoading) {
             pnumber = details.pnumber!!
         )
         jwtViewModel.saveUser(user)
+
+        Log.d("tokenisninlatlong",fcmToken.toString())
+        delay(1000)
+        coroutineScope.launch {
+            val response = greetingViewModel.uploadToken(id = details?.id!!, token = fcmToken!!)
+            greetingViewModel.saveFcm(FcmEntity(id = 1, fcm_token = fcmToken!!))
+            Log.d("token uploaded",response.toString())
+        }
+
         navController.popBackStack()
         navController.navigate(com.krp.whoknows.Navigation.GreetingScreen)
     }
@@ -167,7 +184,6 @@ LaunchedEffect(state.isLoading) {
             text = TextFieldValue(loc.toString())
         }
     }
-    val coroutineScope = rememberCoroutineScope()
 
     var isFocused by remember { mutableStateOf(false) }
     val imeHeight = WindowInsets.ime.getBottom(LocalDensity.current).toDp()
@@ -192,7 +208,7 @@ LaunchedEffect(state.isLoading) {
             Icon(
                 imageVector = Icons.Default.ArrowBack, contentDescription = "Back arrow",
                 Modifier.size(35.dp).clickable{
-                    navController.navigate(com.krp.whoknows.Navigation.DOBScreen){
+                    navController.navigate(com.krp.whoknows.Navigation.GeoRadiusRange){
                         popUpTo(0) { inclusive = true }
                     }
                 },

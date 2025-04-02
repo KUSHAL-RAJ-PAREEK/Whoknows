@@ -6,10 +6,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.krp.whoknows.ktorclient.KtorClient
+import com.krp.whoknows.model.FcmModel
 import com.krp.whoknows.model.UserResponse
 import com.krp.whoknows.roomdb.UserRepository
+import com.krp.whoknows.roomdb.entity.FcmEntity
+import com.krp.whoknows.roomdb.entity.MatchFcmEntity
 import com.krp.whoknows.roomdb.entity.MatchUserEntity
 import com.krp.whoknows.roomdb.entity.UserResponseEntity
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,6 +42,13 @@ class GreetingViewModel(
     private val _pNumber = MutableStateFlow<String?>(null)
     val pNumber: StateFlow<String?> get() = _pNumber
 
+    private val _fcmToken = MutableStateFlow<String?>(null)
+    val fcmToken: StateFlow<String?> get() = _fcmToken
+
+    private val _matchFcmToken = MutableStateFlow<String?>(null)
+    val matchFcmToken: StateFlow<String?> get() = _matchFcmToken
+
+
     init {
         loadJwtToken()
         loadPNumber()
@@ -46,6 +57,17 @@ class GreetingViewModel(
                 _userState.value = user
             }
 
+        }
+        viewModelScope.launch {
+            userRepository.getFcm().collect { entity ->
+                _fcmToken.value = entity?.fcm_token
+            }
+        }
+
+        viewModelScope.launch {
+            userRepository.getMatchFcm().collect { entity ->
+                _matchFcmToken.value = entity?.fcm_token
+            }
         }
 
 //        viewModelScope.launch {
@@ -114,7 +136,37 @@ class GreetingViewModel(
         }
     }
 
+    fun saveMatchFcm(matchFcm: MatchFcmEntity) {
+        viewModelScope.launch {
+            userRepository.saveMatchFcm(matchFcm)
+        }
+    }
 
+    fun getMatchFcm(): Flow<MatchFcmEntity?> {
+        return userRepository.getMatchFcm()
+    }
+
+    fun deleteMatchFcm() {
+        viewModelScope.launch {
+            userRepository.deleteMatchFcm()
+        }
+    }
+
+    fun saveFcm(fcm: FcmEntity) {
+        viewModelScope.launch {
+            userRepository.saveFcm(fcm)
+        }
+    }
+
+    fun getFcm(): Flow<FcmEntity?> {
+        return userRepository.getFcm()
+    }
+
+    fun deleteFcm() {
+        viewModelScope.launch {
+            userRepository.deleteFcm()
+        }
+    }
 
 
     fun onEvent(event: GetUserEvent) {
@@ -145,6 +197,31 @@ class GreetingViewModel(
             }
         }
     }
+
+
+    suspend fun uploadToken(id : String, token : String) : Int{
+          return try{
+                Log.d("iamheretoupload","$id $token")
+                val response = ktorClient.uploadToken(id = id, token =token)
+                 response
+            }catch (e : Exception){
+              Log.d("GreetingViewModeltoken", e.message.toString())
+                -1
+            }
+    }
+
+    suspend fun getToken(id : String) : FcmModel{
+        return try{
+            Log.d("iamheretoupload","$id")
+            val response = ktorClient.getToken(id = id)
+            response
+        }catch (e : Exception){
+            Log.d("GreetingViewModeltoken", e.message.toString())
+            FcmModel(-1,"")
+        }
+    }
+
+
 }
 
 

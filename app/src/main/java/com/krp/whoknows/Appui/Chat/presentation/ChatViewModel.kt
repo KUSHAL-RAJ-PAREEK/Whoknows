@@ -8,6 +8,7 @@ import com.google.gson.Gson
 import com.krp.whoknows.Utils.TypewriteText
 import com.krp.whoknows.ktorclient.KtorClient
 import com.krp.whoknows.model.Message
+import com.krp.whoknows.model.NotificationModel
 import io.socket.client.IO
 import io.socket.client.Socket
 import kotlinx.coroutines.delay
@@ -284,6 +285,55 @@ class ChatViewModel :ViewModel(),KoinComponent{
             }
         }
     }
+
+    fun sendNotification(notification : NotificationModel){
+
+        viewModelScope.launch {
+            try{
+                val response = ktorClient.sendNotification(notification)
+
+                if(response == 200){
+                    Log.d("sendinoti",response.toString())
+                }else{
+                    Log.d("sendinoti",response.toString())
+                }
+            }catch (e : Exception){
+                Log.d("sendinoti","${e.message}")
+            }
+        }
+    }
+
+    suspend fun getWait(id : String): Int{
+
+           return try{
+                val response = ktorClient.getWait(id)
+                Log.d("sendinoti",response.toString())
+                response
+            }catch (e : Exception){
+                Log.d("sendinoti","${e.message}")
+               500
+            }
+    }
+
+   suspend fun postWait(id : String): Int{
+
+            return try{
+                val response = ktorClient.postWait(id)
+
+                if(response == 200){
+                    Log.d("postit",response.toString())
+                }else{
+                    Log.d("postit",response.toString())
+                }
+                response
+            }catch (e : Exception){
+                Log.d("postit","${e.message}")
+                500
+            }
+
+    }
+
+
     override fun onCleared() {
         super.onCleared()
         socket.disconnect()

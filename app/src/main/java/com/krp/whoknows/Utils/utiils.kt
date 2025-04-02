@@ -1100,6 +1100,34 @@ fun MyAlertDialogDel(onDismiss: () -> Unit, onConfirm :() -> Unit){
 
 }
 
+@Composable
+fun MyAlertDialogWait(onDismiss: () -> Unit, onConfirm :() -> Unit){
+
+    AlertDialog(
+        modifier = Modifier,
+        containerColor = colorResource(R.color.ordColor),
+        onDismissRequest = { onDismiss() },
+        confirmButton = {
+            TextButton(onClick = {
+                onConfirm()
+                onDismiss()}) {
+                Text("yes",
+                    color = t_color)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onDismiss() }) {
+                Text("no",color = t_color)
+            }
+        },
+//            title = { Text("Alert") },
+        text = { Text("Do you want to notify?",
+            color = androidx.compose.ui.graphics.Color.Black) }
+    )
+
+
+}
+
 
 @Composable
 fun ExpandableLogoutFAB(onLogout: () -> Unit) {
@@ -1156,3 +1184,5 @@ fun ExpandableLogoutFAB(onLogout: () -> Unit) {
         }
     }
 }
+
+
