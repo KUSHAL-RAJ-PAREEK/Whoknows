@@ -19,6 +19,10 @@ import android.os.Build
 import android.os.Environment
 import android.util.Base64
 import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -54,6 +58,7 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -86,6 +91,7 @@ import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Cake
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Camera
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Checkroom
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Code
@@ -205,6 +211,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
@@ -213,6 +220,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -256,6 +264,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.readBytes
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
@@ -919,8 +928,8 @@ fun DotsWaveAnimation(dotColor: androidx.compose.ui.graphics.Color) {
 
     val modifier = Modifier
         .padding(
-            start =  8.dp,
-            end =  16.dp,
+            start = 8.dp,
+            end = 16.dp,
             top = 0.dp,
             bottom = 0.dp
         )
@@ -930,13 +939,13 @@ fun DotsWaveAnimation(dotColor: androidx.compose.ui.graphics.Color) {
                 bottomEnd = 10.dp,
                 bottomStart = 10.dp,
                 topStart = 0.dp,
-                topEnd =  10.dp
+                topEnd = 10.dp
             )
         )
         .background(
 
 
-                    chat_light
+            chat_light
 
 
         )
@@ -1151,7 +1160,9 @@ fun ExpandableLogoutFAB(onLogout: () -> Unit) {
             shape = CircleShape,
             containerColor = fabColor,
             contentColor = androidx.compose.ui.graphics.Color.White,
-            modifier = Modifier.padding(top = 40.dp,end = 20.dp).size(fabSize),
+            modifier = Modifier
+                .padding(top = 40.dp, end = 20.dp)
+                .size(fabSize),
         ) {
             if (!isExpanded) {
                 androidx.compose.material3.Icon(Icons.Default.Logout, contentDescription = "Logout")
@@ -1186,3 +1197,67 @@ fun ExpandableLogoutFAB(onLogout: () -> Unit) {
 }
 
 
+@Preview
+@Composable
+private fun run() {
+    ShowToastExample()
+}
+@Composable
+fun ShowToastExample() {
+    var showToast by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Button(onClick = { showToast = true }) {
+            Text("Show Custom Toast")
+        }
+
+        if (showToast) {
+            CustomToast(
+                message = "Success!",
+                icon = Icons.Default.Check,
+                backgroundColor = androidx.compose.ui.graphics.Color.Green
+            )
+            LaunchedEffect(Unit) {
+                delay(4000)
+                showToast = false
+            }
+        }
+    }
+}
+
+
+@Composable
+fun CustomToast(message: String, icon: ImageVector, backgroundColor: androidx.compose.ui.graphics.Color, duration: Long = 2000L) {
+    val context = LocalContext.current
+    var isVisible by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        delay(duration)
+        isVisible = false
+    }
+
+    if (isVisible) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            Row(
+                modifier = Modifier
+                    .background(backgroundColor, shape = RoundedCornerShape(12.dp))
+                    .padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                androidx.compose.material3.Icon(
+                    imageVector = icon,
+                    contentDescription = "Toast Icon",
+                    tint = androidx.compose.ui.graphics.Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = message, color =  androidx.compose.ui.graphics.Color.White, fontSize = 16.sp)
+            }
+        }
+    }
+}

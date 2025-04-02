@@ -88,6 +88,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.modifier.modifierLocalConsumer
@@ -141,8 +142,11 @@ import com.krp.whoknows.roomdb.ImageConverter.uriToBase64
 import com.krp.whoknows.roomdb.ImageRepository
 import com.krp.whoknows.roomdb.entity.UserResponseEntity
 import com.krp.whoknows.ui.theme.background_white
+import com.krp.whoknows.ui.theme.lightOrdColor
+import com.krp.whoknows.ui.theme.light_yellow
 import com.krp.whoknows.ui.theme.ordColor
 import com.krp.whoknows.ui.theme.text_gray
+import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import io.github.jan.supabase.storage.storage
 import io.ktor.utils.io.core.use
 import kotlinx.coroutines.CoroutineScope
@@ -611,7 +615,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                         )
                                     } catch (e: Exception) {
-                                        Toast.makeText(context, "$e", Toast.LENGTH_LONG).show()
+                                        Log.d("errorinphoto","${e.message}")
                                     }
                                 }
                             }
@@ -1043,8 +1047,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                                                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                                 )
                                             } catch (e: Exception) {
-                                                Toast.makeText(context, "$e", Toast.LENGTH_LONG)
-                                                    .show()
+                                                Log.d("errorinphoto","${e.message}")
                                             }
                                         }
                                     }
@@ -1096,8 +1099,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                                                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                                 )
                                             } catch (e: Exception) {
-                                                Toast.makeText(context, "$e", Toast.LENGTH_LONG)
-                                                    .show()
+                                                Log.d("errorinphoto","${e.message}")
                                             }
                                         }
                                     }
@@ -1149,8 +1151,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                                                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                                 )
                                             } catch (e: Exception) {
-                                                Toast.makeText(context, "$e", Toast.LENGTH_LONG)
-                                                    .show()
+                                                Log.d("errorinphoto","${e.message}")
                                             }
                                         }
                                     }
@@ -1176,17 +1177,13 @@ fun SharedTransitionScope.ProfileEditScreen(
                     val today = LocalDate.now()
                     val ageThreshold = today.minusYears(18)
                     if (date.isAfter(ageThreshold)) {
-                        Toast.makeText(
-                            context,
-                            "You must be at least 18 years old",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        DynamicToast.make(context,"You must be at least 18 years old",
+                            ContextCompat.getDrawable(context, R.drawable.age_logo)?.mutate(),lightOrdColor.toArgb(),
+                            light_yellow.toArgb()).show()
                     } else if (fPre.text.toInt() > tPre.text.toInt()) {
-                        Toast.makeText(
-                            context,
-                            "min range should be small from max range",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        DynamicToast.make(context,"min range should be small from max range",
+                            ContextCompat.getDrawable(context, R.drawable.calender_logo)?.mutate(),lightOrdColor.toArgb(),
+                            light_yellow.toArgb()).show()
                     } else {
                         coroutineScope.launch {
                             uploading = true

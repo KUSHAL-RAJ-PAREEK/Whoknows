@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.Font
@@ -50,6 +51,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -57,7 +59,11 @@ import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.LocalTextStyle
 import androidx.xr.compose.testing.toDp
 import com.krp.whoknows.R
+import com.krp.whoknows.ui.theme.lightOrdColor
+import com.krp.whoknows.ui.theme.light_red
+import com.krp.whoknows.ui.theme.light_yellow
 import com.krp.whoknows.ui.theme.ordColor
+import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import java.time.LocalDate
 
 /**
@@ -178,10 +184,14 @@ fun PreferredAgeRange(viewModel: InfoViewModel,
                     text ="${text1.text}-${text2.text}"
                     Log.d("textiti",text)
                     if(text1.text > text2.text){
-                        Toast.makeText(context, "min range should be small from max range", Toast.LENGTH_SHORT).show()
+                        DynamicToast.make(context,"min range should be small from max range",
+                            ContextCompat.getDrawable(context, R.drawable.calender_logo)?.mutate(),lightOrdColor.toArgb(),
+                            light_yellow.toArgb()).show()
                     }
                    else if (text1.text.isBlank() || text2.text.isBlank()) {
-                        Toast.makeText(context, "Please enter min and max range", Toast.LENGTH_SHORT).show()
+                        DynamicToast.make(context,"Please enter min and max range",
+                            ContextCompat.getDrawable(context, R.drawable.calender_logo)?.mutate(),lightOrdColor.toArgb(),
+                            light_yellow.toArgb()).show()
                     } else {
                         viewModel.updatePreAgeRange(text)
                         navController.navigate(com.krp.whoknows.Navigation.GeoRadiusRange)

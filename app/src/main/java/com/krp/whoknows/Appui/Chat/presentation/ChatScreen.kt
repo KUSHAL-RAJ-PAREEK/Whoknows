@@ -86,6 +86,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.colorspace.TransferParameters
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
@@ -106,6 +107,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.room.Database
 import androidx.wear.compose.material.Scaffold
@@ -157,7 +159,9 @@ import com.krp.whoknows.ui.theme.background_white
 import com.krp.whoknows.ui.theme.chat_dark
 import com.krp.whoknows.ui.theme.chat_light
 import com.krp.whoknows.ui.theme.lightOrdColor
+import com.krp.whoknows.ui.theme.light_yellow
 import com.krp.whoknows.ui.theme.ordColor
+import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.net.URI
@@ -529,13 +533,10 @@ fun SharedTransitionScope.ChatScreen(
                                     if (acc_status == 2) {
                                         matchUserViewModel.updateVis(true)
                                         navController.navigate("matchProfileScreen")
-
                                     } else {
-                                        Toast.makeText(
-                                            context,
-                                            "Both concerns need to be addressed to view the profile",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                        DynamicToast.make(context,"Both concerns need to be addressed to view the profile",
+                                            ContextCompat.getDrawable(context, R.drawable.fulll_handshake)?.mutate(),Color.White.toArgb(),
+                                            lightOrdColor.toArgb()).show()
                                     }
                                 }
                         )
@@ -580,11 +581,10 @@ fun SharedTransitionScope.ChatScreen(
                                     if (matchUserViewModel.clicked.value == false) {
                                         showAccDialog = true
                                     } else {
-                                        Toast.makeText(
-                                            context,
-                                            "You have already taken your side step",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                        DynamicToast.make(context,"You have already taken your side step",
+                                            ContextCompat.getDrawable(context, R.drawable.half_circle)?.mutate(),Color.White.toArgb(),
+                                            lightOrdColor.toArgb()).show()
+
                                     }
                                 })
 
@@ -597,11 +597,9 @@ fun SharedTransitionScope.ChatScreen(
                                 .size(30.dp)
                                 .clickable {
                                     if (inWait) {
-                                        Toast.makeText(
-                                            context,
-                                            "You need to wait for 5 minutes before making another request.",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                        DynamicToast.make(context,"You need to wait for 5 minutes before making another request.",
+                                            ContextCompat.getDrawable(context, R.drawable.clock)?.mutate(),Color.White.toArgb(),
+                                            lightOrdColor.toArgb()).show()
                                     } else {
                                         coroutineScope.launch {
                                          val responses = userDetailViewModel.updateInWait(userDetailViewModel.id.value)
@@ -704,12 +702,6 @@ fun SharedTransitionScope.ChatScreen(
                                         } else if (it == SwipeToDismissBoxValue.StartToEnd && !canSwipeRight) {
                                             false
                                         } else if (it == SwipeToDismissBoxValue.EndToStart) {
-                                            Toast.makeText(
-                                                context,
-                                                "Do you want to delete?",
-                                                Toast.LENGTH_LONG
-                                            )
-                                                .show()
                                             coroutineScope.launch {
                                                 dismissState.reset()
                                             }
@@ -718,12 +710,6 @@ fun SharedTransitionScope.ChatScreen(
                                             showDialog = true
                                             true
                                         } else if (it == SwipeToDismissBoxValue.StartToEnd) {
-                                            Toast.makeText(
-                                                context,
-                                                "Do you want to download",
-                                                Toast.LENGTH_LONG
-                                            )
-                                                .show()
                                             coroutineScope.launch {
                                                 dismissState.reset()
                                             }

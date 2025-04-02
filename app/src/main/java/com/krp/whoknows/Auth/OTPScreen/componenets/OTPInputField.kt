@@ -43,11 +43,7 @@ import androidx.compose.ui.unit.dp
  * Created by KUSHAL RAJ PAREEK on 01,February,2025
  */
 
-@Preview
-@Composable
-private fun run() {
-    OTPInputField("afsfasfa",{})
-}
+
 @Composable
 fun OTPInputField(
     otpText: String,
@@ -73,10 +69,8 @@ fun OTPInputField(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                // Create a circular field for each digit.
                 repeat(4) { index ->
                     val digit = if (index < otpText.length) otpText[index].toString() else ""
-                    // Change border color for the "focused" circle
                     val borderColor = if (isFieldFocused && otpText.length == index) Color.Blue else Color.Gray
                     Box(
                         modifier = Modifier

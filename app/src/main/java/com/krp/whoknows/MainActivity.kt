@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,6 +39,7 @@ import com.krp.whoknows.Auth.WelcomeScreen.presentation.WelcomeScreen
 import com.krp.whoknows.roomdb.DataStoreManager
 import com.krp.whoknows.roomdb.JWTViewModel
 import com.krp.whoknows.ui.theme.WhoknowsTheme
+import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import kotlinx.coroutines.delay
 import org.koin.android.ext.android.inject
 import org.koin.androidx.compose.koinViewModel
@@ -49,6 +51,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val splashScreen = installSplashScreen()
 //        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+
+
 
         setContent {
             val jwtViewModel: JWTViewModel by inject()

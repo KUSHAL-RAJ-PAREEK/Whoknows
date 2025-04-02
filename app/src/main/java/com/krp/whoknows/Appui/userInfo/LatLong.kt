@@ -49,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.Font
@@ -58,6 +59,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.LocalTextStyle
@@ -73,7 +75,10 @@ import com.krp.whoknows.model.User
 import com.krp.whoknows.roomdb.JWTViewModel
 import com.krp.whoknows.roomdb.entity.FcmEntity
 import com.krp.whoknows.roomdb.entity.InterUserDetail
+import com.krp.whoknows.ui.theme.lightOrdColor
+import com.krp.whoknows.ui.theme.light_yellow
 import com.krp.whoknows.ui.theme.ordColor
+import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -280,7 +285,8 @@ LaunchedEffect(state.isLoading) {
                 onClick = {
 
                     if (text.text.isBlank()) {
-                        Toast.makeText(context, "Click to select Location", Toast.LENGTH_SHORT).show()
+                        DynamicToast.make(context,"Click Icon to select Location",
+                            ContextCompat.getDrawable(context, R.drawable.location_p)?.mutate(),lightOrdColor.toArgb(),light_yellow.toArgb()).show()
                     } else {
                         if(pNumber?.value == null){
                             Log.d("asfddffffffffffff", "null")

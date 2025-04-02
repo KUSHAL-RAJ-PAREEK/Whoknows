@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.Font
@@ -42,6 +43,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.wear.compose.material.Icon
 import androidx.xr.compose.testing.toDp
@@ -50,7 +52,11 @@ import com.krp.whoknows.Navigation.PhoneScreen
 import com.krp.whoknows.Navigation.UserGender
 import com.krp.whoknows.R
 import com.krp.whoknows.Utils.DropDownMenu
+import com.krp.whoknows.ui.theme.lightOrdColor
+import com.krp.whoknows.ui.theme.light_red
+import com.krp.whoknows.ui.theme.light_yellow
 import com.krp.whoknows.ui.theme.ordColor
+import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import kotlin.math.log
 
 
@@ -127,9 +133,15 @@ LaunchedEffect(Unit) {
             FloatingActionButton(
                 onClick = {
                     if (text.text.isBlank()) {
-                    Toast.makeText(context, "Please enter your Preferred Gender", Toast.LENGTH_SHORT).show()
+                        val lightOrdColor = null
+                        DynamicToast.make(context,"Please enter your Preferred Gender",
+                            ContextCompat.getDrawable(context, R.drawable.warning)?.mutate(),
+                            com.krp.whoknows.ui.theme.lightOrdColor.toArgb(),light_red.toArgb()).show()
+
                 } else if (text.text.toIntOrNull() != null && text.text.toInt() < 18) {
-                    Toast.makeText(context, "You must be at least 18 years old", Toast.LENGTH_SHORT).show()
+                        DynamicToast.make(context,"You must be at least 18 years old",
+                            ContextCompat.getDrawable(context, R.drawable.age_logo)?.mutate(),lightOrdColor.toArgb(),
+                            light_yellow.toArgb()).show()
                 } else {
                     navController.navigate(com.krp.whoknows.Navigation.DOBScreen)
                 }

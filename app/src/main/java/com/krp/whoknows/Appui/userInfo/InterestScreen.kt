@@ -43,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.Font
@@ -50,6 +51,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.wear.compose.material.Icon
@@ -59,7 +61,10 @@ import com.google.accompanist.insets.imePadding
 import com.krp.whoknows.Appui.Profile.presentation.SearchViewModel
 import com.krp.whoknows.Appui.interest.Components.InterestItem
 import com.krp.whoknows.R
+import com.krp.whoknows.ui.theme.lightOrdColor
+import com.krp.whoknows.ui.theme.light_red
 import com.krp.whoknows.ui.theme.ordColor
+import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import java.time.LocalDate
 
 /**
@@ -195,8 +200,9 @@ fun InterestScreen(modifier: Modifier = Modifier,
             FloatingActionButton(
                 onClick = {
                     if(infoViewModel.interests.value == null || infoViewModel.interests.value!!.size < 3){
-                        Toast.makeText(context,"You need to select at least three interests.",
-                            Toast.LENGTH_SHORT).show()
+
+                        DynamicToast.make(context,"You need to select at least three interests.",
+                            ContextCompat.getDrawable(context, R.drawable.warning)?.mutate(),lightOrdColor.toArgb(),light_red.toArgb()).show()
                     }else{
                         Log.d("intrersetsfasfas",infoViewModel.interests.value.toString())
                         navController.navigate(com.krp.whoknows.Navigation.PreferredAgeRange)

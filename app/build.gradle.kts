@@ -170,5 +170,8 @@ dependencies {
 
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
+    implementation ("com.pranavpandey.android:dynamic-toasts:4.3.0")
+
+    implementation ("com.pranavpandey.android:dynamic-toasts:1.3.0")
 }
 

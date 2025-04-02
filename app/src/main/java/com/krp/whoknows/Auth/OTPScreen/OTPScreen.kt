@@ -44,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -53,6 +54,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.Button
@@ -76,7 +78,10 @@ import com.krp.whoknows.roomdb.DataBase
 import com.krp.whoknows.roomdb.JWTViewModel
 import com.krp.whoknows.roomdb.UserRepository
 import com.krp.whoknows.roomdb.entity.JWTToken
+import com.krp.whoknows.ui.theme.lightOrdColor
+import com.krp.whoknows.ui.theme.light_red
 import com.krp.whoknows.ui.theme.ordColor
+import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -242,7 +247,9 @@ fun OTPScreen(
                     onClick = {
                         val notp = otp
                         if(otp.length < 4){
-                            Toast.makeText(context,"please enter 4-digit OTP",Toast.LENGTH_SHORT).show()
+                            DynamicToast.make(context,"please enter 4-digit OTP",
+                                ContextCompat.getDrawable(context, R.drawable.warning)?.mutate(),lightOrdColor.toArgb(),light_red.toArgb()).show()
+
                         }else{
                             if (!state.isLoading) {
                                 event(

@@ -7,6 +7,7 @@ package com.krp.whoknows.Auth.PhoneScreen.Presentation
 import android.R.attr.maxLines
 import android.R.attr.text
 import android.R.attr.textStyle
+import android.graphics.PorterDuff
 import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -57,6 +58,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -67,21 +69,31 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.LocalTextStyle
 import androidx.xr.compose.testing.isFocused
 import androidx.xr.compose.testing.toDp
 import com.krp.whoknows.Navigation.LatLong
 import com.krp.whoknows.R
+import com.krp.whoknows.Utils.CustomToast
 import com.krp.whoknows.model.OtpDetail
+import com.krp.whoknows.ui.theme.lightOrdColor
+import com.krp.whoknows.ui.theme.light_green
+import com.krp.whoknows.ui.theme.light_red
+import com.krp.whoknows.ui.theme.light_yellow
 import com.krp.whoknows.ui.theme.ordColor
+import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import okhttp3.internal.wait
+
+
 
 @Preview
 @Composable
 private fun run() {
     PhoneScreen(Modifier,{},PhoneAuthState(),{})
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PhoneScreen(
@@ -98,21 +110,23 @@ fun PhoneScreen(
     val imeHeight = WindowInsets.ime.getBottom(LocalDensity.current).toDp()
 
 
-
     var phoneNumber by remember { mutableStateOf("") }
     val isValid = phoneNumber.length == 10
 val context = LocalContext.current
 
     if (state.isLoading) {
-        Toast.makeText(context,"Sending otp...",Toast.LENGTH_SHORT).show()
+        DynamicToast.make(context,"Sending otp...",
+            ContextCompat.getDrawable(context, R.drawable.paper_plane)?.mutate(),lightOrdColor.toArgb(),light_yellow.toArgb()).show()
     }
 
     if (state.errorMessage != null) {
-        Toast.makeText(context,"Something went wrong",Toast.LENGTH_SHORT).show()
+        DynamicToast.make(context,"Something went wrong",
+            ContextCompat.getDrawable(context, R.drawable.warning)?.mutate(),lightOrdColor.toArgb(),light_red.toArgb()).show()
     }
 
     if (state.isOtpSent) {
-        Toast.makeText(context,"OTP sent successfully!",Toast.LENGTH_SHORT).show()
+        DynamicToast.make(context,"OTP sent successfully!",
+            ContextCompat.getDrawable(context, R.drawable.success)?.mutate(),lightOrdColor.toArgb(),light_green.toArgb()).show()
     }
 
     Box(
@@ -167,16 +181,16 @@ val context = LocalContext.current
             FloatingActionButton(
                 onClick = {
                     if (!state.isLoading) {
+
                         if (phoneNumber.isEmpty()) {
-                            Toast.makeText(context, "Please Enter Phone Number", Toast.LENGTH_SHORT)
-                                .show()
+                            DynamicToast.make(context,"Please Enter Phone Number",
+                                ContextCompat.getDrawable(context, R.drawable.warning)?.mutate(),lightOrdColor.toArgb(),light_red.toArgb()).show()
 
                         } else if (!isValid && phoneNumber.isNotEmpty()) {
-                            Toast.makeText(
-                                context,
-                                "Phone number must be exactly 10 digits",
-                                Toast.LENGTH_SHORT
-                            ).show()
+
+                            DynamicToast.make(context,"number must be 10 digits",
+                                ContextCompat.getDrawable(context, R.drawable.warning)?.mutate(),lightOrdColor.toArgb(),light_red.toArgb()).show()
+
                         }
                         if (isValid) {
                             event(PhoneAuthEvent.SendOtp(OtpDetail("+91", pNumber = phoneNumber)))
