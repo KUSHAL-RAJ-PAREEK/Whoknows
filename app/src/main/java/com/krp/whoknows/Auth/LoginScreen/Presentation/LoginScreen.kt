@@ -52,21 +52,21 @@ fun LoginScreen(modifier: Modifier = Modifier,onPhoneSlide :() -> Unit) {
       ) {
 Spacer(modifier = modifier.height(90.dp))
         Image(
-            painter = painterResource(id = R.drawable.circle_image),
+            painter = painterResource(id = R.drawable.couple),
             contentDescription = "Landing Image",
             modifier = Modifier
-                .size(380.dp)
+                .size(580.dp)
                 .fillMaxSize()
         )
-        Spacer(modifier = modifier.height(40.dp))
+        Spacer(modifier = modifier.height(10.dp))
        Text(
-          text = "Let's meeting new \n people around you",
-          fontSize = 28.sp,
-          fontFamily = FontFamily(Font(R.font.hellixbold)),
+          text = "WhoKnows? Love Beyond Looks!",
+          fontSize = 20.sp,
+          fontFamily = FontFamily(Font(R.font.outfit_medium)),
           modifier = Modifier.fillMaxWidth(),
           textAlign = TextAlign.Center
        )
-        Spacer(modifier = modifier.height(55.dp))
+        Spacer(modifier = modifier.height(20.dp))
       SlideToUnlock(
          isLoading = isLoading,
          onUnlockRequested = {onPhoneSlide() },

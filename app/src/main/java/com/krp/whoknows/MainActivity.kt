@@ -53,7 +53,6 @@ class MainActivity : ComponentActivity() {
 //        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
 
-
         setContent {
             val jwtViewModel: JWTViewModel by inject()
             val greetingViewModel: GreetingViewModel by inject()
@@ -95,7 +94,6 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .background(color = colorResource(id = R.color.splashScreenColor))
                     ) {
-
                             SetUpNavGraph(startDest = startDest!!)
 
                     }
