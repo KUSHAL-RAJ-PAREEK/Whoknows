@@ -29,6 +29,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.krp.whoknows.App
 import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
 import com.krp.whoknows.Appui.Profile.presentation.ProfileDetailViewModel
 import com.krp.whoknows.MainActivity
@@ -121,7 +122,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
     @SuppressLint("LaunchActivityFromNotification")
     private fun showNotificationWithAlarm(context : Context, title: String?, body: String?) {
 
-        val intent = Intent(context, MainActivity::class.java)
+        val intent = Intent(context, App::class.java)
         val pendingIntent = PendingIntent.getBroadcast(context, 0, intent,  PendingIntent.FLAG_IMMUTABLE)
 
         val notification = NotificationCompat.Builder(context, "KRP")

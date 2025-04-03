@@ -221,7 +221,16 @@ fun SharedTransitionScope.HomeScreen(
                 updateDeferred.await()
                 delay(200)
                 Log.d("adasdasdasdasdasdsadsadasd",fcmToken.toString())
-                matchUserViewModel.updateFcm(fcmToken!!)
+                coroutineScope.launch {
+                    val response = greetingViewModel.getToken(m_id)
+                    Log.d("asdddddddddddddddddd",response.toString()
+                    )
+                    if(response.statusCode == 200){
+                        greetingViewModel.saveMatchFcm(MatchFcmEntity(id = 1, fcm_token = response.token!!))
+                        matchUserViewModel.updateFcm(response.token!!)
+                        Log.d("adasdasdasdasdasdsssdsdsdsadsadasd",response.token!!)
+                    }
+                }
             }
         }
     }

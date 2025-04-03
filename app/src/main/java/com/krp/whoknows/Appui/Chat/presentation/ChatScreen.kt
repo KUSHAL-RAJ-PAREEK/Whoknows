@@ -460,22 +460,22 @@ fun SharedTransitionScope.ChatScreen(
 
 
             val imeVisible = imeInsets.getBottom(density) > 0f
-
-            LaunchedEffect(imeVisible, chatState.messageList) {
-                if (imeVisible && chatState.messageList.size >= 1) {
-                    listState.animateScrollToItem(chatState.messageList.size - 1)
-                }else if(imeVisible){
-                    listState.animateScrollToItem(chatState.messageList.size)
-                }
-            }
-
-            val isScrollingUp = remember { mutableStateOf(false) }
-            LaunchedEffect(listState) {
-                snapshotFlow { listState.firstVisibleItemIndex }
-                    .collect { firstVisibleItemIndex ->
-                        isScrollingUp.value = firstVisibleItemIndex > 0
-                    }
-            }
+//
+//            LaunchedEffect(imeVisible, chatState.messageList) {
+//                if (imeVisible && chatState.messageList.isNotEmpty()) {
+//                    listState.animateScrollToItem(chatState.messageList.size - 1)
+//                }else if(imeVisible){
+//                    listState.animateScrollToItem(0)
+//                }
+//            }
+//
+//            val isScrollingUp = remember { mutableStateOf(false) }
+//            LaunchedEffect(listState) {
+//                snapshotFlow { listState.firstVisibleItemIndex }
+//                    .collect { firstVisibleItemIndex ->
+//                        isScrollingUp.value = firstVisibleItemIndex > 0
+//                    }
+//            }
 
             Box(
 
@@ -605,7 +605,7 @@ fun SharedTransitionScope.ChatScreen(
                                     } else {
                                         coroutineScope.launch {
                                          val responses = userDetailViewModel.updateInWait(userDetailViewModel.id.value)
-                                            if(responses == 200){
+                                            if(responses == 404){
                                                 showWaitDialog = true
                                             }
                                         }

@@ -142,8 +142,8 @@ val coroutineScope = rememberCoroutineScope()
                 greetingViewModel.loadJwtToken()
             }
 
-            coroutineScope.launch {
 
+            coroutineScope.launch {
                 GlobalScope.launch(Dispatchers.IO) {
                     try {
                         val userId = greetingViewModel.getId(phoneNumber, jwt)

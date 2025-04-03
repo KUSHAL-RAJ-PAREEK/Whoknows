@@ -3,6 +3,7 @@ package com.krp.whoknows.Appui.Profile.presentation
 import android.R.attr.contentDescription
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -119,7 +120,7 @@ import java.time.temporal.TemporalQueries.localDate
 data class InterestItem(val name: String, val icon: ImageVector)
 
 
-@SuppressLint("StateFlowValueCalledInComposition")
+@SuppressLint("StateFlowValueCalledInComposition", "UseCompatLoadingForDrawables")
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class,
     ExperimentalSharedTransitionApi::class
@@ -274,8 +275,21 @@ fun SharedTransitionScope.ProfileScreen(modifier: Modifier = Modifier, matrix: C
         derivedStateOf { scrollState.value > 0 }
     }
     val defaultIcon = Icons.Default.Star
-    val bitmapImage = profileImg?.asImageBitmap()
-        ?: drawableToBitmap(context, if(profileDetailViewModel.gender.value == "MALE") R.drawable.bp_img_placeholder else  R.drawable.p_img_placeholder).asImageBitmap()
+//    val bitmapImage = profileImg?.asImageBitmap()
+//        ?: drawableToBitmap(context, if(profileDetailViewModel.gender.value == "MALE") R.drawable.bp_img_placeholder else  R.drawable.p_img_placeholder).asImageBitmap()
+
+    val placeholderImage = remember {
+        val drawable = context.resources.getDrawable(
+            if (profileDetailViewModel.gender.value == "MALE") R.drawable.bp_img_placeholder
+            else R.drawable.p_img_placeholder,
+            null
+        ) as BitmapDrawable
+
+        drawable.bitmap.asImageBitmap()
+    }
+
+    val bitmapImage = profileImg?.asImageBitmap() ?: placeholderImage
+
 
     val progress by animateFloatAsState(
         targetValue = if (shouldCollapse) 1f else 0f,
@@ -296,7 +310,7 @@ fun SharedTransitionScope.ProfileScreen(modifier: Modifier = Modifier, matrix: C
             )
 
     ) {
-        ProfileHeader(progress = progress,animatedVisibilityScope = animatedVisibilityScope,profileDetailViewModel =profileDetailViewModel, img = profileImg, gender = if(profileDetailViewModel.gender.value == "MALE") true else false, bitmapImage = bitmapImage)
+        ProfileHeader(progress = progress,animatedVisibilityScope = animatedVisibilityScope,profileDetailViewModel =profileDetailViewModel, img = profileImg, gender = if(profileDetailViewModel.gender.value == "MALE") true else false, bitmapImage = bitmapImage!!)
 
 
         Column(
