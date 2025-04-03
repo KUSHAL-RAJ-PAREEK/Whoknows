@@ -46,6 +46,7 @@ import com.krp.whoknows.R
 import com.krp.whoknows.RiveComponents.ComposableRiveAnimationView
 import com.krp.whoknows.Utils.ShinyText
 import com.krp.whoknows.Utils.calculateAge
+import com.krp.whoknows.Utils.convertDrawableToBase64
 import com.krp.whoknows.Utils.convertImageUrlToBase64
 import com.krp.whoknows.Utils.getLocationCityState
 import com.krp.whoknows.Utils.noRippleClickable
@@ -365,7 +366,13 @@ val coroutineScope = rememberCoroutineScope()
                }
 
 //        coroutineScope.launch {
-               mainImageViewModel.saveMatchProfileImage(convertImageUrlToBase64(matchUser?.imgUrl.toString()))
+if(matchUser?.imgUrl == null){
+    mainImageViewModel.saveMatchProfileImage(convertDrawableToBase64(context = context,if(matchUser?.gender == "MALE")  R.drawable.bp_img_placeholder else R.drawable.bp_img_placeholder))
+
+}else{
+    mainImageViewModel.saveMatchProfileImage(convertImageUrlToBase64(matchUser?.imgUrl.toString()))
+
+}
                val size = matchUser?.posts?.size ?: 0
                for (i in 0 until size) {
                    val imgUrl = matchUser?.posts?.get(i) ?: continue

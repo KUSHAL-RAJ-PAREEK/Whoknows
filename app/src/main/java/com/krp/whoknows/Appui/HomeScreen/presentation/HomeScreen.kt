@@ -107,6 +107,7 @@ import com.krp.whoknows.Navigation.PhoneScreen
 import com.krp.whoknows.RiveComponents.ComposableRiveAnimationView
 import com.krp.whoknows.Utils.ExpandableLogoutFAB
 import com.krp.whoknows.Utils.calculateAge
+import com.krp.whoknows.Utils.convertDrawableToBase64
 import com.krp.whoknows.Utils.convertImageUrlToBase64
 import com.krp.whoknows.Utils.createChatRoomId
 import com.krp.whoknows.Utils.getLocationCityState
@@ -219,7 +220,7 @@ fun SharedTransitionScope.HomeScreen(
                 statusDeferred.await()
                 updateDeferred.await()
                 delay(200)
-                Log.d("adasdasdasdasdasdsadsadasd",fcmToken!!)
+                Log.d("adasdasdasdasdasdsadsadasd",fcmToken.toString())
                 matchUserViewModel.updateFcm(fcmToken!!)
             }
         }
@@ -233,6 +234,8 @@ fun SharedTransitionScope.HomeScreen(
 
             coroutineScope.launch {
                 val response = greetingViewModel.getToken(matchUserViewModel.id.value)
+                Log.d("asdddddddddddddddddd",response.toString()
+                )
                 if(response.statusCode == 200){
                     greetingViewModel.saveMatchFcm(MatchFcmEntity(id = 1, fcm_token = response.token!!))
                     matchUserViewModel.updateFcm(response.token!!)
@@ -316,7 +319,13 @@ fun SharedTransitionScope.HomeScreen(
                     }
 
 //        coroutineScope.launch {
-                    mainImageViewModel.saveMatchProfileImage(convertImageUrlToBase64(matchUser?.imgUrl.toString()))
+                    if(matchUser?.imgUrl == null){
+                        mainImageViewModel.saveMatchProfileImage(convertDrawableToBase64(context = context,if(matchUser?.gender == "MALE")  R.drawable.bp_img_placeholder else R.drawable.bp_img_placeholder))
+
+                    }else{
+                        mainImageViewModel.saveMatchProfileImage(convertImageUrlToBase64(matchUser?.imgUrl.toString()))
+
+                    }
                     val size = matchUser?.posts?.size ?: 0
                     for (i in 0 until size) {
                         val imgUrl = matchUser?.posts?.get(i) ?: continue
@@ -437,7 +446,7 @@ clicked = clicked,
        coroutineScope.launch {
            greetingViewModel.deleteUsers()
            greetingViewModel.deleteMatchUser()
-           greetingViewModel.deleteFcm()
+//           greetingViewModel.deleteFcm()
            greetingViewModel.deleteMatchFcm()
            infoViewModel.resetData()
        }

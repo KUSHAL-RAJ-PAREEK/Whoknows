@@ -49,6 +49,9 @@ class GreetingViewModel(
     val matchFcmToken: StateFlow<String?> get() = _matchFcmToken
 
 
+    private val _userId = MutableStateFlow<String?>(null)
+    val userId: StateFlow<String?> get() = _userId
+
     init {
         loadJwtToken()
         loadPNumber()
@@ -94,31 +97,31 @@ class GreetingViewModel(
         }
     }
 
-    fun deleteUsers(){
+    fun deleteUsers() {
         viewModelScope.launch {
             userRepository.deleteUsers()
         }
     }
 
-    fun deleteMatchUser(){
+    fun deleteMatchUser() {
         viewModelScope.launch {
             userRepository.deleteMatchUser()
         }
     }
 
-    fun saveToken(token : String){
+    fun saveToken(token: String) {
         viewModelScope.launch {
             userRepository.saveToken(token)
         }
     }
 
-    fun savePnumber(pnumber : String){
+    fun savePnumber(pnumber: String) {
         viewModelScope.launch {
             userRepository.savePhone(pnumber)
         }
     }
 
-     fun loadJwtToken() {
+    fun loadJwtToken() {
         viewModelScope.launch {
             userRepository.getToken()
                 .collect { token ->
@@ -188,37 +191,56 @@ class GreetingViewModel(
         viewModelScope.launch {
             _state.value = GetUserState(isLoading = true)
             try {
-                Log.d("iamingetUser","$pnumber  $jwt")
+                Log.d("iamingetUser", "$pnumber  $jwt")
                 val response = ktorClient.getUser(pnumber, jwt)
-                _state.value = GetUserState(isSuccess = true, successMessage = response, isLoading = false)
+                _state.value =
+                    GetUserState(isSuccess = true, successMessage = response, isLoading = false)
                 Log.d("GreetingViewModel", "User response: ${state.value.successMessage}")
             } catch (e: Exception) {
-                _state.value = GetUserState(errorMessage = e.localizedMessage ?: "An error occurred")
+                _state.value =
+                    GetUserState(errorMessage = e.localizedMessage ?: "An error occurred")
             }
         }
     }
 
 
-    suspend fun uploadToken(id : String, token : String) : Int{
-          return try{
-                Log.d("iamheretoupload","$id $token")
-                val response = ktorClient.uploadToken(id = id, token =token)
-                 response
-            }catch (e : Exception){
-              Log.d("GreetingViewModeltoken", e.message.toString())
-                -1
-            }
+    suspend fun uploadToken(id: String, token: String): Int {
+        return try {
+            Log.d("iamheretoupload", "$id $token")
+            val response = ktorClient.uploadToken(id = id, token = token)
+            response
+        } catch (e: Exception) {
+            Log.d("GreetingViewModeltoken", e.message.toString())
+            -1
+        }
     }
 
-    suspend fun getToken(id : String) : FcmModel{
-        return try{
-            Log.d("iamheretoupload","$id")
+    suspend fun getToken(id: String): FcmModel {
+        return try {
+            Log.d("iamheretoupload", "$id")
             val response = ktorClient.getToken(id = id)
             response
-        }catch (e : Exception){
+        } catch (e: Exception) {
             Log.d("GreetingViewModeltoken", e.message.toString())
-            FcmModel(-1,"")
+            FcmModel(-1, "")
         }
+    }
+
+    suspend fun getId(phone: String, jwt: String): String {
+        return try {
+            Log.d("asdasdasdasdasds", "$phone")
+            val response = ktorClient.getUser(pnumber = phone, jwt = jwt)
+
+            _userId.value = response!!.id.toString()
+            Log.d("asdasdasdasdasds", "${_userId.value}")
+            return response!!.id.toString()
+        } catch (e: Exception) {
+            Log.d("GreetingViewModeltoken", e.message.toString())
+            _userId.value = ""
+            return ""
+        }
+
+
     }
 
 

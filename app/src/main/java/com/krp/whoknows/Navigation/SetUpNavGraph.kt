@@ -143,6 +143,7 @@ fun SetUpNavGraph(modifier: Modifier = Modifier, startDest: Any) {
                     jwtViewModel,
                     navController = navController,
                     phoneNumber = args.phoneNumber,
+                    profileDetailViewModel = profileDetailViewModel,
                     onOTp = { onOTp(navController) },
                     greetingViewModel = greetingViewModel
                 )

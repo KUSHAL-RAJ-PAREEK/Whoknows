@@ -266,6 +266,7 @@ import io.ktor.client.statement.readBytes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -821,6 +822,16 @@ suspend fun convertImageUrlToBase64(imageUrl: String): String? {
     }
 }
 
+fun convertDrawableToBase64(context: Context, drawableId: Int): String? {
+    val drawable = context.resources.getDrawable(drawableId, null) as BitmapDrawable
+    val bitmap: Bitmap = drawable.bitmap
+    val outputStream = ByteArrayOutputStream()
+
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+
+    val byteArray = outputStream.toByteArray()
+    return Base64.encodeToString(byteArray, Base64.DEFAULT)
+}
 
 fun drawableToBitmap(context: Context, drawableId: Int): Bitmap {
     val drawable = ContextCompat.getDrawable(context, drawableId)

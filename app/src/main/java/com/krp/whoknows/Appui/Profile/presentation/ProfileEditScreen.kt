@@ -537,6 +537,7 @@ fun SharedTransitionScope.ProfileEditScreen(
             delay(4000)
             uploading = false
             navController.popBackStack()
+            navController.popBackStack()
             navController.navigate("profileScreen")
 //            navController.navigate(HomeScreen)
         } else {

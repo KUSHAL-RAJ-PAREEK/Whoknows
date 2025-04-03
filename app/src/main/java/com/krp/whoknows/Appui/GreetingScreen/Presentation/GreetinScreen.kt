@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -42,6 +43,7 @@ import com.krp.whoknows.R
 import com.krp.whoknows.Utils.TypewriteText
 import com.krp.whoknows.Utils.calculateAge
 import com.krp.whoknows.Utils.convertImageUrlToBase64
+import com.krp.whoknows.Utils.drawableToBitmap
 import com.krp.whoknows.Utils.getLocationCityState
 import com.krp.whoknows.model.FcmModel
 import com.krp.whoknows.model.User
@@ -153,7 +155,7 @@ fun GreetingScreen(modifier: Modifier = Modifier,
             profileDetailViewModel.updateLongitude(user?.longitude.toString())
             profileDetailViewModel.updatePnumber(user?.pnumber.toString())
             profileDetailViewModel.updateJwt(jwtViewModel.jwtToken.value.toString())
-
+            profileDetailViewModel.updateDefaultImg(drawableToBitmap(context, if(user?.gender.toString() == "MALE") R.drawable.bp_img_placeholder else  R.drawable.p_img_placeholder).asImageBitmap())
             val  location = getLocationCityState(
                 user?.latitude?.toDouble() ?: 26.9124,
                 user?.longitude?.toDouble() ?: 75.7873,
@@ -288,6 +290,7 @@ fun GreetingScreen(modifier: Modifier = Modifier,
                 }
 //            }
             }
+            profileDetailViewModel.updateDefaultImg(drawableToBitmap(context, if(user?.gender.toString() == "MALE") R.drawable.bp_img_placeholder else  R.drawable.p_img_placeholder).asImageBitmap())
 
             fun logValues() {
                 Log.d("ProfileViewModel", """

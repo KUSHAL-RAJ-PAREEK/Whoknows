@@ -159,9 +159,17 @@ LaunchedEffect(state.isLoading) {
         Log.d("tokenisninlatlong",fcmToken.toString())
         delay(1000)
         coroutineScope.launch {
-            val response = greetingViewModel.uploadToken(id = details?.id!!, token = fcmToken!!)
-            greetingViewModel.saveFcm(FcmEntity(id = 1, fcm_token = fcmToken!!))
-            Log.d("token uploaded",response.toString())
+            if(fcmToken == null){
+                val response = greetingViewModel.getToken(greetingViewModel.userId.value!!)
+                if(response.statusCode == 200){
+                    greetingViewModel.saveFcm(FcmEntity(id = 1, fcm_token = response.token!!))
+                }
+            }else{
+                val response = greetingViewModel.uploadToken(id = details?.id!!, token = fcmToken!!)
+                greetingViewModel.saveFcm(FcmEntity(id = 1, fcm_token = fcmToken!!))
+                Log.d("token uploaded",response.toString())
+            }
+
         }
 
         navController.popBackStack()

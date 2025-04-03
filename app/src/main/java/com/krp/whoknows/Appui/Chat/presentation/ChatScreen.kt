@@ -462,8 +462,10 @@ fun SharedTransitionScope.ChatScreen(
             val imeVisible = imeInsets.getBottom(density) > 0f
 
             LaunchedEffect(imeVisible, chatState.messageList) {
-                if (imeVisible) {
+                if (imeVisible && chatState.messageList.size >= 1) {
                     listState.animateScrollToItem(chatState.messageList.size - 1)
+                }else if(imeVisible){
+                    listState.animateScrollToItem(chatState.messageList.size)
                 }
             }
 

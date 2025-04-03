@@ -59,7 +59,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
     private val greetingViewModel: GreetingViewModel by inject()
     private val profileDetailViewModel: ProfileDetailViewModel by inject()
 
-
     companion object {
         var ringtone: Ringtone? = null
     }

@@ -385,7 +385,25 @@ fun SharedTransitionScope.MatchProfileScreen(modifier: Modifier = Modifier, matr
                 )
 
                 Spacer(modifier.height(15.dp))
-                ImageSlider(images = galleryImages, matrix = matrix)
+                val g1 = if (matchUserViewModel.gender.value  == "MALE") {
+                    R.drawable.boy_g1
+                } else {
+                    R.drawable.girl_g1
+                }
+
+                val g2 =  if (matchUserViewModel.gender.value  == "MALE") {
+                    R.drawable.boy_g2
+                } else {
+                    R.drawable.girl_g2
+                }
+
+                val g3 = if (matchUserViewModel.gender.value  == "MALE") {
+                    R.drawable.boy_g3
+                } else {
+                    R.drawable.girl_g3
+                }
+
+                ImageSlider(images = galleryImages, matrix = matrix,g1 = g1, g2 = g2, g3 = g3)
 
 
                 Spacer(modifier.height(50.dp))
@@ -438,6 +456,8 @@ fun SharedTransitionScope.ProfileHeader(progress: Float, animatedVisibilityScope
     LaunchedEffect(Unit) {
         username = (matchUserViewModel.username.value ?: "Whoknows").toString()
     }
+
+
 
 //    var profileImage by remember { mutableStateOf<Any>(R.drawable.p_image) }
 //
@@ -516,9 +536,20 @@ fun SharedTransitionScope.ProfileHeader(progress: Float, animatedVisibilityScope
 }
 
 @Composable
-fun ImageSlider(modifier: Modifier = Modifier, images: List<Bitmap?>, matrix: ColorMatrix) {
+fun ImageSlider(modifier: Modifier = Modifier, images: List<Bitmap?>, matrix: ColorMatrix, g1 : Int, g2 : Int, g3: Int) {
     val pagerState = rememberPagerState { 3 }
     val context = LocalContext.current
+
+
+    val defaultBitmaps by remember {
+        mutableStateOf(
+            mapOf(
+                0 to drawableToBitmap(context, g1).asImageBitmap(),
+                1 to drawableToBitmap(context, g2).asImageBitmap(),
+                2 to drawableToBitmap(context, g3).asImageBitmap()
+            )
+        )
+    }
     HorizontalPager(
         state = pagerState
     ) { index ->
@@ -529,8 +560,7 @@ fun ImageSlider(modifier: Modifier = Modifier, images: List<Bitmap?>, matrix: Co
         )
 
 
-        val bitmapImage = images.getOrNull(index)?.asImageBitmap()
-            ?: drawableToBitmap(context, R.drawable.p_image).asImageBitmap()
+        val bitmapImage = images.getOrNull(index)?.asImageBitmap() ?: defaultBitmaps[index] ?: defaultBitmaps[2]
 
         Image(
             modifier = Modifier

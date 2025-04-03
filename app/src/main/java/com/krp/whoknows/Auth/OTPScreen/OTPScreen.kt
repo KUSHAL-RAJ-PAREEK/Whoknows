@@ -38,6 +38,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,7 +62,9 @@ import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Icon
 import androidx.xr.compose.testing.toDp
+import com.google.firebase.messaging.FirebaseMessaging
 import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
+import com.krp.whoknows.Appui.Profile.presentation.ProfileDetailViewModel
 import com.krp.whoknows.Auth.OTPScreen.OTPVerificationEvent
 import com.krp.whoknows.Auth.OTPScreen.componenets.OTPInputField
 import com.krp.whoknows.Navigation.GreetingScreen
@@ -77,15 +80,19 @@ import com.krp.whoknows.roomdb.Dao
 import com.krp.whoknows.roomdb.DataBase
 import com.krp.whoknows.roomdb.JWTViewModel
 import com.krp.whoknows.roomdb.UserRepository
+import com.krp.whoknows.roomdb.entity.FcmEntity
 import com.krp.whoknows.roomdb.entity.JWTToken
 import com.krp.whoknows.ui.theme.lightOrdColor
 import com.krp.whoknows.ui.theme.light_red
 import com.krp.whoknows.ui.theme.ordColor
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Dispatcher
+import org.koin.compose.koinInject
 
 /**
  * Created by KUSHAL RAJ PAREEK on 31,January,2025
@@ -101,13 +108,15 @@ fun OTPScreen(
     navController : NavController,
     phoneNumber: String,
     onOTp: () -> Unit,
+    profileDetailViewModel: ProfileDetailViewModel,
     greetingViewModel: GreetingViewModel) {
     var otp by remember { mutableStateOf("") }
     var counter by remember { mutableStateOf(30) }
     var enable by remember { mutableStateOf(false) }
 //    val user by greetingViewModel.userState.collectAsState()
-    val context = LocalContext.current
 
+    val context = LocalContext.current
+val coroutineScope = rememberCoroutineScope()
     BackHandler {
         navController.navigate(PhoneScreen){
             popUpTo(0) { inclusive = true }
@@ -133,9 +142,41 @@ fun OTPScreen(
                 greetingViewModel.loadJwtToken()
             }
 
+            coroutineScope.launch {
+
+                GlobalScope.launch(Dispatchers.IO) {
+                    try {
+                        val userId = greetingViewModel.getId(phoneNumber, jwt)
+
+                        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                val newToken = task.result
+                                Log.d("FCMssssssssssssdsdsdsssssssssssssssscd", "New Token: $newToken")
+
+                                GlobalScope.launch(Dispatchers.IO) {
+                                    try {
+                                        greetingViewModel.uploadToken(userId, newToken)
+                                        Log.d("FCMssssssssssssdsdsdsssssssssssssssscd", "Token updated in MongoDB")
+                                    } catch (e: Exception) {
+                                        Log.e("FCMssssssssssssdsdsdsssssssssssssssscd", "Error updating token in MongoDB: ${e.message}")
+                                    }
+                                }
+
+                                greetingViewModel.saveFcm(FcmEntity(id = 1, fcm_token = newToken))
+                                profileDetailViewModel.updateFcm(newToken)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e("FCM", "Error fetching user ID: ${e.message}")
+                    }
+                }
+
+            }
+
             if(state.statusCode == 200){
                 navController.navigate(GreetingScreen)
             }else if(state.statusCode == 206){
+
                 navController.popBackStack()
                 navController.popBackStack()
                 navController.navigate(UserGender)

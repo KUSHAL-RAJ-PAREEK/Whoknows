@@ -1,6 +1,7 @@
 package com.krp.whoknows.Appui.Profile.presentation
 
 import android.util.Log
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.krp.whoknows.ktorclient.KtorClient
@@ -95,6 +96,9 @@ val fImage : StateFlow<String> = _fImage
     private val _bio = MutableStateFlow("")
     val bio: StateFlow<String> = _bio
 
+    private  val _defaultImg = MutableStateFlow<ImageBitmap?>(null)
+    val  defaultImg: StateFlow<ImageBitmap?> = _defaultImg
+
     private val _interests = MutableStateFlow<List<String>?>(null)
     val interests: StateFlow<List<String>?> = _interests
 
@@ -119,6 +123,9 @@ val fImage : StateFlow<String> = _fImage
     }
 
 
+    fun updateDefaultImg(bitmap : ImageBitmap?){
+        _defaultImg.value = bitmap
+    }
     fun updatePnumber(pno: String) {
         _pnumber.value = pno
     }
