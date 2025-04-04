@@ -940,7 +940,7 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
                             .windowInsetsPadding(WindowInsets.ime)
                             .padding(
                                 start = 20.dp,
-                                bottom = if (imeVisible) 70.dp else 110.dp
+                                bottom = if (imeVisible) 70.dp else 95.dp
                             )
                             .animateContentSize()
                             .clip(shape = RoundedCornerShape(16.dp))
