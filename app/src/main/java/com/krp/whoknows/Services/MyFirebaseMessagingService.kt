@@ -122,8 +122,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
     @SuppressLint("LaunchActivityFromNotification")
     private fun showNotificationWithAlarm(context : Context, title: String?, body: String?) {
 
-        val intent = Intent(context, App::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(context, 0, intent,  PendingIntent.FLAG_IMMUTABLE)
+        val intent = Intent(context, MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent,  PendingIntent.FLAG_IMMUTABLE)
 
         val notification = NotificationCompat.Builder(context, "KRP")
             .setContentTitle(title)

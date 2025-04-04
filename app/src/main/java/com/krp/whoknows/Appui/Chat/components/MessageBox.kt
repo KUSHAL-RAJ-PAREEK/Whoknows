@@ -131,7 +131,7 @@ fun MessageBox(
                             bitmap = message.imgStr!!.toBitmap()!!.asImageBitmap(),
                             contentDescription = null,
                             modifier = Modifier
-                                .size(140.dp)
+                                .size(250.dp)
                                 .clip(RoundedCornerShape(20.dp))
                         )
                     }
@@ -141,7 +141,7 @@ fun MessageBox(
 
                     if(message.message != "") {
                         Text(
-                            modifier = Modifier.widthIn(max = 140.dp),
+                            modifier = Modifier.widthIn(max = 250.dp),
                             text = message.message!!,
                             maxLines = Int.MAX_VALUE,
                             overflow = TextOverflow.Visible,

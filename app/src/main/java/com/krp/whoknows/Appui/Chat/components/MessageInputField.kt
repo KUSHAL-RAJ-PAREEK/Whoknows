@@ -7,8 +7,14 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -41,6 +47,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.krp.whoknows.Appui.Chat.presentation.ChatState
 import com.krp.whoknows.Appui.Chat.presentation.ChatViewModel
@@ -115,7 +122,7 @@ var cam = remember { mutableStateOf(true) }
 
             chatViewModel.sendTypingStatus(chatId, userId, true)
 
-            lastTypedTime = System.currentTimeMillis() // Update last typed time
+            lastTypedTime = System.currentTimeMillis()
 
             coroutineScope.launch {
                 delay(2000)
@@ -130,6 +137,8 @@ var cam = remember { mutableStateOf(true) }
             .padding(bottom = 7.dp)
             .padding( horizontal = 4.dp)
             .navigationBarsPadding()
+            .animateContentSize()
+
 //            .imePadding()
         ,
         textStyle = TextStyle(

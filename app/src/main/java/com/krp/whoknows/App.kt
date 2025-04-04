@@ -5,6 +5,7 @@ package com.krp.whoknows
  */
 import android.app.Application
 import com.google.firebase.FirebaseApp
+import com.krp.whoknows.Services.MyFirebaseMessagingService
 import com.krp.whoknows.ktorclient.di.appModule
 import com.krp.whoknows.ktorclient.di.ktorModule
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
@@ -32,6 +33,6 @@ class App : Application() {
             modules(ktorModule)
             modules(appModule)
         }
-
+        MyFirebaseMessagingService.ringtone?.stop()
     }
 }
