@@ -36,6 +36,7 @@ import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
 import com.krp.whoknows.Appui.Profile.presentation.ImageViewModel
 import com.krp.whoknows.Navigation.SetUpNavGraph
 import com.krp.whoknows.Auth.WelcomeScreen.presentation.WelcomeScreen
+import com.krp.whoknows.Services.MyFirebaseMessagingService
 import com.krp.whoknows.roomdb.DataStoreManager
 import com.krp.whoknows.roomdb.JWTViewModel
 import com.krp.whoknows.ui.theme.WhoknowsTheme
@@ -52,6 +53,7 @@ class MainActivity : ComponentActivity() {
         val splashScreen = installSplashScreen()
 //        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
+        MyFirebaseMessagingService.ringtone?.stop()
 
         setContent {
             val jwtViewModel: JWTViewModel by inject()

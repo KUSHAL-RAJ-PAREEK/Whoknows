@@ -33,6 +33,5 @@ class App : Application() {
             modules(ktorModule)
             modules(appModule)
         }
-        MyFirebaseMessagingService.ringtone?.stop()
     }
 }
