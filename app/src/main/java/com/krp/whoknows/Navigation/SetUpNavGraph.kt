@@ -330,7 +330,8 @@ fun SetUpNavGraph(modifier: Modifier = Modifier, startDest: Any) {
                         event = chatViewModel::onEvent,
                         animatedVisibilityScope = this@composable,
                         mainImageViewModel = mainImageViewModel,
-                        chatViewModel = chatViewModel
+                        chatViewModel = chatViewModel,
+                        greetingViewModel = greetingViewModel
                     )
                 }
             }

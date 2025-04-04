@@ -8,6 +8,7 @@ import android.util.Log
 import com.krp.whoknows.model.AcceptationModel
 import com.krp.whoknows.model.AcceptationRequest
 import com.krp.whoknows.model.AcceptationResponse
+import com.krp.whoknows.model.CountResponse
 import com.krp.whoknows.model.FcmModel
 import com.krp.whoknows.model.Message
 import com.krp.whoknows.model.NotificationModel
@@ -267,6 +268,7 @@ val response = client.get("/match/remove"){
     }
 
      fun fetchMessage(chatRoomId: String): Flow<List<Message>> = flow {
+         Log.d("chatIdInFetchMessage",chatRoomId)
         try {
             val response = client.get {
                 url("https://whoknowschatbackend.onrender.com/message/$chatRoomId")
@@ -302,19 +304,24 @@ val response = client.get("/match/remove"){
     }
 
 
-    suspend fun updateAcceptation(id: String, count: Int, userId: String): Int {
+    suspend fun updateAcceptation(id: String, count: Int, userId: String): CountResponse {
+        Log.d("asjdnasjkdnaskjndkjasndkjasndkjnaskjdnjasn","asdasd")
         try {
             val response = client.put {
                 url("https://whoknowschatbackend.onrender.com/accept/$id")
                 contentType(ContentType.Application.Json)
                 setBody(AcceptationRequest(count = count, userId = userId))
             }
+            val responseBody = response.body<String>()
+            val jsonObject = Json.parseToJsonElement(responseBody).jsonObject
+            val countValue = jsonObject["count"]?.jsonPrimitive?.int ?: 0
 
-            return response.status.value
+            Log.d("asdasdasdasdasdsadasd",response.body())
+            return CountResponse(response.status.value,countValue)
         } catch (e: Exception) {
             Log.d("errorinacceptaionaaaaaaaaaaaaaaddddd", "Exception: ${e.message}")
         }
-        return 500
+        return CountResponse(500,0)
     }
 
     suspend fun getAcceptation(id : String): AcceptationModel{

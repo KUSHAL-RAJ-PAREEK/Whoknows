@@ -115,6 +115,9 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
     private  val _acceptStatus = MutableStateFlow(0)
     val acceptStatus  = _acceptStatus
 
+    private  val _updation = MutableStateFlow(0)
+    val updation  = _updation
+
     private  val _clicked = MutableStateFlow(false)
     val clicked  = _clicked
 
@@ -136,7 +139,9 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
         _dobs.value = dobs
     }
 
-
+    fun updateUpdation(){
+        _updation.value = 1
+    }
     fun updatePnumber(pno: String) {
         _pnumber.value = pno
     }
@@ -239,6 +244,7 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
     }
 
     fun deleteUser() {
+        Log.d("delteingusers","yep")
         viewModelScope.launch {
             userRepository.deleteMatchUser()
         }
@@ -266,8 +272,8 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
         viewModelScope.launch {
             try {
                 val response = ktorClient.updateAcceptation(id = id,count = count, userId = userId)
-                if(response == 200){
-                   updateAcceptStatus(acceptStatus.value+1)
+                if(response.statusCode== 200){
+                   updateAcceptStatus(count)
                     updateClicked(true)
                     Log.d("gotthething",response.toString())
                 }
@@ -282,6 +288,7 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
     fun updateVis(flag : Boolean){
         _vis.value = flag
     }
+
     fun updateClicked(accid: String,id : String) {
         Log.d("afsdsffs","$id")
         viewModelScope.launch {

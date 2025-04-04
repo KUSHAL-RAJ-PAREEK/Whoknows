@@ -199,7 +199,7 @@ fun SharedTransitionScope.HomeScreen(
     val fcmToken by greetingViewModel.matchFcmToken.collectAsState()
 
 
-
+Log.d("adssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",matchUserViewModel.acceptStatus.value.toString())
 
     LaunchedEffect(mUser) {
 
@@ -358,7 +358,11 @@ fun SharedTransitionScope.HomeScreen(
 
                         GoOn = true
                     }
-                    profileDetailViewModel.updateInWait(id = profileDetailViewModel.id.value)
+                    coroutineScope.launch {
+                        val response =   profileDetailViewModel.getInWait(id = profileDetailViewModel.id.value)
+                        Log.d("responseGetWait",response.toString())
+                    }
+
 //                    val id = createChatRoomId(profileDetailViewModel.id.value,matchUserViewModel.id.value)
 //                    chatViewModel.getMessages(chatRoomID = id)
 //                    matchUserViewModel.getStatus(id)

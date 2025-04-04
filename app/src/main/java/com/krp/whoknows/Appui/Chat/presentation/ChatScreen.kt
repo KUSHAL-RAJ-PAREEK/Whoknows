@@ -74,6 +74,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -131,6 +132,7 @@ import com.google.accompanist.insets.statusBarsPadding
 import com.google.common.collect.Multimaps.index
 import com.krp.whoknows.Appui.Chat.components.MessageBox
 import com.krp.whoknows.Appui.Chat.components.MessageInputField
+import com.krp.whoknows.Appui.GreetingScreen.Presentation.GreetingViewModel
 import com.krp.whoknows.Appui.MatchingScreen.presentation.MatchUserViewModel
 import com.krp.whoknows.Appui.Profile.presentation.ImageViewModel
 import com.krp.whoknows.Appui.Profile.presentation.MainImageViewModel
@@ -182,7 +184,7 @@ import java.net.URI
 )
 @SuppressLint(
     "UnrememberedMutableState", "StateFlowValueCalledInComposition",
-    "SuspiciousIndentation"
+    "SuspiciousIndentation", "AutoboxingStateCreation"
 )
 @Composable
 fun SharedTransitionScope.ChatScreen(
@@ -196,7 +198,8 @@ fun SharedTransitionScope.ChatScreen(
     event: (ChatEvent) -> Unit,
     animatedVisibilityScope: AnimatedVisibilityScope,
     mainImageViewModel: MainImageViewModel,
-    chatViewModel: ChatViewModel
+    chatViewModel: ChatViewModel,
+    greetingViewModel: GreetingViewModel
 ) {
 
     var showSplash by remember { mutableStateOf(true) }
@@ -320,7 +323,7 @@ fun SharedTransitionScope.ChatScreen(
             var showWaitDialog by remember { mutableStateOf(false) }
 
             val imeIsShown = WindowInsets.isImeVisible
-
+val updateValue by matchUserViewModel.updation.collectAsState()
             val targetBottomPadding = if (imeIsShown) 0.dp else contentPadding().calculateBottomPadding()
             val bottomPadding by animateDpAsState(
                 targetValue = targetBottomPadding,
@@ -333,13 +336,17 @@ fun SharedTransitionScope.ChatScreen(
 
             val chatId = createChatRoomId(userDetailViewModel.id.value, matchUserViewModel.id.value)
 
-            var acc_status by remember { mutableStateOf(matchUserViewModel.acceptStatus.value) }
+val acc by matchUserViewModel.acceptStatus.collectAsState()
+            var acc_status by remember { mutableIntStateOf(acc)}
 
-            LaunchedEffect(matchUserViewModel.acceptStatus) {
-                matchUserViewModel.acceptStatus.collect { newValue ->
-                    acc_status = newValue
-                }
-            }
+//            LaunchedEffect(matchUserViewModel.acceptStatus) {
+//                Log.d("inininnininininin",matchUserViewModel.acceptStatus.value.to)
+//                matchUserViewModel.acceptStatus.collect { newValue ->
+//                    acc_status = newValue
+//                }
+//            }
+//
+
             val deleteChatState by chatViewModel.deleteState.collectAsState()
 
             val map by chatViewModel.map.collectAsState()
@@ -361,7 +368,8 @@ fun SharedTransitionScope.ChatScreen(
 
             Log.d("hereititititiititit", matchRM.toString())
             Log.d("hereititititiititit1", matchRMm.toString())
-//
+
+            Log.d("asddddddddddddddethythythy", acc.toString())
 //LaunchedEffect(chatViewModel.map.value) {
 //    map = chatViewModel.map.value.toMutableMap()
 //}
@@ -387,6 +395,8 @@ fun SharedTransitionScope.ChatScreen(
                     chatViewModel.updateMatchRmm()
                     userDetailViewModel.updateMatch(false)
                     matchUserViewModel.updateMatch(false)
+                    deleteChatState.isSuccess = false
+                    deleteChatState.statusCode = 500
                 }
             }
 
@@ -398,6 +408,7 @@ fun SharedTransitionScope.ChatScreen(
                     matchUserViewModel.clearAll()
                     mainImageViewModel.clearMatch()
                     matchUserViewModel.deleteUser()
+
                     delay(1000)
 //            coroutineScope.launch {
 
@@ -421,9 +432,9 @@ fun SharedTransitionScope.ChatScreen(
                 }
             }
 
-            LaunchedEffect(matchUserViewModel.acceptStatus.value) {
-                acc_status = matchUserViewModel.acceptStatus.value
-            }
+//            LaunchedEffect(matchUserViewModel.acceptStatus.value) {
+//                acc_status = matchUserViewModel.acceptStatus.value
+//            }
 
             val statusState by chatViewModel.statusState.collectAsState()
 
@@ -432,12 +443,15 @@ fun SharedTransitionScope.ChatScreen(
             LaunchedEffect(statusState) {
                 Log.d("changingstates", "yes")
                 statusState?.let { status ->
-                    if (status.chatId == chatId) {
+                    if (status.chatId == chatId && updateValue == 0) {
                         Log.d("updatedcountbysocket", "hererere")
                         acc_status = status.count
+                        matchUserViewModel.updateUpdation()
+                        matchUserViewModel.updateAcceptStatus(status.count)
                     }
                 }
             }
+
             LaunchedEffect(state.isLoading) {
 
                 if (state.isSuccess) {
@@ -557,9 +571,16 @@ fun SharedTransitionScope.ChatScreen(
                                         matchUserViewModel.updateVis(true)
                                         navController.navigate("matchProfileScreen")
                                     } else {
-                                        DynamicToast.make(context,"Both concerns need to be addressed to view the profile",
-                                            ContextCompat.getDrawable(context, R.drawable.fulll_handshake)?.mutate(),Color.White.toArgb(),
-                                            lightOrdColor.toArgb()).show()
+                                        DynamicToast.make(
+                                            context,
+                                            "Both concerns need to be addressed to view the profile",
+                                            ContextCompat.getDrawable(
+                                                context,
+                                                R.drawable.fulll_handshake
+                                            )?.mutate(),
+                                            Color.White.toArgb(),
+                                            lightOrdColor.toArgb()
+                                        ).show()
                                     }
                                 }
                         )
@@ -604,9 +625,14 @@ fun SharedTransitionScope.ChatScreen(
                                     if (matchUserViewModel.clicked.value == false) {
                                         showAccDialog = true
                                     } else {
-                                        DynamicToast.make(context,"You have already taken your side step",
-                                            ContextCompat.getDrawable(context, R.drawable.half_circle)?.mutate(),Color.White.toArgb(),
-                                            lightOrdColor.toArgb()).show()
+                                        DynamicToast.make(
+                                            context, "You have already taken your side step",
+                                            ContextCompat.getDrawable(
+                                                context,
+                                                R.drawable.half_circle
+                                            )?.mutate(), Color.White.toArgb(),
+                                            lightOrdColor.toArgb()
+                                        ).show()
 
                                     }
                                 })
@@ -619,17 +645,23 @@ fun SharedTransitionScope.ChatScreen(
                             modifier = Modifier
                                 .size(30.dp)
                                 .clickable {
-                                    if (inWait) {
-                                        DynamicToast.make(context,"You need to wait for 5 minutes before making another request.",
-                                            ContextCompat.getDrawable(context, R.drawable.clock)?.mutate(),Color.White.toArgb(),
-                                            lightOrdColor.toArgb()).show()
-                                    } else {
+
                                         coroutineScope.launch {
-                                         val responses = userDetailViewModel.updateInWait(userDetailViewModel.id.value)
-                                            if(responses == 200){
+                                            val responses =
+                                                userDetailViewModel.getInWait(userDetailViewModel.id.value)
+                                            if (responses == 404) {
                                                 showWaitDialog = true
+                                            }else{
+                                                DynamicToast.make(
+                                                    context,
+                                                    "You need to wait for 5 minutes before making another request.",
+                                                    ContextCompat.getDrawable(context, R.drawable.clock)
+                                                        ?.mutate(),
+                                                    Color.White.toArgb(),
+                                                    lightOrdColor.toArgb()
+                                                ).show()
                                             }
-                                        }
+
 
                                     }
                                 }
@@ -659,13 +691,12 @@ fun SharedTransitionScope.ChatScreen(
                         .fillMaxSize()
                         .padding(top = 60.dp)
                         .imePadding()
-                        .animateContentSize()
+//                        .animateContentSize()
                 ) {
 
 
 //                    Spacer(modifier = Modifier.height(10.dp))
 
-                    CompositionLocalProvider(LocalOverscrollConfiguration provides null) {
 
                         LazyColumn(
                             modifier = Modifier
@@ -825,7 +856,7 @@ fun SharedTransitionScope.ChatScreen(
                             }
 
                         }
-                    }
+
 
                     Box(
                         modifier = Modifier
@@ -947,20 +978,26 @@ fun SharedTransitionScope.ChatScreen(
 
             if (showAccDialog) {
                 MyAlertDialogAcc(onDismiss = { showAccDialog = false }, onConfirm = {
-                    matchUserViewModel.updateStatus(
-                        id = chatId,
-                        count = matchUserViewModel.acceptStatus.value + 1,
-                        userId = userDetailViewModel.id.value
-                    )
-                    acc_status = matchUserViewModel.acceptStatus.value + 1
-
-                    chatViewModel.sendCountUpdate(chatRoomId = chatId, count = acc_status)
+                   coroutineScope.launch {
+                       matchUserViewModel.updateStatus(
+                           id = chatId,
+                           count = matchUserViewModel.acceptStatus.value + 1,
+                           userId = userDetailViewModel.id.value
+                       )
+                       acc_status = matchUserViewModel.acceptStatus.value + 1
+Log.d("asdasdasdasdas","${matchUserViewModel.acceptStatus.value} $acc_status")
+                       chatViewModel.sendCountUpdate(chatRoomId = chatId, count = acc_status)
+                   }
                 })
             }
 
             if (showDelDialog) {
                 MyAlertDialogDel(onDismiss = { showDelDialog = false }, onConfirm = {
-                    chatViewModel.deleteChatRoom(chatId)
+                  coroutineScope.launch {
+                      chatViewModel.deleteChatRoom(chatId)
+                      greetingViewModel.deleteMatchUser()
+                      greetingViewModel.deleteMatchFcm()
+                  }
                     showLottie = true
                     backstack = false
                 })
@@ -994,7 +1031,9 @@ fun SharedTransitionScope.ChatScreen(
                         isdownload = false
                     },
                     onConfirmDe = {
-                        event(ChatEvent.EditMessage(mId!!))
+                        coroutineScope.launch {
+                            event(ChatEvent.EditMessage(mId!!))
+                        }
                     })
             }
 

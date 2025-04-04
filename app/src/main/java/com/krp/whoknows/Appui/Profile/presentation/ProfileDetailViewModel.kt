@@ -208,14 +208,14 @@ val fImage : StateFlow<String> = _fImage
     }
 
 
-    suspend fun updateInWait(id : String): Int{
+    suspend fun getInWait(id : String): Int{
 
             return try{
                 val response = ktorClient.getWait(id)
 
                 if(response == 200){
                     _inWait.value = true
-                }else{
+                }else if(response == 404){
                     _inWait.value = false
                 }
                 response
