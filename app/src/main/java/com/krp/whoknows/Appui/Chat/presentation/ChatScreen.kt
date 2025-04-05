@@ -394,6 +394,7 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
                     chatViewModel.updateMatchRm()
                     chatViewModel.updateMatchRmm()
                     userDetailViewModel.updateMatch(false)
+                    userDetailViewModel.updateMatch(false)
                     matchUserViewModel.updateMatch(false)
                     deleteChatState.isSuccess = false
                     deleteChatState.statusCode = 500
@@ -408,7 +409,6 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
                     matchUserViewModel.clearAll()
                     mainImageViewModel.clearMatch()
                     matchUserViewModel.deleteUser()
-
                     delay(1000)
 //            coroutineScope.launch {
 
@@ -425,6 +425,7 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
                     delay(500)
                     chatViewModel.updateMatchRm()
                     chatViewModel.updateMatchRmm()
+                    userDetailViewModel.updateMatch(false)
                     userDetailViewModel.updateMatch(false)
                     matchUserViewModel.updateMatch(false)
                     deleteChatState.isSuccess = false
@@ -541,14 +542,21 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        val gender = matchUserViewModel.gender.value ?: "MALE"
+                        val profileImage = mainImageViewModel.matchprofileImage.value
+
                         val bitmapImage = if (acc_status == 2) {
-                            mainImageViewModel.matchprofileImage.value!!.asImageBitmap()
+                            profileImage?.asImageBitmap() ?: drawableToBitmap(
+                                context,
+                                if (gender == "MALE") R.drawable.bp_img_placeholder else R.drawable.p_img_placeholder
+                            ).asImageBitmap()
                         } else {
                             drawableToBitmap(
                                 context,
-                                if (matchUserViewModel.gender.value == "MALE") R.drawable.bp_img_placeholder else R.drawable.p_img_placeholder
+                                if (gender == "MALE") R.drawable.bp_img_placeholder else R.drawable.p_img_placeholder
                             ).asImageBitmap()
                         }
+
                         Image(
                             bitmap = bitmapImage,
                             contentDescription = null,
