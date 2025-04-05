@@ -158,7 +158,6 @@ dependencies {
 
     implementation("io.socket:socket.io-client:2.0.0")
 
-
     implementation(platform("com.google.firebase:firebase-bom:33.11.0"))
     implementation("com.google.firebase:firebase-messaging:24.1.1")
 
