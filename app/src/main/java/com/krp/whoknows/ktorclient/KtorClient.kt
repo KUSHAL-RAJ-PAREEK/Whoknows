@@ -259,7 +259,7 @@ val response = client.get("/match/remove"){
     suspend fun sendMessage(message : Message) :Int{
 
         val response = client.post{
-            url("https://whoknowschatbackend.onrender.com/send-message")
+            url("https://whoknowschatbackendrailway-production.up.railway.app/send-message")
             contentType(ContentType.Application.Json)
             setBody(message)
         }
@@ -271,7 +271,7 @@ val response = client.get("/match/remove"){
          Log.d("chatIdInFetchMessage",chatRoomId)
         try {
             val response = client.get {
-                url("https://whoknowschatbackend.onrender.com/message/$chatRoomId")
+                url("https://whoknowschatbackendrailway-production.up.railway.app/message/$chatRoomId")
                 contentType(ContentType.Application.Json)
             }
             Log.d("fetchmessage",response.body())
@@ -291,7 +291,7 @@ val response = client.get("/match/remove"){
     suspend fun editMessage(charId: String): Int {
         try {
             val response = client.put {
-                url("https://whoknowschatbackend.onrender.com/edit-message/$charId")
+                url("https://whoknowschatbackendrailway-production.up.railway.app/edit-message/$charId")
                 contentType(ContentType.Application.Json)
             }
 
@@ -308,7 +308,7 @@ val response = client.get("/match/remove"){
         Log.d("asjdnasjkdnaskjndkjasndkjasndkjnaskjdnjasn","asdasd")
         try {
             val response = client.put {
-                url("https://whoknowschatbackend.onrender.com/accept/$id")
+                url("https://whoknowschatbackendrailway-production.up.railway.app/accept/$id")
                 contentType(ContentType.Application.Json)
                 setBody(AcceptationRequest(count = count, userId = userId))
             }
@@ -327,7 +327,7 @@ val response = client.get("/match/remove"){
     suspend fun getAcceptation(id : String): AcceptationModel{
         try{
             val response = client.get{
-                url("https://whoknowschatbackend.onrender.com/accept/$id")
+                url("https://whoknowschatbackendrailway-production.up.railway.app/accept/$id")
                 contentType(ContentType.Application.Json)
             }
             val responseBody: String = response.body()
@@ -349,7 +349,7 @@ val response = client.get("/match/remove"){
     suspend fun getClickStatus(accid : String, id : String): Int{
         try{
             val response = client.get{
-                url("https://whoknowschatbackend.onrender.com/accept/$accid/user/$id")
+                url("https://whoknowschatbackendrailway-production.up.railway.app/accept/$accid/user/$id")
                 contentType(ContentType.Application.Json)
             }
             return response.status.value
@@ -362,7 +362,7 @@ val response = client.get("/match/remove"){
     suspend fun deleteChatRoom(chat_id : String): Int{
         try{
             val response = client.delete {
-                url("https://whoknowschatbackend.onrender.com/chatroom/$chat_id")
+                url("https://whoknowschatbackendrailway-production.up.railway.app/chatroom/$chat_id")
                 contentType(ContentType.Application.Json)
             }
 
@@ -377,7 +377,7 @@ val response = client.get("/match/remove"){
     suspend fun deleteAcceptation(id : String) : Int{
         try{
             val response = client.delete {
-                url("https://whoknowschatbackend.onrender.com/accept/$id")
+                url("https://whoknowschatbackendrailway-production.up.railway.app/accept/$id")
                 contentType(ContentType.Application.Json)
             }
             return response.status.value
@@ -391,7 +391,7 @@ val response = client.get("/match/remove"){
     suspend fun getToken(id : String): FcmModel{
         try{
             val response = client.get{
-                url("https://whoknowschatbackend.onrender.com/fcm-token/$id")
+                url("https://whoknowschatbackendrailway-production.up.railway.app/fcm-token/$id")
                 contentType(ContentType.Application.Json)
             }
 
@@ -410,7 +410,7 @@ val response = client.get("/match/remove"){
         try{
             Log.d("adsssssssssssssssssssssssd","$id $token")
             val response = client.post{
-                url("https://whoknowschatbackend.onrender.com/fcm-token")
+                url("https://whoknowschatbackendrailway-production.up.railway.app/fcm-token")
                 contentType(ContentType.Application.Json)
                 setBody(TokenModel(userId = id, fcmToken = token))
             }
@@ -425,7 +425,7 @@ val response = client.get("/match/remove"){
     suspend fun deleteToken(id : String): Int{
         try{
             val response = client.delete{
-                url("https://whoknowschatbackend.onrender.com/fcm-token/$id")
+                url("https://whoknowschatbackendrailway-production.up.railway.app/fcm-token/$id")
                 contentType(ContentType.Application.Json)
             }
 
@@ -443,7 +443,7 @@ val response = client.get("/match/remove"){
 
         try{
             val response = client.post {
-                url("https://whoknowschatbackend.onrender.com/send-notification")
+                url("https://whoknowschatbackendrailway-production.up.railway.app/send-notification")
                 contentType(ContentType.Application.Json)
                 setBody(notification)
             }
@@ -459,7 +459,7 @@ val response = client.get("/match/remove"){
     suspend fun getWait(id : String) : Int{
         try{
             val response = client.get{
-                url("https://whoknowschatbackend.onrender.com/waitlist/$id")
+                url("https://whoknowschatbackendrailway-production.up.railway.app/waitlist/$id")
                 contentType(ContentType.Application.Json)
             }
 
@@ -474,7 +474,7 @@ val response = client.get("/match/remove"){
     suspend fun postWait(id : String) : Int{
         try{
             val response = client.post{
-                url("https://whoknowschatbackend.onrender.com/waitlist")
+                url("https://whoknowschatbackendrailway-production.up.railway.app/waitlist")
                 contentType(ContentType.Application.Json)
                 setBody(WaitlistRequest(userId = id))
             }

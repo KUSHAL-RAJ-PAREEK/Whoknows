@@ -23,6 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -40,46 +42,51 @@ import com.krp.whoknows.R
  */
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier,onPhoneSlide :() -> Unit) {
-   var isLoading by remember { mutableStateOf(false) }
-   Box(
-      modifier = Modifier
-          .fillMaxSize()
-          .background(Color.White)
-   ) {
-    Column(modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-      ) {
-Spacer(modifier = modifier.height(90.dp))
-        Image(
-            painter = painterResource(id = R.drawable.couple),
-            contentDescription = "Landing Image",
+fun LoginScreen(modifier: Modifier = Modifier, onPhoneSlide: () -> Unit) {
+    var isLoading by remember { mutableStateOf(false) }
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        Column(
             modifier = Modifier
-                .size(580.dp)
                 .fillMaxSize()
-        )
-        Spacer(modifier = modifier.height(10.dp))
-       Text(
-          text = "WhoKnows? Love Beyond Looks!",
-          fontSize = 20.sp,
-          fontFamily = FontFamily(Font(R.font.outfit_medium)),
-          modifier = Modifier.fillMaxWidth(),
-          textAlign = TextAlign.Center
-       )
-        Spacer(modifier = modifier.height(20.dp))
-      SlideToUnlock(
-         isLoading = isLoading,
-         onUnlockRequested = {onPhoneSlide() },
-          modifier = Modifier.padding(horizontal = 40.dp)
-      )
+                .padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.height(60.dp))
+
+            Image(
+                painter = painterResource(id = R.drawable.couple),
+                contentDescription = "Landing Image",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(screenHeight * 0.7f)
+            )
+
+            Text(
+                text = "WhoKnows? Love Beyond Looks!",
+                fontSize = 20.sp,
+                fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            SlideToUnlock(
+                isLoading = isLoading,
+                onUnlockRequested = { onPhoneSlide() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+            )
+
+            Spacer(modifier = Modifier.height(70.dp))
+        }
     }
-   }
 }
-//
-//@Preview
-//@Composable
-//private fun run() {
-//    LoginScreen(onPhoneSlide = {})
-//}
-
-

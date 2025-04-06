@@ -32,7 +32,7 @@ class ChatViewModel :ViewModel(),KoinComponent{
     data class Status(val chatId : String,val count: Int)
 
 
-    private var socket : Socket = IO.socket("https://whoknowschatbackend.onrender.com")
+    private var socket : Socket = IO.socket("https://whoknowschatbackendrailway-production.up.railway.app")
 
     private val _state = MutableStateFlow(SendMessageState())
     val state: StateFlow<SendMessageState> = _state

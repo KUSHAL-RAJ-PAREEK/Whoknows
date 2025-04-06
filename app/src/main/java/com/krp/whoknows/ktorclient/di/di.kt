@@ -104,7 +104,7 @@ fun provideHttpClient(): HttpClient {
 
         install(DefaultRequest) {
             url {
-                host = "whoknows-jaqw.onrender.com"
+                host = "java-spring-boot-production-d806.up.railway.app"
                 protocol = URLProtocol.HTTPS
             }
         }
