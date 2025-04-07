@@ -162,51 +162,34 @@ private fun getRenderEffect(): RenderEffect {
 @ExperimentalSharedTransitionApi
 @Composable
 fun SharedTransitionScope.HomeScreen(
-    videoUri : Uri,
+    videoUri: Uri,
     modifier: Modifier = Modifier,
     animatedVisibilityScope: AnimatedVisibilityScope,
     navController: NavController,
-    onFabClick: ()-> Unit,
-    onProfileClick:()-> Unit,
-    onChatClick:()-> Unit,
+    onFabClick: () -> Unit,
+    onProfileClick: () -> Unit,
+    onChatClick: () -> Unit,
     greetingViewModel: GreetingViewModel,
-    updateMatchViewModel:UpdateMatchViewModel,
-    profileDetailViewModel : ProfileDetailViewModel,
-    matchUserViewModel : MatchUserViewModel,
+    updateMatchViewModel: UpdateMatchViewModel,
+    profileDetailViewModel: ProfileDetailViewModel,
+    matchUserViewModel: MatchUserViewModel,
     infoViewModel: InfoViewModel,
     state: UpdateMatchState,
     chatViewModel: ChatViewModel,
-    mainImageViewModel : MainImageViewModel,
-    event :(UpdateMatchEvent) -> Unit){
+    mainImageViewModel: MainImageViewModel,
+    event: (UpdateMatchEvent) -> Unit
+) {
     val context = LocalContext.current
-//    val exoPlayer = remember { context.buildExoPlayer(videoUri) }
-//
-//    DisposableEffect(
-//        AndroidView(
-//            factory = {it.buildPlayerView(exoPlayer)},
-//            modifier = Modifier.fillMaxSize()
-//        )
-//    ) {
-//        onDispose {
-//            exoPlayer.release()
-//        }
-//    }
     val coroutineScope = rememberCoroutineScope()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val mUser by matchUserViewModel.matchUserState.collectAsState()
     var GoOn by remember { mutableStateOf(false) }
-//    val callIt by remember { mutableStateOf(false) }
     val fcmToken by greetingViewModel.matchFcmToken.collectAsState()
-
-
-Log.d("adssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",matchUserViewModel.acceptStatus.value.toString())
 
     LaunchedEffect(mUser) {
 
-        val m_id : String? = mUser?.id
-        if(m_id != null){
-            Log.d("optinmize",m_id)
-
+        val m_id: String? = mUser?.id
+        if (m_id != null) {
 
             coroutineScope.launch(Dispatchers.IO) {
 
@@ -214,21 +197,27 @@ Log.d("adssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",matchUserVi
 
                 val messagesDeferred = async { chatViewModel.getMessages(chatRoomID = id) }
                 val statusDeferred = async { matchUserViewModel.getStatus(id) }
-                val updateDeferred = async { matchUserViewModel.updateClicked(accid = id, id = profileDetailViewModel.id.value) }
+                val updateDeferred = async {
+                    matchUserViewModel.updateClicked(
+                        accid = id,
+                        id = profileDetailViewModel.id.value
+                    )
+                }
 
                 messagesDeferred.await()
                 statusDeferred.await()
                 updateDeferred.await()
                 delay(200)
-                Log.d("adasdasdasdasdasdsadsadasd",fcmToken.toString())
                 coroutineScope.launch {
                     val response = greetingViewModel.getToken(m_id)
-                    Log.d("asdddddddddddddddddd",response.toString()
-                    )
-                    if(response.statusCode == 200){
-                        greetingViewModel.saveMatchFcm(MatchFcmEntity(id = 1, fcm_token = response.token!!))
+                    if (response.statusCode == 200) {
+                        greetingViewModel.saveMatchFcm(
+                            MatchFcmEntity(
+                                id = 1,
+                                fcm_token = response.token!!
+                            )
+                        )
                         matchUserViewModel.updateFcm(response.token!!)
-                        Log.d("adasdasdasdasdasdsssdsdsdsadsadasd",response.token!!)
                     }
                 }
             }
@@ -236,47 +225,47 @@ Log.d("adssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",matchUserVi
     }
 
     LaunchedEffect(GoOn) {
-        Log.d("okokokokokokokoko","yesssss call")
 
-        if(GoOn == true){
-            Log.d("okokokokokokokoko","yes call")
+        if (GoOn == true) {
 
             coroutineScope.launch {
                 val response = greetingViewModel.getToken(matchUserViewModel.id.value)
-                Log.d("asdddddddddddddddddd",response.toString()
-                )
-                if(response.statusCode == 200){
-                    greetingViewModel.saveMatchFcm(MatchFcmEntity(id = 1, fcm_token = response.token!!))
+                if (response.statusCode == 200) {
+                    greetingViewModel.saveMatchFcm(
+                        MatchFcmEntity(
+                            id = 1,
+                            fcm_token = response.token!!
+                        )
+                    )
                     matchUserViewModel.updateFcm(response.token!!)
-                    Log.d("adasdasdasdasdasdsssdsdsdsadsadasd",response.token!!)
-
                 }
             }
             val id = createChatRoomId(profileDetailViewModel.id.value, matchUserViewModel.id.value)
 
             val messagesDeferred = async { chatViewModel.getMessages(chatRoomID = id) }
             val statusDeferred = async { matchUserViewModel.getStatus(id) }
-            val updateDeferred = async { matchUserViewModel.updateClicked(accid = id, id = profileDetailViewModel.id.value) }
+            val updateDeferred = async {
+                matchUserViewModel.updateClicked(
+                    accid = id,
+                    id = profileDetailViewModel.id.value
+                )
+            }
 
             messagesDeferred.await()
             statusDeferred.await()
             updateDeferred.await()
-            Log.d("okokokokokokokoko","yes called")
         }
     }
 
 
-    Log.d("adasdasdjnfasjvnsjkv",state.toString())
     LaunchedEffect(state.isLoading) {
-        if(state.isSuccess){
-            Log.d("inhomescreen",state.statusCode.toString())
-            if(!updateMatchViewModel.called.value){
+        if (state.isSuccess) {
+            if (!updateMatchViewModel.called.value) {
                 val res = state.statusCode
 
-                if(res == 200){
+                if (res == 200) {
                     profileDetailViewModel.updateMatch(true)
                     val matchUser = state.user
-                    Log.d("adsdasdasdsadasdasdas",matchUser.toString())
                     matchUserViewModel.saveMatchUser(matchUser)
                     val dobString = matchUser?.dob ?: "2004-12-12"
                     val localDate = LocalDate.parse(dobString, DateTimeFormatter.ISO_LOCAL_DATE)
@@ -289,11 +278,9 @@ Log.d("adssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",matchUserVi
                     matchUserViewModel.updateDobs(calculateAge(localDate.toString()).toString())
                     matchUserViewModel.updateDOB(localDate)
                     matchUserViewModel.updatePreAgeRange(matchUser?.ageGap.toString())
-                    matchUserViewModel.updateBio(matchUser?.bio?:"hey, I am using whoknows.")
+                    matchUserViewModel.updateBio(matchUser?.bio ?: "hey, I am using whoknows.")
                     matchUserViewModel.updateInterest(matchUser?.interests ?: emptyList())
                     matchUserViewModel.updatePosts(matchUser?.posts ?: emptyList())
-//        profileDetailViewModel.updateFPreAgeRange(parts[0].toString())
-//        profileDetailViewModel.updateTPreAgeRange(parts[1].toString())
                     matchUserViewModel.updateLatitude(matchUser?.latitude.toString())
                     matchUserViewModel.updateLongitude(matchUser?.longitude.toString())
                     matchUserViewModel.updatePnumber(matchUser?.pnumber.toString())
@@ -301,7 +288,7 @@ Log.d("adssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",matchUserVi
                     val imgUrl = matchUser?.imgUrl.toString()
                     val list = matchUser?.posts ?: emptyList()
 
-                    val  location = getLocationCityState(
+                    val location = getLocationCityState(
                         matchUser?.latitude?.toDouble() ?: 26.9124,
                         matchUser?.longitude?.toDouble() ?: 75.7873,
                         context
@@ -327,11 +314,15 @@ Log.d("adssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",matchUserVi
 
                     }
 
-//        coroutineScope.launch {
-                    if(matchUser?.imgUrl == null){
-                        mainImageViewModel.saveMatchProfileImage(convertDrawableToBase64(context = context,if(matchUser?.gender == "MALE")  R.drawable.bp_img_placeholder else R.drawable.bp_img_placeholder))
+                    if (matchUser?.imgUrl == null) {
+                        mainImageViewModel.saveMatchProfileImage(
+                            convertDrawableToBase64(
+                                context = context,
+                                if (matchUser?.gender == "MALE") R.drawable.bp_img_placeholder else R.drawable.bp_img_placeholder
+                            )
+                        )
 
-                    }else{
+                    } else {
                         mainImageViewModel.saveMatchProfileImage(convertImageUrlToBase64(matchUser?.imgUrl.toString()))
 
                     }
@@ -339,35 +330,28 @@ Log.d("adssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",matchUserVi
                     for (i in 0 until size) {
                         val imgUrl = matchUser?.posts?.get(i) ?: continue
                         val base64String = convertImageUrlToBase64(imgUrl)
-                        Log.d("imgusdasdsdrl",imgUrl)
                         if (base64String != null) {
-                            Log.d("converted",i.toString())
-                            mainImageViewModel.saveMatchGalleryImage("${matchUser?.id}_g${i+1}",base64String)
+                            Log.d("converted", i.toString())
+                            mainImageViewModel.saveMatchGalleryImage(
+                                "${matchUser?.id}_g${i + 1}",
+                                base64String
+                            )
                         } else {
                             Log.e("ProfileImage", "Failed to convert image to Base64")
                         }
-//            }
                     }
 
-//                    val id = createChatRoomId(profileDetailViewModel.id.value, matchUserViewModel.id.value)
 
-
-                    if(mUser?.id == null){
-                        Log.d("okokokokokokokoko","no call")
-                        Log.d("notoptimize","yesthis")
-
+                    if (mUser?.id == null) {
                         GoOn = true
                     }
                     coroutineScope.launch {
-                        val response =   profileDetailViewModel.getInWait(id = profileDetailViewModel.id.value)
-                        Log.d("responseGetWait",response.toString())
+                        val response =
+                            profileDetailViewModel.getInWait(id = profileDetailViewModel.id.value)
+                        Log.d("responseGetWait", response.toString())
                     }
 
-//                    val id = createChatRoomId(profileDetailViewModel.id.value,matchUserViewModel.id.value)
-//                    chatViewModel.getMessages(chatRoomID = id)
-//                    matchUserViewModel.getStatus(id)
-//                    matchUserViewModel.updateClicked(accid = id, id =profileDetailViewModel.id.value)
-                }else if(res == 204){
+                } else if (res == 204) {
                     profileDetailViewModel.updateMatch(false)
                 }
                 updateMatchViewModel.updateCalled(false)
@@ -379,9 +363,17 @@ Log.d("adssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",matchUserVi
 
 
     LaunchedEffect(currentBackStackEntry) {
-        if(!updateMatchViewModel.called.value){
-            Log.d("afasfaf","${profileDetailViewModel.id.value}, ${profileDetailViewModel.jwt.value}")
-            event(UpdateMatchEvent.UpdateMatch(profileDetailViewModel.id.value,profileDetailViewModel.jwt.value))
+        if (!updateMatchViewModel.called.value) {
+            Log.d(
+                "afasfaf",
+                "${profileDetailViewModel.id.value}, ${profileDetailViewModel.jwt.value}"
+            )
+            event(
+                UpdateMatchEvent.UpdateMatch(
+                    profileDetailViewModel.id.value,
+                    profileDetailViewModel.jwt.value
+                )
+            )
         }
     }
 
@@ -409,17 +401,13 @@ Log.d("adssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",matchUserVi
     var clicked by remember { mutableStateOf(false) }
 
     LaunchedEffect(clicked) {
-        if(!clicked){
+        if (!clicked) {
             animation?.reset()
-        }else{
-            Log.d("afsfafasfsafas","fasasfas")
+        } else {
             animation?.setBooleanState(
                 "GirlState", "MouseOver",
-                clicked)
-//            animation?.setNumberState(
-//                "GirlState", "Look_up",
-//                value = 1f
-//            )
+                clicked
+            )
         }
     }
     val renderEffect = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -429,8 +417,10 @@ Log.d("adssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",matchUserVi
     }
 
 
-    ComposableRiveAnimationView(modifier = Modifier,animation = R.raw.phone_girl,
-        stateMachineName = "GirlState"){view ->
+    ComposableRiveAnimationView(
+        modifier = Modifier, animation = R.raw.phone_girl,
+        stateMachineName = "GirlState"
+    ) { view ->
         animation = view
     }
 
@@ -447,7 +437,7 @@ Log.d("adssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",matchUserVi
         onFabClick = onFabClick,
         onProfileClick = onProfileClick,
         onChatClick = onChatClick,
-clicked = clicked,
+        clicked = clicked,
         onToggle = {
             clicked = !clicked
         }
@@ -455,14 +445,13 @@ clicked = clicked,
         isMenuExtended.value = isMenuExtended.value.not()
     }
 
-    ExpandableLogoutFAB{
-       coroutineScope.launch {
-           greetingViewModel.deleteUsers()
-           greetingViewModel.deleteMatchUser()
-//           greetingViewModel.deleteFcm()
-           greetingViewModel.deleteMatchFcm()
-           infoViewModel.resetData()
-       }
+    ExpandableLogoutFAB {
+        coroutineScope.launch {
+            greetingViewModel.deleteUsers()
+            greetingViewModel.deleteMatchUser()
+            greetingViewModel.deleteMatchFcm()
+            infoViewModel.resetData()
+        }
         navController.popBackStack()
         navController.navigate(LoginScreen)
 
@@ -503,10 +492,10 @@ fun MainScreen(
     fabAnimationProgress: Float = 0f,
     clickAnimationProgress: Float = 0f,
     onToggle: () -> Unit,
-    clicked :Boolean,
+    clicked: Boolean,
     onFabClick: () -> Unit,
-    onProfileClick:()-> Unit,
-    onChatClick:()-> Unit,
+    onProfileClick: () -> Unit,
+    onChatClick: () -> Unit,
     toggleAnimation: () -> Unit = { },
 ) {
     Box(
@@ -522,9 +511,14 @@ fun MainScreen(
             animationProgress = 0.5f
         )
 
-        FabGroup(modifier = Modifier,renderEffect = renderEffect,   onToggle = onToggle, animationProgress = fabAnimationProgress)
         FabGroup(
-           onFabClick= onFabClick,
+            modifier = Modifier,
+            renderEffect = renderEffect,
+            onToggle = onToggle,
+            animationProgress = fabAnimationProgress
+        )
+        FabGroup(
+            onFabClick = onFabClick,
             onProfileClick = onProfileClick,
             onChatClick = onChatClick,
             modifier = modifier,
@@ -560,7 +554,6 @@ fun Circle(color: Color, animationProgress: Float) {
 }
 
 
-
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun FabGroup(
@@ -568,9 +561,9 @@ fun FabGroup(
     animationProgress: Float = 0f,
     renderEffect: androidx.compose.ui.graphics.RenderEffect? = null,
     onFabClick: (() -> Unit)? = null,
-    onProfileClick:(() -> Unit)? = null,
-    onChatClick:(() -> Unit)? = null,
-    onToggle :() -> Unit,
+    onProfileClick: (() -> Unit)? = null,
+    onChatClick: (() -> Unit)? = null,
+    onToggle: () -> Unit,
     toggleAnimation: () -> Unit = { }
 ) {
     Box(
@@ -592,14 +585,14 @@ fun FabGroup(
                     ) * FastOutSlowInEasing.transform(0f, 0.8f, animationProgress)
                 ),
             opacity = LinearEasing.transform(0.2f, 0.7f, animationProgress)
-        ){
+        ) {
             if (onChatClick != null) {
                 onChatClick()
             }
         }
 
-       AnimatedFab1(
-           backgroundColor = ordColor,
+        AnimatedFab1(
+            backgroundColor = ordColor,
             icon = Icons.Default.Search,
             modifier = modifier.padding(
                 PaddingValues(
@@ -607,11 +600,11 @@ fun FabGroup(
                 ) * FastOutSlowInEasing.transform(0.1f, 0.9f, animationProgress)
             ),
             opacity = LinearEasing.transform(0.3f, 0.8f, animationProgress)
-        ){
-           if (onFabClick != null) {
-               onFabClick()
-           }
-       }
+        ) {
+            if (onFabClick != null) {
+                onFabClick()
+            }
+        }
 
         AnimatedFab1(
             backgroundColor = ordColor,
@@ -623,7 +616,7 @@ fun FabGroup(
                 ) * FastOutSlowInEasing.transform(0.2f, 1.0f, animationProgress)
             ),
             opacity = LinearEasing.transform(0.4f, 0.9f, animationProgress)
-        ){
+        ) {
             if (onProfileClick != null) {
                 onProfileClick()
             }
@@ -642,8 +635,10 @@ fun FabGroup(
                     225 * FastOutSlowInEasing
                         .transform(0.35f, 0.65f, animationProgress)
                 ),
-            onClick = { toggleAnimation()
-                onToggle()},
+            onClick = {
+                toggleAnimation()
+                onToggle()
+            },
             backgroundColor = Color.Transparent
         )
     }
@@ -674,31 +669,5 @@ fun AnimatedFab(
     }
 }
 
-
-
-//@Composable
-//@Preview(device = "id:pixel_4a", showBackground = true, backgroundColor = 0xFF3A2F6E)
-//private fun MainScreenPreview() {
-//    WhoknowsTheme {
-//        com.krp.whoknows.Navigation.HomeScreen(navController = rememberNavController())
-//    }
-//}
-
-//
-//private fun Context.buildExoPlayer(uri: Uri) =
-//    ExoPlayer.Builder(this).build().apply {
-//        setMediaItem(MediaItem.fromUri(uri))
-//        repeatMode = Player.REPEAT_MODE_ALL
-//        playWhenReady = true
-//        prepare()
-//    }
-//
-//private fun Context.buildPlayerView(exoPlayer: ExoPlayer) =
-//    StyledPlayerView(this).apply {
-//        player = exoPlayer
-//        layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
-//        useController = false
-//        resizeMode = RESIZE_MODE_ZOOM
-//    }
 
 

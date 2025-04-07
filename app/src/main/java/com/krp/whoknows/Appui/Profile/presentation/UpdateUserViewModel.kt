@@ -20,7 +20,6 @@ import kotlin.getValue
  */
 
 
-
 class UpdateUserViewModel : ViewModel(), KoinComponent {
 
     private val ktorClient: KtorClient by inject()
@@ -40,9 +39,9 @@ class UpdateUserViewModel : ViewModel(), KoinComponent {
             try {
                 val response = ktorClient.updateUser(user, jwt)
                 _state.value = UpdateUserState(isSuccess = true, statusCode = response)
-                Log.d("GKJADNKJGNDJGNDKJ", state.value.toString())
             } catch (e: Exception) {
-                _state.value = UpdateUserState(errorMessage = e.localizedMessage ?: "An error occurred")
+                _state.value =
+                    UpdateUserState(errorMessage = e.localizedMessage ?: "An error occurred")
             }
         }
     }

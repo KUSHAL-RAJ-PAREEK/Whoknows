@@ -68,7 +68,7 @@ class ImageRepository(private val imageDao: Dao) {
     }
 
 
-     suspend fun saveChatImageToSupabase(context: Context, uri: Uri?, id: String): Boolean {
+    suspend fun saveChatImageToSupabase(context: Context, uri: Uri?, id: String): Boolean {
         if (uri == null) return true
 
         return withContext(Dispatchers.IO) {
@@ -103,15 +103,12 @@ class ImageRepository(private val imageDao: Dao) {
     }
 
 
-
-
     suspend fun deleteProfileImageFromSupabase(id: String): Boolean {
-        Log.d("sfasfasfsfdafd",id)
         return withContext(Dispatchers.IO) {
             try {
                 val response = supabase.storage.from("profile_images").delete("${id}.jpg")
 
-                if (response != null){
+                if (response != null) {
                     Log.d("SupabaseDelete", "Image deleted successfully: $id")
                     return@withContext true
                 } else {
@@ -125,9 +122,7 @@ class ImageRepository(private val imageDao: Dao) {
         }
     }
 
-    suspend fun deleteImageFromSupabase(bucket : String,id: String): Boolean {
-        Log.d("DeleteRequest", "Attempting to delete image with ID: $id")
-
+    suspend fun deleteImageFromSupabase(bucket: String, id: String): Boolean {
         return withContext(Dispatchers.IO) {
             try {
                 val response = supabase.storage.from(bucket).delete("${id}.jpg")
@@ -145,7 +140,6 @@ class ImageRepository(private val imageDao: Dao) {
             }
         }
     }
-
 
 
     suspend fun deleteGalleryImageFromSupabase(id: String): Boolean {
@@ -169,7 +163,6 @@ class ImageRepository(private val imageDao: Dao) {
 
 
     suspend fun saveGalleryImageToSupabase(context: Context, uri: Uri?, id: String): Boolean {
-        Log.d("adsadasddggwer",uri.toString())
         if (uri == null) return true
 
         return withContext(Dispatchers.IO) {
@@ -210,13 +203,13 @@ class ImageRepository(private val imageDao: Dao) {
         }
     }
 
-    suspend fun saveProfileImageD(imageString :String?) {
+    suspend fun saveProfileImageD(imageString: String?) {
         if (imageString != null) {
             imageDao.upsertProfileImage(ProfileImageEntity(imageString = imageString))
         }
     }
 
-    suspend fun saveGalleryImageD(id : String,imageString :String?) {
+    suspend fun saveGalleryImageD(id: String, imageString: String?) {
         if (imageString != null) {
             imageDao.upsertGalleryImage(GalleryImageEntity(id = id, imageString = imageString))
         }
@@ -230,15 +223,20 @@ class ImageRepository(private val imageDao: Dao) {
         }
     }
 
-    suspend fun saveMatchProfileImageD(imageString :String?) {
+    suspend fun saveMatchProfileImageD(imageString: String?) {
         if (imageString != null) {
             imageDao.upsertMatchUserProfileImage(UserProfileImage(imageString = imageString))
         }
     }
 
-    suspend fun saveMatchGalleryImageD(id : String,imageString :String?) {
+    suspend fun saveMatchGalleryImageD(id: String, imageString: String?) {
         if (imageString != null) {
-            imageDao.upsertMatchUserGalleryImage(UserGalleryImageEntity(id = id, imageString = imageString))
+            imageDao.upsertMatchUserGalleryImage(
+                UserGalleryImageEntity(
+                    id = id,
+                    imageString = imageString
+                )
+            )
         }
     }
 
@@ -257,12 +255,12 @@ class ImageRepository(private val imageDao: Dao) {
         }
     }
 
-    suspend fun deleteProfile(){
+    suspend fun deleteProfile() {
         return imageDao.deleteProfile()
     }
 
 
-    suspend fun deleteGallery(){
+    suspend fun deleteGallery() {
         return imageDao.deleteAllGalleryImages()
     }
 
@@ -272,17 +270,16 @@ class ImageRepository(private val imageDao: Dao) {
     }
 
     suspend fun deleteProfileImage() {
-         imageDao.deleteProfileImage()
+        imageDao.deleteProfileImage()
     }
 
-    suspend fun deleteGalleryImage(id : String){
+    suspend fun deleteGalleryImage(id: String) {
         return imageDao.deleteGalleryImageById(id = id)
     }
 
     suspend fun getGalleryImages(): List<GalleryImageEntity> {
         return imageDao.getGalleryImages()
     }
-
 
 
     suspend fun getMatchProfileImage(): UserProfileImage? {

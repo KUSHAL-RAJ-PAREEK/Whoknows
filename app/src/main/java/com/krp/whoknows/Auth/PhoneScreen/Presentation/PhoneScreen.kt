@@ -87,11 +87,10 @@ import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import okhttp3.internal.wait
 
 
-
 @Preview
 @Composable
 private fun run() {
-    PhoneScreen(Modifier,{},PhoneAuthState(),{})
+    PhoneScreen(Modifier, {}, PhoneAuthState(), {})
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -112,21 +111,36 @@ fun PhoneScreen(
 
     var phoneNumber by remember { mutableStateOf("") }
     val isValid = phoneNumber.length == 10
-val context = LocalContext.current
+    val context = LocalContext.current
 
     if (state.isLoading) {
-        DynamicToast.make(context,"Sending otp...",
-            ContextCompat.getDrawable(context, R.drawable.paper_plane)?.mutate(),lightOrdColor.toArgb(),light_yellow.toArgb()).show()
+        DynamicToast.make(
+            context,
+            "Sending otp...",
+            ContextCompat.getDrawable(context, R.drawable.paper_plane)?.mutate(),
+            lightOrdColor.toArgb(),
+            light_yellow.toArgb()
+        ).show()
     }
 
     if (state.errorMessage != null) {
-        DynamicToast.make(context,"Something went wrong",
-            ContextCompat.getDrawable(context, R.drawable.warning)?.mutate(),lightOrdColor.toArgb(),light_red.toArgb()).show()
+        DynamicToast.make(
+            context,
+            "Something went wrong",
+            ContextCompat.getDrawable(context, R.drawable.warning)?.mutate(),
+            lightOrdColor.toArgb(),
+            light_red.toArgb()
+        ).show()
     }
 
     if (state.isOtpSent) {
-        DynamicToast.make(context,"OTP sent successfully!",
-            ContextCompat.getDrawable(context, R.drawable.success)?.mutate(),lightOrdColor.toArgb(),light_green.toArgb()).show()
+        DynamicToast.make(
+            context,
+            "OTP sent successfully!",
+            ContextCompat.getDrawable(context, R.drawable.success)?.mutate(),
+            lightOrdColor.toArgb(),
+            light_green.toArgb()
+        ).show()
     }
 
     Box(
@@ -138,7 +152,7 @@ val context = LocalContext.current
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 15.dp, end = 15.dp,top = 50.dp, bottom = 20.dp),
+                .padding(start = 15.dp, end = 15.dp, top = 50.dp, bottom = 20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
@@ -152,7 +166,11 @@ val context = LocalContext.current
                 onValueChange = { phoneNumber = it },
                 modifier = Modifier.fillMaxWidth(),
                 trailingIcon = {
-                    Icon(imageVector = Icons.Default.Person, contentDescription = null,  tint = Color.Gray)
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = null,
+                        tint = Color.Gray
+                    )
                 },
                 textStyle = LocalTextStyle.current.copy(fontSize = 18.sp, color = Color.Black),
                 placeholder = { Text("Enter your number") },
@@ -167,7 +185,6 @@ val context = LocalContext.current
                     imeAction = ImeAction.Done
                 )
             )
-            
 
 
         }
@@ -183,13 +200,23 @@ val context = LocalContext.current
                     if (!state.isLoading) {
 
                         if (phoneNumber.isEmpty()) {
-                            DynamicToast.make(context,"Please Enter Phone Number",
-                                ContextCompat.getDrawable(context, R.drawable.warning)?.mutate(),lightOrdColor.toArgb(),light_red.toArgb()).show()
+                            DynamicToast.make(
+                                context,
+                                "Please Enter Phone Number",
+                                ContextCompat.getDrawable(context, R.drawable.warning)?.mutate(),
+                                lightOrdColor.toArgb(),
+                                light_red.toArgb()
+                            ).show()
 
                         } else if (!isValid && phoneNumber.isNotEmpty()) {
 
-                            DynamicToast.make(context,"number must be 10 digits",
-                                ContextCompat.getDrawable(context, R.drawable.warning)?.mutate(),lightOrdColor.toArgb(),light_red.toArgb()).show()
+                            DynamicToast.make(
+                                context,
+                                "number must be 10 digits",
+                                ContextCompat.getDrawable(context, R.drawable.warning)?.mutate(),
+                                lightOrdColor.toArgb(),
+                                light_red.toArgb()
+                            ).show()
 
                         }
                         if (isValid) {
@@ -203,7 +230,7 @@ val context = LocalContext.current
                     .padding(bottom = if (imeHeight > 0.dp) imeHeight + 20.dp else 40.dp)
                     .size(56.dp)
                     .shadow(8.dp, CircleShape)
-                .clickable(enabled = !state.isLoading) {}
+                    .clickable(enabled = !state.isLoading) {}
             ) {
                 if (state.isLoading) {
                     CircularProgressIndicator(

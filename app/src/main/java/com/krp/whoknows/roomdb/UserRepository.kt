@@ -35,32 +35,33 @@ class UserRepository(private val dao: Dao) {
     }
 
     suspend fun savePhone(pNumber: String) {
-        dao.saveNumber(UserPhoneNumber(id = 1,userPhoneNumber = pNumber))
+        dao.saveNumber(UserPhoneNumber(id = 1, userPhoneNumber = pNumber))
     }
 
-    suspend fun saveMatchUser(user : MatchUserEntity){
+    suspend fun saveMatchUser(user: MatchUserEntity) {
         dao.saveMatchUser(user)
     }
 
-    suspend fun deleteMatchUser(){
+    suspend fun deleteMatchUser() {
 
         dao.deleteAllMatchUsers()
     }
 
-     fun getMatchUser() : Flow<MatchUserEntity?> =  dao.getMatchUser()
+    fun getMatchUser(): Flow<MatchUserEntity?> = dao.getMatchUser()
 
 
-     fun getPnumber() : Flow<UserPhoneNumber?>{
+    fun getPnumber(): Flow<UserPhoneNumber?> {
         return dao.getPhoneNumber()
     }
 
-     fun getToken(): Flow<JWTToken?> {
+    fun getToken(): Flow<JWTToken?> {
         return dao.getToken()
     }
 
     suspend fun deleteToken() {
         dao.deleteToken()
     }
+
     suspend fun saveMatchFcm(matchFcm: MatchFcmEntity) {
         dao.saveMatchFcm(matchFcm)
     }

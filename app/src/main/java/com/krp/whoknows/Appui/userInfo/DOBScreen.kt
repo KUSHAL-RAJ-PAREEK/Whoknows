@@ -82,7 +82,7 @@ fun DOBScreen(
     val imeHeight = WindowInsets.ime.getBottom(LocalDensity.current).toDp()
 
     BackHandler {
-        navController.navigate(com.krp.whoknows.Navigation.PreferredGender){
+        navController.navigate(com.krp.whoknows.Navigation.PreferredGender) {
             popUpTo(0) { inclusive = true }
         }
     }
@@ -107,11 +107,13 @@ fun DOBScreen(
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack, contentDescription = "Back arrow",
-                Modifier.size(35.dp).clickable{
-                    navController.navigate(com.krp.whoknows.Navigation.PreferredGender){
-                        popUpTo(0) { inclusive = true }
-                    }
-                },
+                Modifier
+                    .size(35.dp)
+                    .clickable {
+                        navController.navigate(com.krp.whoknows.Navigation.PreferredGender) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    },
                 tint = ordColor
             )
         }
@@ -132,7 +134,7 @@ fun DOBScreen(
 
             OutlinedTextField(
                 value = text,
-                onValueChange = {  },
+                onValueChange = { },
                 readOnly = true,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -146,7 +148,7 @@ fun DOBScreen(
                         modifier = Modifier.clickable {
                             val listener =
                                 DatePickerDialog.OnDateSetListener { _, year, month, day ->
-                                    date = LocalDate.of(year, month+1, day)
+                                    date = LocalDate.of(year, month + 1, day)
                                     val formattedDate =
                                         date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
                                     text = TextFieldValue(formattedDate)
@@ -160,7 +162,7 @@ fun DOBScreen(
                         }
                     )
                 },
-                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp,color = Color.Black),
+                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp, color = Color.Black),
                 placeholder = { Text("Enter your Date of Birth") },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = ordColor,
@@ -177,21 +179,31 @@ fun DOBScreen(
             contentAlignment = Alignment.BottomEnd
         ) {
             FloatingActionButton(
-                onClick = {if (text.text.isBlank()) {
+                onClick = {
+                    if (text.text.isBlank()) {
 
-                    DynamicToast.make(context,"Please enter your date of birth",
-                        ContextCompat.getDrawable(context, R.drawable.calender_logo)?.mutate(),lightOrdColor.toArgb(),light_red.toArgb()).show()
-                } else {
-                    val today = LocalDate.now()
-                    val ageThreshold = today.minusYears(18)
-                    if (viewModel.dob.value.isAfter(ageThreshold)) {
-                        DynamicToast.make(context,"You must be at least 18 years old",
-                            ContextCompat.getDrawable(context, R.drawable.age_logo)?.mutate(),lightOrdColor.toArgb(),
-                            light_yellow.toArgb()).show()
+                        DynamicToast.make(
+                            context,
+                            "Please enter your date of birth",
+                            ContextCompat.getDrawable(context, R.drawable.calender_logo)?.mutate(),
+                            lightOrdColor.toArgb(),
+                            light_red.toArgb()
+                        ).show()
                     } else {
-                        navController.navigate(com.krp.whoknows.Navigation.InterestScreen)
+                        val today = LocalDate.now()
+                        val ageThreshold = today.minusYears(18)
+                        if (viewModel.dob.value.isAfter(ageThreshold)) {
+                            DynamicToast.make(
+                                context,
+                                "You must be at least 18 years old",
+                                ContextCompat.getDrawable(context, R.drawable.age_logo)?.mutate(),
+                                lightOrdColor.toArgb(),
+                                light_yellow.toArgb()
+                            ).show()
+                        } else {
+                            navController.navigate(com.krp.whoknows.Navigation.InterestScreen)
+                        }
                     }
-                }
                 },
                 shape = CircleShape,
                 containerColor = ordColor,

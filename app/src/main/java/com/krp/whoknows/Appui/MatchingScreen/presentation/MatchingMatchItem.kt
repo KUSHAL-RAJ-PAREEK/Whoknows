@@ -38,19 +38,20 @@ fun MatchingMatchItem(modifier: Modifier = Modifier, icon: ImageVector, status: 
             .border(1.dp, ordColor, RoundedCornerShape(13.dp))
             .clip(RoundedCornerShape(13.dp))
             .background(ordColor.copy(alpha = 0.2f))
-            .padding(6.dp).clickable(enabled = false, onClick = {}),
+            .padding(6.dp)
+            .clickable(enabled = false, onClick = {}),
         contentAlignment = Alignment.Center,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 imageVector = icon,
                 contentDescription = "match Icon",
-                tint =  if(status) heartColor else Bpink,
+                tint = if (status) heartColor else Bpink,
                 modifier = Modifier.size(30.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = if(status) "matched" else "single",
+                text = if (status) "matched" else "single",
                 fontSize = 30.sp,
                 color = ordColor,
                 maxLines = 1

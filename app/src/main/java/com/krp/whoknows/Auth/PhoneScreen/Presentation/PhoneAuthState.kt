@@ -8,5 +8,5 @@ data class PhoneAuthState(
     val isLoading: Boolean = false,
     val isOtpSent: Boolean = false,
     val errorMessage: String? = null,
-    val phoneNumber: String?= null
+    val phoneNumber: String? = null
 )

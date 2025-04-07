@@ -90,6 +90,5 @@ fun MyMap(
             properties = mapProperties.copy(mapStyleOptions = mapStyleOptions)
         )
 
-
-        }
+    }
 }

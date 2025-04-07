@@ -67,26 +67,26 @@ val ktorModule = module {
     single { UserRepository(get()) }
     single { ImageRepository(get()) }
     single { ImageViewModel(get()) }
-    single{MainImageViewModel(get())}
+    single { MainImageViewModel(get()) }
     single { MatchUserViewModel(get()) }
 }
 val appModule: Module = module {
     viewModel { PhoneAuthViewModel() }
-    viewModel{ OTPVerificationViewModel() }
-    viewModel{ JWTViewModel(androidApplication())}
-    viewModel{InfoViewModel()}
-    viewModel{ CreateUserViewModel() }
+    viewModel { OTPVerificationViewModel() }
+    viewModel { JWTViewModel(androidApplication()) }
+    viewModel { InfoViewModel() }
+    viewModel { CreateUserViewModel() }
     viewModel { GreetingViewModel(get(), get()) }
-    viewModel{ProfileViewModel(get())}
-    viewModel{EditProfileViewModel()}
-    viewModel{ProfileDetailViewModel()}
-    viewModel{UpdateUserViewModel()}
-    viewModel{UpdateMatchViewModel()}
-    viewModel{CheckMatchViewModel()}
-    viewModel{CreateMatchViewModel()}
-    viewModel{CancelMatchViewModel()}
-    viewModel{ChatViewModel()}
-    viewModel{ChatViewModel()}
+    viewModel { ProfileViewModel(get()) }
+    viewModel { EditProfileViewModel() }
+    viewModel { ProfileDetailViewModel() }
+    viewModel { UpdateUserViewModel() }
+    viewModel { UpdateMatchViewModel() }
+    viewModel { CheckMatchViewModel() }
+    viewModel { CreateMatchViewModel() }
+    viewModel { CancelMatchViewModel() }
+    viewModel { ChatViewModel() }
+    viewModel { ChatViewModel() }
 
 }
 

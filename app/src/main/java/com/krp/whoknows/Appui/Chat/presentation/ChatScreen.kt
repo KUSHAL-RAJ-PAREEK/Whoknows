@@ -205,21 +205,16 @@ fun SharedTransitionScope.ChatScreen(
     var showSplash by remember { mutableStateOf(true) }
     var backstack by remember { mutableStateOf(true) }
     val visited by matchUserViewModel.vis.collectAsState()
-    Log.d("loginging", visited.toString())
-
-
 
     BackHandler(true) {
         if (backstack) {
             matchUserViewModel.updateVis(true)
-            Log.d("backstackes", "asfasdfda")
             navController.popBackStack()
             navController.navigate(HomeScreen)
         }
     }
     LaunchedEffect(Unit) {
         if (visited == false) {
-            Log.d("askfjaskfklsamfkasf", "jfaklsjflksahflhas")
             delay(2000)
             showSplash = false
         } else {
@@ -305,7 +300,6 @@ fun SharedTransitionScope.ChatScreen(
             }
         } else {
 
-
             val context = LocalContext.current
             var bimage by remember { mutableStateOf<Bitmap?>(null) }
             val listState = rememberLazyListState()
@@ -323,8 +317,9 @@ fun SharedTransitionScope.ChatScreen(
             var showWaitDialog by remember { mutableStateOf(false) }
 
             val imeIsShown = WindowInsets.isImeVisible
-val updateValue by matchUserViewModel.updation.collectAsState()
-            val targetBottomPadding = if (imeIsShown) 0.dp else contentPadding().calculateBottomPadding()
+            val updateValue by matchUserViewModel.updation.collectAsState()
+            val targetBottomPadding =
+                if (imeIsShown) 0.dp else contentPadding().calculateBottomPadding()
             val bottomPadding by animateDpAsState(
                 targetValue = targetBottomPadding,
                 animationSpec = tween(durationMillis = 300)
@@ -336,16 +331,8 @@ val updateValue by matchUserViewModel.updation.collectAsState()
 
             val chatId = createChatRoomId(userDetailViewModel.id.value, matchUserViewModel.id.value)
 
-val acc by matchUserViewModel.acceptStatus.collectAsState()
-            var acc_status by remember { mutableIntStateOf(acc)}
-
-//            LaunchedEffect(matchUserViewModel.acceptStatus) {
-//                Log.d("inininnininininin",matchUserViewModel.acceptStatus.value.to)
-//                matchUserViewModel.acceptStatus.collect { newValue ->
-//                    acc_status = newValue
-//                }
-//            }
-//
+            val acc by matchUserViewModel.acceptStatus.collectAsState()
+            var acc_status by remember { mutableIntStateOf(acc) }
 
             val deleteChatState by chatViewModel.deleteState.collectAsState()
 
@@ -365,18 +352,8 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
                 }
             }
 
-
-            Log.d("hereititititiititit", matchRM.toString())
-            Log.d("hereititititiititit1", matchRMm.toString())
-
-            Log.d("asddddddddddddddethythythy", acc.toString())
-//LaunchedEffect(chatViewModel.map.value) {
-//    map = chatViewModel.map.value.toMutableMap()
-//}
-
             LaunchedEffect(matchRM) {
                 if (matchRM == true) {
-                    Log.d("byrrmsssssssss1", matchRM.toString())
                     matchUserViewModel.updateAcceptStatus(0)
                     chatViewModel.removeAcc(chatId)
                     matchUserViewModel.clearAll()
@@ -403,21 +380,15 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
 
             LaunchedEffect(matchRMm) {
                 if (matchRMm == chatId && matchRM == false) {
-                    Log.d("byrrmsssssssss2", "m${matchRMm} ${matchRM}")
                     matchUserViewModel.updateAcceptStatus(0)
                     chatViewModel.removeAcc(chatId)
                     matchUserViewModel.clearAll()
                     mainImageViewModel.clearMatch()
                     matchUserViewModel.deleteUser()
                     delay(1000)
-//            coroutineScope.launch {
-
-//            }
 
                     showLottie = true
                     backstack = false
-                    Log.d("byrrm", "yes")
-
 
                     navController.popBackStack()
                     navController.navigate(HomeScreen)
@@ -433,19 +404,14 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
                 }
             }
 
-//            LaunchedEffect(matchUserViewModel.acceptStatus.value) {
-//                acc_status = matchUserViewModel.acceptStatus.value
-//            }
 
             val statusState by chatViewModel.statusState.collectAsState()
 
 
 
             LaunchedEffect(statusState) {
-                Log.d("changingstates", "yes")
                 statusState?.let { status ->
                     if (status.chatId == chatId && updateValue == 0) {
-                        Log.d("updatedcountbysocket", "hererere")
                         acc_status = status.count
                         matchUserViewModel.updateUpdation()
                         matchUserViewModel.updateAcceptStatus(status.count)
@@ -462,7 +428,6 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
 
 
             LaunchedEffect(deleteChatState.isLoading) {
-                Log.d("hogayi", deleteChatState.statusCode.toString())
                 if (deleteChatState.isSuccess && deleteChatState.statusCode == 200) {
                     chatViewModel.removeMatch(
                         id = userDetailViewModel.id.value,
@@ -471,8 +436,6 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
                     chatViewModel.sendRemoveStatus(chatId)
                 }
             }
-
-
 
 
             val density = LocalDensity.current
@@ -492,14 +455,15 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
             LaunchedEffect(imeVisible, chatState.messageList) {
                 if (imeVisible && chatState.messageList.isNotEmpty()) {
                     listState.animateScrollToItem(chatState.messageList.size - 1)
-                }else if(imeVisible){
+                } else if (imeVisible) {
                     listState.animateScrollToItem(chatState.messageList.size)
                 }
             }
 
 
             LaunchedEffect(key1 = map[chatId]?.contains(matchUserViewModel.id.value)) {
-                val isTyping = map.contains(chatId) && map[chatId]?.contains(matchUserViewModel.id.value) == true
+                val isTyping =
+                    map.contains(chatId) && map[chatId]?.contains(matchUserViewModel.id.value) == true
                 if (isTyping) {
                     listState.animateScrollToItem(chatState.messageList.size)
                 }
@@ -516,24 +480,17 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
             Box(
 
                 modifier = Modifier
-//            .statusBarsPadding()
                     .fillMaxSize()
                     .background(lightOrdColor)
                     .padding(WindowInsets.statusBars.asPaddingValues())
             ) {
 
-
-//                Column(modifier = Modifier.fillMaxSize()) {
-
-
                 Box(
                     modifier = Modifier
-//              .statusBarsPadding()
                         .fillMaxWidth()
                         .size(60.dp)
                         .background(lightOrdColor)
                         .zIndex(1f)
-//                        .consumeWindowInsets(WindowInsets.ime.exclude(WindowInsets.safeDrawing))
                         .padding(horizontal = 20.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
@@ -654,21 +611,21 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
                                 .size(30.dp)
                                 .clickable {
 
-                                        coroutineScope.launch {
-                                            val responses =
-                                                userDetailViewModel.getInWait(userDetailViewModel.id.value)
-                                            if (responses == 404) {
-                                                showWaitDialog = true
-                                            }else{
-                                                DynamicToast.make(
-                                                    context,
-                                                    "You need to wait for 5 minutes before making another request.",
-                                                    ContextCompat.getDrawable(context, R.drawable.clock)
-                                                        ?.mutate(),
-                                                    Color.White.toArgb(),
-                                                    lightOrdColor.toArgb()
-                                                ).show()
-                                            }
+                                    coroutineScope.launch {
+                                        val responses =
+                                            userDetailViewModel.getInWait(userDetailViewModel.id.value)
+                                        if (responses == 404) {
+                                            showWaitDialog = true
+                                        } else {
+                                            DynamicToast.make(
+                                                context,
+                                                "You need to wait for 5 minutes before making another request.",
+                                                ContextCompat.getDrawable(context, R.drawable.clock)
+                                                    ?.mutate(),
+                                                Color.White.toArgb(),
+                                                lightOrdColor.toArgb()
+                                            ).show()
+                                        }
 
 
                                     }
@@ -678,9 +635,6 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
                 }
 
 
-//                    Box(modifier = Modifier
-//                        .fillMaxSize()
-//                       ){
                 Image(
                     painter = painterResource(id = R.drawable.chat_background),
                     contentDescription = null,
@@ -689,9 +643,6 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
                         .graphicsLayer(alpha = 0.2f),
                     contentScale = ContentScale.Crop
                 )
-//
-//                        Box(modifier = Modifier.fillMaxSize()
-//                         ){
 
                 Column(
                     modifier = Modifier
@@ -699,179 +650,161 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
                         .fillMaxSize()
                         .padding(top = 60.dp)
                         .imePadding()
-//                        .animateContentSize()
                 ) {
 
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(1f),
+                        state = listState,
+                        reverseLayout = false,
+                    ) {
+                        Log.d("listrgfaasdfa", chatState.messageList.toString())
+                        itemsIndexed(chatState.messageList) { index, message ->
 
-//                    Spacer(modifier = Modifier.height(10.dp))
+                            val isLastMessage = index == chatState.messageList.size - 1
+                            val bottomPadding = if (isLastMessage) 5.dp else 0.dp
 
+                            val currentDate = message.timeStamp!!.substring(0, 10)
 
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-//                            .animateContentSize()
-//                            .padding(bottom = if (imeVisible) 5.dp else 0.dp)
-//                            .padding(bottom = if (isScrollingUp.value) 0.dp else imePadding)
+                            val shouldShowDateHeader = index == 0 ||
+                                    chatState.messageList[index - 1].timeStamp!!.substring(
+                                        0,
+                                        10
+                                    ) != currentDate
 
-//                                        .windowInsetsPadding(WindowInsets.ime)
-//                                        .padding(bottom = imePadding)
-//                            .imePadding()
-
-                                .weight(1f),
-                            state = listState,
-                            reverseLayout = false,
-//                        verticalArrangement = Arrangement.Bottom
-                        ) {
-                            Log.d("listrgfaasdfa", chatState.messageList.toString())
-                            itemsIndexed(chatState.messageList) { index, message ->
-
-                                val isLastMessage = index == chatState.messageList.size - 1
-                                val bottomPadding = if (isLastMessage) 5.dp else 0.dp
-
-                                val currentDate = message.timeStamp!!.substring(0, 10)
-
-                                val shouldShowDateHeader = index == 0 ||
-                                        chatState.messageList[index - 1].timeStamp!!.substring(
-                                            0,
-                                            10
-                                        ) != currentDate
-
-                                if (shouldShowDateHeader) {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 8.dp),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            text = formatDate(currentDate),
-                                            color = background_white,
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
-                                }
-
-
-                                if (message.message != "deleted") {
-                                    var dismissState = rememberSwipeToDismissBoxState()
-                                    Log.d("heiehefhjdnkfsaf", message.toString())
-                                    val canSwipeRight = message.imgUrl != null
-                                    dismissState = rememberSwipeToDismissBoxState(
-                                        confirmValueChange = {
-                                            if (it == SwipeToDismissBoxValue.EndToStart && message.senderId == matchUserViewModel.id.value) {
-                                                false
-                                            } else if (it == SwipeToDismissBoxValue.StartToEnd && message.senderId == userDetailViewModel.id.value) {
-                                                false
-                                            } else if (it == SwipeToDismissBoxValue.StartToEnd && !canSwipeRight) {
-                                                false
-                                            } else if (it == SwipeToDismissBoxValue.EndToStart) {
-                                                coroutineScope.launch {
-                                                    dismissState.reset()
-                                                }
-                                                mId = message._id!!
-                                                isdownload = false
-                                                showDialog = true
-                                                true
-                                            } else if (it == SwipeToDismissBoxValue.StartToEnd) {
-                                                coroutineScope.launch {
-                                                    dismissState.reset()
-                                                }
-                                                imageUrl = message.imgUrl!!
-                                                isdownload = true
-                                                showDialog = true
-                                                true
-                                            } else {
-                                                true
-                                            }
-                                        }
+                            if (shouldShowDateHeader) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = formatDate(currentDate),
+                                        color = background_white,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Bold
                                     )
-                                    androidx.compose.material3.SwipeToDismissBox(
-                                        state = dismissState,
-                                        backgroundContent = {
-                                            when (dismissState.targetValue) {
-                                                SwipeToDismissBoxValue.EndToStart -> {
-                                                    if (message.senderId == userDetailViewModel.id.value) {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .fillMaxSize()
-                                                                .padding(end = 16.dp),
-                                                            contentAlignment = Alignment.CenterEnd
-                                                        ) {
-                                                            Icon(
-                                                                imageVector = Icons.Default.Delete,
-                                                                contentDescription = "Delete",
-                                                                tint = Color.Red,
-                                                                modifier = Modifier.size(32.dp)
-                                                            )
+                                }
+                            }
 
-                                                        }
-                                                    }
-                                                }
 
-                                                SwipeToDismissBoxValue.StartToEnd -> {
-                                                    if (canSwipeRight && message.senderId == matchUserViewModel.id.value) {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .fillMaxSize()
-                                                                .padding(start = 16.dp),
-                                                            contentAlignment = Alignment.CenterStart
-                                                        ) {
-                                                            Icon(
-                                                                imageVector = Icons.Default.Download,
-                                                                contentDescription = "Download",
-                                                                tint = Color.Green,
-                                                                modifier = Modifier.size(32.dp)
-                                                            )
-                                                        }
-                                                    }
-                                                }
-
-                                                else -> {}
+                            if (message.message != "deleted") {
+                                var dismissState = rememberSwipeToDismissBoxState()
+                                Log.d("heiehefhjdnkfsaf", message.toString())
+                                val canSwipeRight = message.imgUrl != null
+                                dismissState = rememberSwipeToDismissBoxState(
+                                    confirmValueChange = {
+                                        if (it == SwipeToDismissBoxValue.EndToStart && message.senderId == matchUserViewModel.id.value) {
+                                            false
+                                        } else if (it == SwipeToDismissBoxValue.StartToEnd && message.senderId == userDetailViewModel.id.value) {
+                                            false
+                                        } else if (it == SwipeToDismissBoxValue.StartToEnd && !canSwipeRight) {
+                                            false
+                                        } else if (it == SwipeToDismissBoxValue.EndToStart) {
+                                            coroutineScope.launch {
+                                                dismissState.reset()
                                             }
+                                            mId = message._id!!
+                                            isdownload = false
+                                            showDialog = true
+                                            true
+                                        } else if (it == SwipeToDismissBoxValue.StartToEnd) {
+                                            coroutineScope.launch {
+                                                dismissState.reset()
+                                            }
+                                            imageUrl = message.imgUrl!!
+                                            isdownload = true
+                                            showDialog = true
+                                            true
+                                        } else {
+                                            true
                                         }
-                                    ) {
-                                        MessageBox(
-                                            padding = bottomPadding,
-                                            message = message,
-                                            profileDetailViewModel = userDetailViewModel,
-                                        )
                                     }
-                                } else {
+                                )
+                                androidx.compose.material3.SwipeToDismissBox(
+                                    state = dismissState,
+                                    backgroundContent = {
+                                        when (dismissState.targetValue) {
+                                            SwipeToDismissBoxValue.EndToStart -> {
+                                                if (message.senderId == userDetailViewModel.id.value) {
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .fillMaxSize()
+                                                            .padding(end = 16.dp),
+                                                        contentAlignment = Alignment.CenterEnd
+                                                    ) {
+                                                        Icon(
+                                                            imageVector = Icons.Default.Delete,
+                                                            contentDescription = "Delete",
+                                                            tint = Color.Red,
+                                                            modifier = Modifier.size(32.dp)
+                                                        )
+
+                                                    }
+                                                }
+                                            }
+
+                                            SwipeToDismissBoxValue.StartToEnd -> {
+                                                if (canSwipeRight && message.senderId == matchUserViewModel.id.value) {
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .fillMaxSize()
+                                                            .padding(start = 16.dp),
+                                                        contentAlignment = Alignment.CenterStart
+                                                    ) {
+                                                        Icon(
+                                                            imageVector = Icons.Default.Download,
+                                                            contentDescription = "Download",
+                                                            tint = Color.Green,
+                                                            modifier = Modifier.size(32.dp)
+                                                        )
+                                                    }
+                                                }
+                                            }
+
+                                            else -> {}
+                                        }
+                                    }
+                                ) {
                                     MessageBox(
                                         padding = bottomPadding,
                                         message = message,
-                                        profileDetailViewModel = userDetailViewModel
+                                        profileDetailViewModel = userDetailViewModel,
                                     )
                                 }
+                            } else {
+                                MessageBox(
+                                    padding = bottomPadding,
+                                    message = message,
+                                    profileDetailViewModel = userDetailViewModel
+                                )
+                            }
 
-                                if (index == chatState.messageList.lastIndex) {
-                                    if (map.contains(chatId) && map[chatId]?.contains(
-                                            matchUserViewModel.id.value
-                                        ) == true
+                            if (index == chatState.messageList.lastIndex) {
+                                if (map.contains(chatId) && map[chatId]?.contains(
+                                        matchUserViewModel.id.value
+                                    ) == true
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 4.dp)
                                     ) {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(vertical = 4.dp)
-                                        ) {
-                                            DotsWaveAnimation(chat_dark)
-//                                            Spacer(modifier = Modifier.height(7.dp))
-                                        }
+                                        DotsWaveAnimation(chat_dark)
                                     }
                                 }
-
                             }
 
                         }
+
+                    }
 
 
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-//                            .animateContentSize()
-//                            .imePadding()
-//                            .windowInsetsPadding(WindowInsets.ime)
                     ) {
                         MessageInputField(
                             chatId = chatId,
@@ -890,9 +823,7 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
                                     imgStr = uriToBase64(context, localUri)
 
                                 }
-                                Log.d("uriisherersss", localUri.toString())
                                 coroutineScope.launch {
-                                    Log.d("insideuri", localUri.toString())
                                     if (localUri != null) {
                                         imageViewModel.saveChatImagetoSupabase(
                                             context = context,
@@ -908,8 +839,6 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
                                 }
                             }
 
-
-                            Log.d("uriisherersss", cimage.toString())
                             event(
                                 ChatEvent.SendMessage(
                                     Message(
@@ -928,7 +857,8 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
                                     title = matchUserViewModel.username.value,
                                     body = message.toString(),
                                     type = "chat",
-                                    imgUrl = "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/chat-images//${id}.jpg" ?: "no"
+                                    imgUrl = "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/chat-images//${id}.jpg"
+                                        ?: "no"
                                 )
 
                                 chatViewModel.sendNotification(notification)
@@ -938,7 +868,6 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
                         }
                     }
                 }
-//                        }
 
 
                 if (bimage != null) {
@@ -981,31 +910,29 @@ val acc by matchUserViewModel.acceptStatus.collectAsState()
 
 
                 }
-//                    }
             }
 
             if (showAccDialog) {
                 MyAlertDialogAcc(onDismiss = { showAccDialog = false }, onConfirm = {
-                   coroutineScope.launch {
-                       matchUserViewModel.updateStatus(
-                           id = chatId,
-                           count = matchUserViewModel.acceptStatus.value + 1,
-                           userId = userDetailViewModel.id.value
-                       )
-                       acc_status = matchUserViewModel.acceptStatus.value + 1
-Log.d("asdasdasdasdas","${matchUserViewModel.acceptStatus.value} $acc_status")
-                       chatViewModel.sendCountUpdate(chatRoomId = chatId, count = acc_status)
-                   }
+                    coroutineScope.launch {
+                        matchUserViewModel.updateStatus(
+                            id = chatId,
+                            count = matchUserViewModel.acceptStatus.value + 1,
+                            userId = userDetailViewModel.id.value
+                        )
+                        acc_status = matchUserViewModel.acceptStatus.value + 1
+                        chatViewModel.sendCountUpdate(chatRoomId = chatId, count = acc_status)
+                    }
                 })
             }
 
             if (showDelDialog) {
                 MyAlertDialogDel(onDismiss = { showDelDialog = false }, onConfirm = {
-                  coroutineScope.launch {
-                      chatViewModel.deleteChatRoom(chatId)
-                      greetingViewModel.deleteMatchUser()
-                      greetingViewModel.deleteMatchFcm()
-                  }
+                    coroutineScope.launch {
+                        chatViewModel.deleteChatRoom(chatId)
+                        greetingViewModel.deleteMatchUser()
+                        greetingViewModel.deleteMatchFcm()
+                    }
                     showLottie = true
                     backstack = false
                 })
@@ -1055,7 +982,6 @@ Log.d("asdasdasdasdas","${matchUserViewModel.acceptStatus.value} $acc_status")
                     LottieAnimation(
                         composition,
                         iterations = LottieConstants.IterateForever,
-//                        modifier = Modifier.size(150.dp),
                         renderMode = RenderMode.HARDWARE
                     )
                 }
@@ -1063,4 +989,4 @@ Log.d("asdasdasdasdas","${matchUserViewModel.acceptStatus.value} $acc_status")
         }
     }
 }
-//}
+

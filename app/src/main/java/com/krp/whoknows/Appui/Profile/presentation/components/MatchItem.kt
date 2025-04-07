@@ -33,12 +33,6 @@ import com.krp.whoknows.ui.theme.ordColor
  * Created by KUSHAL RAJ PAREEK on 07,March,2025
  */
 
-//@Preview
-//@Composable
-//private fun Run() {
-//    MatchItem(icon = Icons.Default.Cookie, status = "match")
-//}
-
 @Composable
 fun MatchItem(modifier: Modifier = Modifier, icon: ImageVector, status: Boolean) {
     Box(
@@ -46,19 +40,20 @@ fun MatchItem(modifier: Modifier = Modifier, icon: ImageVector, status: Boolean)
             .border(1.dp, ordColor, RoundedCornerShape(13.dp))
             .clip(RoundedCornerShape(13.dp))
             .background(ordColor.copy(alpha = 0.2f))
-            .padding(6.dp).clickable(enabled = false, onClick = {}),
+            .padding(6.dp)
+            .clickable(enabled = false, onClick = {}),
         contentAlignment = Alignment.Center,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 imageVector = icon,
                 contentDescription = "match Icon",
-                tint =  if(status) heartColor else Bpink,
+                tint = if (status) heartColor else Bpink,
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = if(status) "matched" else "single",
+                text = if (status) "matched" else "single",
                 color = ordColor,
                 maxLines = 1
             )

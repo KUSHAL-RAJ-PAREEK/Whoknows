@@ -8,5 +8,5 @@ data class CreateMatchState(
     var isLoading: Boolean = false,
     var isSuccess: Boolean = false,
     val errorMessage: String? = null,
-    val statusCode : Int?= null,
+    val statusCode: Int? = null,
 )

@@ -26,11 +26,18 @@ class OTPVerificationViewModel : ViewModel(), KoinComponent {
 
     fun onEvent(event: OTPVerificationEvent) {
         when (event) {
-            is OTPVerificationEvent.VerifyOtp -> verifyOtp(event.otpDetails.otp, event.otpDetails.pNumber, event.otpDetails.countryCode)
-           is OTPVerificationEvent.ResendOtp -> resendOtp(otpDetail = OtpDetail(
-                event.otpSend.countryCode,
-               event.otpSend.pNumber
-            ))
+            is OTPVerificationEvent.VerifyOtp -> verifyOtp(
+                event.otpDetails.otp,
+                event.otpDetails.pNumber,
+                event.otpDetails.countryCode
+            )
+
+            is OTPVerificationEvent.ResendOtp -> resendOtp(
+                otpDetail = OtpDetail(
+                    event.otpSend.countryCode,
+                    event.otpSend.pNumber
+                )
+            )
         }
     }
 
@@ -41,9 +48,14 @@ class OTPVerificationViewModel : ViewModel(), KoinComponent {
             try {
                 val otpToVerify = SendOTP(countryCode, phoneNumber, otp)
                 val response = ktorClient.verifyOtp(otpToVerify)
-                _state.value = OTPVerificationState(isOtpVerified = true, successMessage = response.body, statusCode = response.statusCode)
+                _state.value = OTPVerificationState(
+                    isOtpVerified = true,
+                    successMessage = response.body,
+                    statusCode = response.statusCode
+                )
             } catch (e: Exception) {
-                _state.value = OTPVerificationState(errorMessage = e.localizedMessage ?: "An error occurred")
+                _state.value =
+                    OTPVerificationState(errorMessage = e.localizedMessage ?: "An error occurred")
             }
         }
     }

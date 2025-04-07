@@ -73,7 +73,7 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MapScreen(navController : NavController, context: Context) {
+fun MapScreen(navController: NavController, context: Context) {
     var showMap by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     var location by remember { mutableStateOf(LatLng(0.0, 0.0)) }
@@ -83,18 +83,6 @@ fun MapScreen(navController : NavController, context: Context) {
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(location, 15f)
     }
-
-//    LaunchedEffect(cameraPositionState.position.target) {
-//        location = cameraPositionState.position.target
-//        Log.d("Updated Location", "New location: ${location.latitude}, ${location.longitude}")
-//    }
-//
-//    LaunchedEffect(location) {
-//        val loc = reverseGeocodeLocation(context,location)
-//        searchQuery = if(loc != null) TextFieldValue(loc) else TextFieldValue("")
-//        Log.d("dofkapodkfapodkfs" ,loc.toString())
-//    }
-
 
     LaunchedEffect(searchQuery.text) {
         if (searchQuery.text.isNotBlank()) {
@@ -115,62 +103,61 @@ fun MapScreen(navController : NavController, context: Context) {
         showMap = true
     }
 
-
-
-//    if (showMap) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(WindowInsets.statusBars.asPaddingValues())
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(WindowInsets.statusBars.asPaddingValues())
+    ) {
+        MyMap(
+            context = context,
+            cameraPositionState = cameraPositionState,
+            mapProperties = mapProperties,
         ) {
-            MyMap(
-                context = context,
-                cameraPositionState = cameraPositionState,
-                mapProperties = mapProperties,
-            ) {
-                location = it
-                Log.d("mapnewpos", it.toString())
-            }
+            location = it
+        }
 
-            SearchBar(searchQuery = searchQuery, onSearch = { newValue -> searchQuery = newValue })
+        SearchBar(searchQuery = searchQuery, onSearch = { newValue -> searchQuery = newValue })
 
-            Image(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .size(35.dp), imageVector = Icons.Default.LocationOn,
-                colorFilter = ColorFilter.tint(ordColor),
-                contentDescription = ""
+        Image(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .size(35.dp), imageVector = Icons.Default.LocationOn,
+            colorFilter = ColorFilter.tint(ordColor),
+            contentDescription = ""
+        )
+    }
+
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp),
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        FloatingActionButton(
+            onClick = {
+                navController.popBackStack()
+                navController.navigate(
+                    com.krp.whoknows.Navigation.LatLong(
+                        location.latitude.toString(),
+                        location.longitude.toString()
+                    )
+                )
+            },
+            shape = CircleShape,
+            containerColor = ordColor,
+            modifier = Modifier
+                .padding(bottom = if (imeHeight > 0.dp) imeHeight + 20.dp else 40.dp)
+                .size(56.dp)
+                .shadow(8.dp, CircleShape)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                contentDescription = "Next",
+                tint = Color.White
             )
         }
-
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp),
-            contentAlignment = Alignment.BottomEnd
-        ) {
-            FloatingActionButton(
-                onClick = {
-                    Log.d("before transmit","${location.latitude} ${location.longitude}")
-                    navController.popBackStack()
-                    navController.navigate(com.krp.whoknows.Navigation.LatLong(location.latitude.toString(),location.longitude.toString()))
-                },
-                shape = CircleShape,
-                containerColor = ordColor,
-                modifier = Modifier
-                    .padding(bottom = if (imeHeight > 0.dp) imeHeight + 20.dp else 40.dp)
-                    .size(56.dp)
-                    .shadow(8.dp, CircleShape)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowForward,
-                    contentDescription = "Next",
-                    tint = Color.White
-                )
-            }
-        }
-//    }
+    }
 }
 
 suspend fun geocodeLocation(context: Context, query: String): LatLng? {
@@ -190,20 +177,21 @@ suspend fun geocodeLocation(context: Context, query: String): LatLng? {
 }
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(searchQuery: TextFieldValue, onSearch: (TextFieldValue) -> Unit) {
     var localQuery by remember { mutableStateOf(searchQuery) }
-    OutlinedTextField(value = localQuery,
+    OutlinedTextField(
+        value = localQuery,
         onValueChange = {
-            localQuery = it},
+            localQuery = it
+        },
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = ordColor,
             unfocusedBorderColor = Color.Gray
         ),
         shape = RoundedCornerShape(20.dp),
-        label = { Text(text = "Search Location")},
+        label = { Text(text = "Search Location") },
         singleLine = true,
         keyboardOptions = KeyboardOptions.Default.copy(
             imeAction = ImeAction.Search
@@ -218,5 +206,6 @@ fun SearchBar(searchQuery: TextFieldValue, onSearch: (TextFieldValue) -> Unit) {
                 } else {
                     false
                 }
-            })
+            }
+    )
 }

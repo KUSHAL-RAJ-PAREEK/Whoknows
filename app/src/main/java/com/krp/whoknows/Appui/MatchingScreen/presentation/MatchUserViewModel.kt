@@ -25,7 +25,8 @@ import kotlin.getValue
  * Created by Kushal Raj Pareek on 22-03-2025 23:04
  */
 
-class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(),KoinComponent{
+class MatchUserViewModel(private val userRepository: UserRepository) : ViewModel(),
+    KoinComponent {
 
     private val ktorClient: KtorClient by inject()
 
@@ -36,7 +37,7 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
     private val _dob = MutableStateFlow(LocalDate.now())
     val dob: StateFlow<LocalDate> = _dob
 
-    private val _fcmToken= MutableStateFlow("")
+    private val _fcmToken = MutableStateFlow("")
     val fcmToken: StateFlow<String> = _fcmToken
 
     private val _vis = MutableStateFlow<Boolean?>(false)
@@ -54,14 +55,14 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
     private val _mImage = MutableStateFlow("")
     val mImage: StateFlow<String> = _mImage
 
-    private  val _fImage = MutableStateFlow("")
-    val fImage : StateFlow<String> = _fImage
+    private val _fImage = MutableStateFlow("")
+    val fImage: StateFlow<String> = _fImage
 
-    private  val _sImage = MutableStateFlow("")
-    val sImage : StateFlow<String> = _sImage
+    private val _sImage = MutableStateFlow("")
+    val sImage: StateFlow<String> = _sImage
 
-    private  val _tImage = MutableStateFlow("")
-    val tImage : StateFlow<String> = _tImage
+    private val _tImage = MutableStateFlow("")
+    val tImage: StateFlow<String> = _tImage
 
     private val _pnumber = MutableStateFlow("")
     val pnumber: StateFlow<String> = _pnumber
@@ -109,25 +110,24 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
     val interests: StateFlow<List<String>?> = _interests
 
 
-    private val _posts =  MutableStateFlow<List<String>?>(null)
+    private val _posts = MutableStateFlow<List<String>?>(null)
     val posts: StateFlow<List<String>?> = _posts
 
-    private  val _acceptStatus = MutableStateFlow(0)
-    val acceptStatus  = _acceptStatus
+    private val _acceptStatus = MutableStateFlow(0)
+    val acceptStatus = _acceptStatus
 
-    private  val _updation = MutableStateFlow(0)
-    val updation  = _updation
+    private val _updation = MutableStateFlow(0)
+    val updation = _updation
 
-    private  val _clicked = MutableStateFlow(false)
-    val clicked  = _clicked
+    private val _clicked = MutableStateFlow(false)
+    val clicked = _clicked
 
 
-
-    fun updateInterest(interests : List<String>) {
+    fun updateInterest(interests: List<String>) {
         _interests.value = interests
     }
 
-    fun updatePosts(posts : List<String>) {
+    fun updatePosts(posts: List<String>) {
         _posts.value = posts
     }
 
@@ -139,9 +139,10 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
         _dobs.value = dobs
     }
 
-    fun updateUpdation(){
+    fun updateUpdation() {
         _updation.value = 1
     }
+
     fun updatePnumber(pno: String) {
         _pnumber.value = pno
     }
@@ -171,16 +172,18 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
         _longitude.value = long
     }
 
-    fun updateMatch(flag : Boolean) {
+    fun updateMatch(flag: Boolean) {
         _isMatch.value = flag
     }
 
-    fun updateJwt(jwt : String){
+    fun updateJwt(jwt: String) {
         _jwt.value = jwt
     }
+
     fun updateLocation(location: String) {
         _location.value = location
     }
+
     fun updateId(id: String) {
         _id.value = id
     }
@@ -188,12 +191,15 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
     fun updatemImage(img: String) {
         _mImage.value = img
     }
+
     fun updatefImage(img: String) {
         _fImage.value = img
     }
+
     fun updatesImage(img: String) {
         _sImage.value = img
     }
+
     fun updatetImage(img: String) {
         _tImage.value = img
     }
@@ -201,29 +207,33 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
     fun updatePreGender(preGender: String) {
         _preGender.value = preGender
     }
+
     fun updatePreAgeRange(preAgeRange: String) {
-        Log.d("prefreefe",preAgeRange)
+        Log.d("prefreefe", preAgeRange)
         _preAgeRange.value = preAgeRange
     }
+
     fun updateFPreAgeRange(preAgeFRange: String) {
         _preAgeFRange.value = preAgeFRange
     }
+
     fun updateTPreAgeRange(preAgeTRange: String) {
         _preAgeTRange.value = preAgeTRange
     }
+
     fun updateGeoRadiusRange(geoRadiusRange: String) {
         _geoRadiusRange.value = geoRadiusRange
     }
 
-    fun updateAcceptStatus(count : Int){
+    fun updateAcceptStatus(count: Int) {
         _acceptStatus.value = count
     }
 
-    fun updateFcm(fcm: String){
+    fun updateFcm(fcm: String) {
         _fcmToken.value = fcm
     }
 
-    fun updateClicked(flag: Boolean){
+    fun updateClicked(flag: Boolean) {
         _clicked.value = flag
     }
 
@@ -233,8 +243,8 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
         }
     }
 
-    init{
-        viewModelScope.launch{
+    init {
+        viewModelScope.launch {
             _matchUserState.value = getMUser()
         }
     }
@@ -244,63 +254,56 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
     }
 
     fun deleteUser() {
-        Log.d("delteingusers","yep")
         viewModelScope.launch {
             userRepository.deleteMatchUser()
         }
     }
 
-    fun getStatus(id : String) {
-        Log.d("afsdsffs","$id")
+    fun getStatus(id: String) {
         viewModelScope.launch {
             try {
                 val response = ktorClient.getAcceptation(id = id)
 
-                if(response.status == 200){
-                    Log.d("hellogotStatus",response.status.toString())
+                if (response.status == 200) {
                     updateAcceptStatus(response.count)
                 }
             } catch (e: Exception) {
-                Log.d("erroringetstatus",e.message.toString())
-
+                Log.e("error", e.message.toString())
             }
         }
     }
 
-    fun updateStatus(id : String, count : Int,userId : String) {
-        Log.d("afsdsffs","$id")
+    fun updateStatus(id: String, count: Int, userId: String) {
         viewModelScope.launch {
             try {
-                val response = ktorClient.updateAcceptation(id = id,count = count, userId = userId)
-                if(response.statusCode== 200){
-                   updateAcceptStatus(count)
+                val response = ktorClient.updateAcceptation(id = id, count = count, userId = userId)
+                if (response.statusCode == 200) {
+                    updateAcceptStatus(count)
                     updateClicked(true)
-                    Log.d("gotthething",response.toString())
                 }
             } catch (e: Exception) {
-                Log.d("erroringetstatus",e.message.toString())
+                Log.e("error", e.message.toString())
 
             }
         }
     }
 
 
-    fun updateVis(flag : Boolean){
+    fun updateVis(flag: Boolean) {
         _vis.value = flag
     }
 
-    fun updateClicked(accid: String,id : String) {
-        Log.d("afsdsffs","$id")
+    fun updateClicked(accid: String, id: String) {
         viewModelScope.launch {
             try {
                 val response = ktorClient.getClickStatus(accid = accid, id = id)
-                if(response == 200){
+                if (response == 200) {
                     updateClicked(true)
-                }else{
+                } else {
                     updateClicked(false)
                 }
             } catch (e: Exception) {
-                Log.d("erroringetstatus",e.message.toString())
+                Log.e("error", e.message.toString())
 
             }
         }
@@ -335,7 +338,4 @@ class MatchUserViewModel(private val userRepository: UserRepository,):ViewModel(
         _acceptStatus.value = 0
         _clicked.value = false
     }
-
-
-
 }

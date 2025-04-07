@@ -67,16 +67,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
     @OptIn(DelicateCoroutinesApi::class)
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        Log.d("FCMssssssssssssssssssssssssssss", "$token")
         GlobalScope.launch {
             try {
-                greetingViewModel.saveFcm(FcmEntity(id = 1, fcm_token =  token))
+                greetingViewModel.saveFcm(FcmEntity(id = 1, fcm_token = token))
                 profileDetailViewModel.updateFcm(token)
             } catch (e: Exception) {
                 Log.e("FCM", "Error uploading token: ${e.message}")
             }
         }
-        Log.d("FCM", "Token: $token")
     }
 
     @SuppressLint("ServiceCast")
@@ -92,7 +90,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
     }
 
 
-
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         if (isAppInForeground()) {
             Log.d("FCM", "App is in foreground, notification data: ${remoteMessage.data}")
@@ -103,27 +100,32 @@ class MyFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
                 val body = it["body"]
                 val img = it["imgUrl"]
 
-                Log.d("zasfknajfshajsfhkjabsfkjabskjfbajkf","$type $title $img")
+                Log.d("zasfknajfshajsfhkjabsfkjabskjfbajkf", "$type $title $img")
                 if (type == "chat") {
-                    if(img != "no"){
-                        ImageNotification(context = this, title =  title, body = body, imageUrl = img)
-                    }else{
+                    if (img != "no") {
+                        ImageNotification(
+                            context = this,
+                            title = title,
+                            body = body,
+                            imageUrl = img
+                        )
+                    } else {
                         showNotification(title, body)
                     }
                 } else if (type == "buzz") {
-                    showNotificationWithAlarm(this,title, body)
+                    showNotificationWithAlarm(this, title, body)
                 }
             }
         }
     }
 
 
-
     @SuppressLint("LaunchActivityFromNotification")
-    private fun showNotificationWithAlarm(context : Context, title: String?, body: String?) {
+    private fun showNotificationWithAlarm(context: Context, title: String?, body: String?) {
 
         val intent = Intent(context, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(context, 0, intent,  PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent =
+            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
 
         val notification = NotificationCompat.Builder(context, "KRP")
             .setContentTitle(title)
@@ -141,7 +143,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
         ringtone?.play()
     }
 
-    class NotificationReceiver : BroadcastReceiver(){
+    class NotificationReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             ringtone?.stop()
         }
@@ -154,7 +156,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
 
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
+            val channel =
+                NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
             notificationManager.createNotificationChannel(channel)
         }
 
@@ -172,12 +175,13 @@ class MyFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
 
 private fun ImageNotification(context: Context, title: String?, body: String?, imageUrl: String?) {
     val channelId = "KRP"
-    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val notificationManager =
+        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val channel = NotificationChannel(
             channelId,
-         "KRP",
+            "KRP",
             NotificationManager.IMPORTANCE_HIGH
         ).apply {
             enableLights(true)
@@ -200,7 +204,9 @@ private fun ImageNotification(context: Context, title: String?, body: String?, i
             val bitmap = getBitmapFromUrl(imageUrl)
 
             if (bitmap != null) {
-                builder.setStyle(NotificationCompat.BigPictureStyle().bigPicture(bitmap).bigLargeIcon(bitmap))
+                builder.setStyle(
+                    NotificationCompat.BigPictureStyle().bigPicture(bitmap).bigLargeIcon(bitmap)
+                )
                     .setSmallIcon(R.drawable.heart)
             }
             notificationManager.notify(System.currentTimeMillis().toInt(), builder.build())

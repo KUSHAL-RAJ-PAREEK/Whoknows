@@ -92,23 +92,23 @@ import kotlinx.coroutines.withContext
  */
 
 
-
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @SuppressLint("StateFlowValueCalledInComposition", "SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LatLong(viewModel: InfoViewModel,
-            event : (CreateUserEvent) -> Unit,
-            jwtViewModel: JWTViewModel,
-            greetingViewModel: GreetingViewModel,
-            state :CreateUserState,
-            navController: NavController,
-            latLong: LatLongs,
+fun LatLong(
+    viewModel: InfoViewModel,
+    event: (CreateUserEvent) -> Unit,
+    jwtViewModel: JWTViewModel,
+    greetingViewModel: GreetingViewModel,
+    state: CreateUserState,
+    navController: NavController,
+    latLong: LatLongs,
 ) {
 
 
-    var pNumber= greetingViewModel.pNumber.collectAsState()
-    var jwt= greetingViewModel.jwtToken.collectAsState()
+    var pNumber = greetingViewModel.pNumber.collectAsState()
+    var jwt = greetingViewModel.jwtToken.collectAsState()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
@@ -135,49 +135,45 @@ fun LatLong(viewModel: InfoViewModel,
         }
     }
 
-LaunchedEffect(state.isLoading) {
-    Log.d("afkmaskfsmasfsa", state.isSuccess.toString())
-    if(state.isSuccess){
-        val details = state.successMessage
-        val user = InterUserDetail(
-            id = details?.id!!,
-            ageGap = details.ageGap!!,
-            username = details.username!!,
-            posts = details.posts!!,
-            interests = details.interests!!,
-            gender = details.gender!!,
-            preferredGender = details.preferredGender!!,
-            geoRadiusRange = details.geoRadiusRange.toString(),
-            dob = details.dob!!,
-            bio = details.bio?:"hey",
-            latitude = details.latitude!!,
-            longitude = details.longitude!!,
-            pnumber = details.pnumber!!
-        )
-        jwtViewModel.saveUser(user)
-
-        Log.d("tokenisninlatlong",fcmToken.toString())
-        delay(1000)
-        coroutineScope.launch {
-            if(fcmToken == null){
-                val response = greetingViewModel.getToken(greetingViewModel.userId.value!!)
-                if(response.statusCode == 200){
-                    greetingViewModel.saveFcm(FcmEntity(id = 1, fcm_token = response.token!!))
+    LaunchedEffect(state.isLoading) {
+        Log.d("afkmaskfsmasfsa", state.isSuccess.toString())
+        if (state.isSuccess) {
+            val details = state.successMessage
+            val user = InterUserDetail(
+                id = details?.id!!,
+                ageGap = details.ageGap!!,
+                username = details.username!!,
+                posts = details.posts!!,
+                interests = details.interests!!,
+                gender = details.gender!!,
+                preferredGender = details.preferredGender!!,
+                geoRadiusRange = details.geoRadiusRange.toString(),
+                dob = details.dob!!,
+                bio = details.bio ?: "hey",
+                latitude = details.latitude!!,
+                longitude = details.longitude!!,
+                pnumber = details.pnumber!!
+            )
+            jwtViewModel.saveUser(user)
+            delay(1000)
+            coroutineScope.launch {
+                if (fcmToken == null) {
+                    val response = greetingViewModel.getToken(greetingViewModel.userId.value!!)
+                    if (response.statusCode == 200) {
+                        greetingViewModel.saveFcm(FcmEntity(id = 1, fcm_token = response.token!!))
+                    }
+                } else {
+                    greetingViewModel.saveFcm(FcmEntity(id = 1, fcm_token = fcmToken!!))
                 }
-            }else{
-                val response = greetingViewModel.uploadToken(id = details?.id!!, token = fcmToken!!)
-                greetingViewModel.saveFcm(FcmEntity(id = 1, fcm_token = fcmToken!!))
-                Log.d("token uploaded",response.toString())
+
             }
 
+            navController.popBackStack()
+            navController.navigate(com.krp.whoknows.Navigation.GreetingScreen)
         }
 
-        navController.popBackStack()
-        navController.navigate(com.krp.whoknows.Navigation.GreetingScreen)
+
     }
-
-
-}
     LaunchedEffect(Unit) {
         locationPermissionLauncher.launch(
             arrayOf(
@@ -189,11 +185,10 @@ LaunchedEffect(state.isLoading) {
 
     var text by remember { mutableStateOf(TextFieldValue("")) }
 
-    LaunchedEffect(Unit){
-        if(latLong.latitude != "" && latLong.longitude != ""){
-            Log.d("latlongcome", "LatLong: $latLong")
-          val loc = getLocationName(latLong.latitude.toDouble(), latLong.longitude.toDouble(),context)
-            Log.d("latlongcome", loc.toString())
+    LaunchedEffect(Unit) {
+        if (latLong.latitude != "" && latLong.longitude != "") {
+            val loc =
+                getLocationName(latLong.latitude.toDouble(), latLong.longitude.toDouble(), context)
             text = TextFieldValue(loc.toString())
         }
     }
@@ -201,7 +196,7 @@ LaunchedEffect(state.isLoading) {
     var isFocused by remember { mutableStateOf(false) }
     val imeHeight = WindowInsets.ime.getBottom(LocalDensity.current).toDp()
     BackHandler {
-        navController.navigate(com.krp.whoknows.Navigation.DOBScreen){
+        navController.navigate(com.krp.whoknows.Navigation.DOBScreen) {
             popUpTo(0) { inclusive = true }
         }
     }
@@ -220,22 +215,28 @@ LaunchedEffect(state.isLoading) {
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack, contentDescription = "Back arrow",
-                Modifier.size(35.dp).clickable{
-                    navController.navigate(com.krp.whoknows.Navigation.GeoRadiusRange){
-                        popUpTo(0) { inclusive = true }
-                    }
-                },
+                Modifier
+                    .size(35.dp)
+                    .clickable {
+                        navController.navigate(com.krp.whoknows.Navigation.GeoRadiusRange) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    },
                 tint = ordColor
             )
         }
 
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 15.dp)
-            .padding(top = 10.dp)){
-            Text(text = "What's your location ?",
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 15.dp)
+                .padding(top = 10.dp)
+        ) {
+            Text(
+                text = "What's your location ?",
                 fontFamily = FontFamily(Font(R.font.noto_sans_khanada)),
-                fontSize = 20.sp)
+                fontSize = 20.sp
+            )
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -248,7 +249,6 @@ LaunchedEffect(state.isLoading) {
                         imageVector = Icons.Filled.LocationOn,
                         contentDescription = "",
                         modifier = Modifier.clickable {
-                            Log.d("GIVENORNOT", hasLocationPermission.toString())
                             if (hasLocationPermission) {
                                 navController.navigate(MapScreen)
                                 Log.d("iscomingthere", "LatLong:")
@@ -271,7 +271,7 @@ LaunchedEffect(state.isLoading) {
 
                     }
                     .onFocusChanged { isFocused = it.isFocused },
-                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp,color = Color.Black),
+                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp, color = Color.Black),
                 placeholder = { Text("Enter your Location") },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = ordColor,
@@ -280,7 +280,8 @@ LaunchedEffect(state.isLoading) {
                 shape = RoundedCornerShape(20.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Search)
+                    imeAction = ImeAction.Search
+                )
             )
         }
         Box(
@@ -293,21 +294,23 @@ LaunchedEffect(state.isLoading) {
                 onClick = {
 
                     if (text.text.isBlank()) {
-                        DynamicToast.make(context,"Click Icon to select Location",
-                            ContextCompat.getDrawable(context, R.drawable.location_p)?.mutate(),lightOrdColor.toArgb(),light_yellow.toArgb()).show()
+                        DynamicToast.make(
+                            context,
+                            "Click Icon to select Location",
+                            ContextCompat.getDrawable(context, R.drawable.location_p)?.mutate(),
+                            lightOrdColor.toArgb(),
+                            light_yellow.toArgb()
+                        ).show()
                     } else {
-                        if(pNumber?.value == null){
-                            Log.d("asfddffffffffffff", "null")
-
-                        }else{
-                            Log.d("asfddffffffffffff", pNumber.value.toString())
+                        if (pNumber?.value == null) {
+                        } else {
+                            Log.d("value", pNumber.value.toString())
                         }
                         coroutineScope.launch {
                             withContext(Dispatchers.IO) {
                                 delay(1000)
-                                Log.d("afnasknfklsnfklasnfkls",viewModel.interests.value.toString())
-                                Log.d("asfddffffffffffff", jwt.value.toString())
-                                val user = User(pNumber =  pNumber?.value!!,
+                                val user = User(
+                                    pNumber = pNumber?.value!!,
                                     geoRadiusRange = viewModel.geoRadiusRange.value,
                                     preferredGender = viewModel.preGender.value,
                                     preferredAgeRange = viewModel.preAgeRange.value,
@@ -315,7 +318,8 @@ LaunchedEffect(state.isLoading) {
                                     longitude = latLong.longitude,
                                     userDob = viewModel.dob.value,
                                     interests = viewModel.interests.value,
-                                    userGender = viewModel.gender.value)
+                                    userGender = viewModel.gender.value
+                                )
                                 event(CreateUserEvent.CreateUser(user, jwt.value.toString()))
                             }
                         }

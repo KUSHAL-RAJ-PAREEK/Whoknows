@@ -210,15 +210,12 @@ fun SharedTransitionScope.ProfileEditScreen(
     val G3 by imageViewModel.thirdGalleryImage.collectAsState()
 
 
-    val PimageBitmap = getImageBitmapOrPlaceholder(profileImage,gender = profileDetailViewModel.gender.value)
+    val PimageBitmap =
+        getImageBitmapOrPlaceholder(profileImage, gender = profileDetailViewModel.gender.value)
 
     val FimageBitmap = getImageBitmapOrPlaceholder(G1)
     val SimageBitmap = getImageBitmapOrPlaceholder(G2)
     val TimageBitmap = getImageBitmapOrPlaceholder(G3)
-
-    Log.d("herehree", FimageBitmap.toString())
-    Log.d("herehree", SimageBitmap.toString())
-    Log.d("herehree", TimageBitmap.toString())
 
     var text by remember { mutableStateOf(TextFieldValue("")) }
     var preferredGender by remember { mutableStateOf(TextFieldValue("")) }
@@ -237,8 +234,6 @@ fun SharedTransitionScope.ProfileEditScreen(
             viewModel.toggleSelection(existingInterest)
         }
     }
-
-//    val imeHeight = WindowInsets.ime.getBottom(LocalDensity.current).toDp()
     val user = profileViewModel.user.collectAsState()
 
     var username by remember { mutableStateOf("Whoknows") }
@@ -264,17 +259,12 @@ fun SharedTransitionScope.ProfileEditScreen(
             if (editProfileViewModel.preAgeRange.value == null) editProfileViewModel.preAgeRange.value else "20-25"
 
         location = TextFieldValue(editProfileViewModel.location.value)
-        Log.d("partsarethere", "${parts[0]} ${parts[1]}")
-
         fPre = TextFieldValue((editProfileViewModel.preAgeFRange.value ?: "Whoknows").toString())
         tPre = TextFieldValue((editProfileViewModel.preAgeTRange.value ?: "Whoknows").toString())
-//        interest = editProfileViewModel.interests.value
         posts = editProfileViewModel.posts.value
     }
 
     val defaultIcon = Icons.Default.Star
-
-//    val interests: MutableList<String> =  editProfileViewModel.interests.value?.toMutableList() ?: mutableListOf()
 
     var isCrossVisible by remember { mutableStateOf(false) }
     var isCrossVisible1 by remember { mutableStateOf(false) }
@@ -400,10 +390,8 @@ fun SharedTransitionScope.ProfileEditScreen(
     var isInterestSheetOpen by rememberSaveable {
         mutableStateOf(false)
     }
-//    val selectedStates =
-//        remember { mutableStateListOf<Boolean>().apply { repeat(205) { add(false) } } }
 
-    var searchisfocused by remember{ mutableStateOf(false) }
+    var searchisfocused by remember { mutableStateOf(false) }
     if (isInterestSheetOpen) {
         val searchText by viewModel.searchText.collectAsState()
         val interestSea by viewModel.interest.collectAsState()
@@ -428,26 +416,23 @@ fun SharedTransitionScope.ProfileEditScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .onFocusChanged { searchisfocused = !searchisfocused },
-                    textStyle = LocalTextStyle.current.copy(fontSize = 18.sp,color = Color.Black),
+                    textStyle = LocalTextStyle.current.copy(fontSize = 18.sp, color = Color.Black),
                     placeholder = { Text("Search") },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = ordColor,
                         unfocusedBorderColor = Color.Gray
                     ),
-                    trailingIcon = {  Icon(
-                        imageVector = Icons.Filled.Search,
-                        tint = ordColor,
-                        contentDescription = "Search Icon")},
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            tint = ordColor,
+                            contentDescription = "Search Icon"
+                        )
+                    },
                     maxLines = 1,
                     shape = RoundedCornerShape(20.dp),
                 )
 
-//                TextField(
-//                    value = searchText,
-//                    onValueChange = viewModel::onSearchTextChange,
-//                    modifier = Modifier.fillMaxWidth(),
-//                    placeholder = { Text(text = "Search") }
-//                )
                 Spacer(modifier = Modifier.height(16.dp))
                 FlowRow(
                     modifier = Modifier.fillMaxWidth()
@@ -483,13 +468,9 @@ fun SharedTransitionScope.ProfileEditScreen(
 
     LaunchedEffect(state.isLoading) {
         if (state.isSuccess) {
-            Log.d("sucesssssss", "dasdssadsd")
+            Log.d("success", "dasdssadsd")
         }
         if (state.statusCode == 200) {
-            Log.d("dasdasdasd", Pimg_url.toString())
-            Log.d("dasdasdasd", g1img_url.toString())
-            Log.d("dasdasdasd", g2img_url.toString())
-            Log.d("dasdasdasd", g3img_url.toString())
             val user = UserResponseEntity(
                 imgUrl = Pimg_url,
                 posts = galleryList,
@@ -508,7 +489,6 @@ fun SharedTransitionScope.ProfileEditScreen(
             )
             Log.d("saveUser", user.toString())
 
-//            withContext(Dispatchers.IO) {
             greetingViewModel.saveUser(user)
 
             profileDetailViewModel.updatePnumber(editProfileViewModel.pnumber.value)
@@ -528,18 +508,12 @@ fun SharedTransitionScope.ProfileEditScreen(
             profileDetailViewModel.updateInterest(editProfileViewModel.interests.value!!)
             profileDetailViewModel.updateDobs(calculateAge(date.toString()).toString())
             profileDetailViewModel.updateLocation(editProfileViewModel.location.value)
-            Log.d("saveUser", "User saved successfully in background")
-//            }
-            Log.d("asdasdasdsadsa", galleryList.toString())
-//            Toast.makeText(context, "data saved", Toast.LENGTH_SHORT).show()
-            Log.d("asdasdasdsadsa","data saved")
 
             delay(4000)
             uploading = false
             navController.popBackStack()
             navController.popBackStack()
             navController.navigate("profileScreen")
-//            navController.navigate(HomeScreen)
         } else {
             Log.d("profileEditScreen", "error");
         }
@@ -605,7 +579,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                                     imageViewModel.updateProfile(
                                         drawableToBitmap(
                                             context,
-                                            if(profileDetailViewModel.gender.value == "MALE") R.drawable.bp_img_placeholder else R.drawable.p_img_placeholder
+                                            if (profileDetailViewModel.gender.value == "MALE") R.drawable.bp_img_placeholder else R.drawable.p_img_placeholder
                                         )
                                     )
                                     mImage = null
@@ -616,7 +590,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                         )
                                     } catch (e: Exception) {
-                                        Log.d("errorinphoto","${e.message}")
+                                        Log.e("error", "${e.message}")
                                     }
                                 }
                             }
@@ -662,7 +636,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                             modifier = Modifier.clickable {
                                 val listener =
                                     DatePickerDialog.OnDateSetListener { _, year, month, day ->
-                                        date = LocalDate.of(year, month+1, day)
+                                        date = LocalDate.of(year, month + 1, day)
                                         val formattedDate =
                                             date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
                                         dob = TextFieldValue(formattedDate)
@@ -697,9 +671,8 @@ fun SharedTransitionScope.ProfileEditScreen(
                     fontFamily = FontFamily(Font(R.font.hellix_regular))
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-                // dropdown
                 RemDropDownMenu(listOf("MALE", "FEMALE"), editProfileViewModel.preGender.value) {
-                    Log.d("precoming",it)
+                    Log.d("precoming", it)
                     editProfileViewModel.updatePreGender(it)
                     preferredGender = TextFieldValue(editProfileViewModel.preGender.value)
                 }
@@ -838,11 +811,8 @@ fun SharedTransitionScope.ProfileEditScreen(
                             imageVector = Icons.Filled.LocationOn,
                             contentDescription = "",
                             modifier = Modifier.clickable {
-                                Log.d("GIVENORNOT", hasLocationPermission.toString())
                                 if (hasLocationPermission) {
                                     onMapClick("InMyMap")
-                                    Log.d("iscomingthere", "LatLong:")
-
                                 } else {
                                     locationPermissionLauncher.launch(
                                         arrayOf(
@@ -948,7 +918,6 @@ fun SharedTransitionScope.ProfileEditScreen(
                 )
 
                 Spacer(modifier = Modifier.height(3.dp))
-//                InterestItem(interest,interestIcons[interest]?:defaultIcon)
                 Box(
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -1048,7 +1017,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                                                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                                 )
                                             } catch (e: Exception) {
-                                                Log.d("errorinphoto","${e.message}")
+                                                Log.e("error", "${e.message}")
                                             }
                                         }
                                     }
@@ -1100,7 +1069,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                                                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                                 )
                                             } catch (e: Exception) {
-                                                Log.d("errorinphoto","${e.message}")
+                                                Log.d("errorinphoto", "${e.message}")
                                             }
                                         }
                                     }
@@ -1152,7 +1121,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                                                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                                 )
                                             } catch (e: Exception) {
-                                                Log.d("errorinphoto","${e.message}")
+                                                Log.d("errorinphoto", "${e.message}")
                                             }
                                         }
                                     }
@@ -1178,13 +1147,21 @@ fun SharedTransitionScope.ProfileEditScreen(
                     val today = LocalDate.now()
                     val ageThreshold = today.minusYears(18)
                     if (date.isAfter(ageThreshold)) {
-                        DynamicToast.make(context,"You must be at least 18 years old",
-                            ContextCompat.getDrawable(context, R.drawable.age_logo)?.mutate(),lightOrdColor.toArgb(),
-                            light_yellow.toArgb()).show()
+                        DynamicToast.make(
+                            context,
+                            "You must be at least 18 years old",
+                            ContextCompat.getDrawable(context, R.drawable.age_logo)?.mutate(),
+                            lightOrdColor.toArgb(),
+                            light_yellow.toArgb()
+                        ).show()
                     } else if (fPre.text.toInt() > tPre.text.toInt()) {
-                        DynamicToast.make(context,"min range should be small from max range",
-                            ContextCompat.getDrawable(context, R.drawable.calender_logo)?.mutate(),lightOrdColor.toArgb(),
-                            light_yellow.toArgb()).show()
+                        DynamicToast.make(
+                            context,
+                            "min range should be small from max range",
+                            ContextCompat.getDrawable(context, R.drawable.calender_logo)?.mutate(),
+                            lightOrdColor.toArgb(),
+                            light_yellow.toArgb()
+                        ).show()
                     } else {
                         coroutineScope.launch {
                             uploading = true
@@ -1216,7 +1193,6 @@ fun SharedTransitionScope.ProfileEditScreen(
                                         "${editProfileViewModel.id.value}_g1"
                                     )
                                     if (success) {
-                                        Log.d("hello99999", "g1")
                                         imageViewModel.deleteGalleryImage("${editProfileViewModel.id.value}_g1")
                                         imageViewModel.updateG1(null)
                                         mainImageViewModel.updateG1(null)
@@ -1238,7 +1214,6 @@ fun SharedTransitionScope.ProfileEditScreen(
                                         "${editProfileViewModel.id.value}_g2"
                                     )
                                     if (success) {
-                                        Log.d("hello99999", "g2")
                                         imageViewModel.deleteGalleryImage("${editProfileViewModel.id.value}_g2")
                                         imageViewModel.updateG2(null)
                                         mainImageViewModel.updateG2(null)
@@ -1259,7 +1234,6 @@ fun SharedTransitionScope.ProfileEditScreen(
                                         "${editProfileViewModel.id.value}_g3"
                                     )
                                     if (success) {
-                                        Log.d("hello99999", "g3")
                                         imageViewModel.deleteGalleryImage("${editProfileViewModel.id.value}_g3")
                                         imageViewModel.updateG3(null)
                                         mainImageViewModel.updateG3(null)
@@ -1280,40 +1254,11 @@ fun SharedTransitionScope.ProfileEditScreen(
                                 deleteG3Task
                             )
 
-                            Log.d("Debug", "awaitAll completed with results: $result")
-
                             if (result.all { it == true }) {
                                 Log.d("Debug", "All images deleted successfully")
                             } else {
                                 Log.e("Debug", "Some deletions failed: $result")
                             }
-//                        Log.d("hello1",deleteProfileTask.toString())
-//                        Log.d("hello1",deleteG1Task.toString())
-//                        Log.d("hello1",deleteG2Task.toString())
-//                        Log.d("hello1",deleteG3Task.toString())
-
-//                        if (isProfileDeleted) {
-//                            imageViewModel.deleteProfileSupabase(editProfileViewModel.id.value)
-//                            imageViewModel.deleteProfile()
-//                            imageViewModel.updateProfile(null)
-//                        }
-//
-//                        if (isG1Deleted) {
-//                            imageViewModel.deleteGallerySupabase("${editProfileViewModel.id.value}_g1")
-//                            imageViewModel.deleteGalleryImage("${editProfileViewModel.id.value}_g1")
-//                            imageViewModel.updateG1(null)
-//                        }
-//                        if (isG2Deleted) {
-//                            imageViewModel.deleteGallerySupabase("${editProfileViewModel.id.value}_g2")
-//                            imageViewModel.deleteGalleryImage("${editProfileViewModel.id.value}_g2")
-//                            imageViewModel.updateG2(null)
-//                        }
-//                        if (isG3Deleted) {
-//                            imageViewModel.deleteGallerySupabase("${editProfileViewModel.id.value}_g3")
-//                            imageViewModel.deleteGalleryImage("${editProfileViewModel.id.value}_g3")
-//                            imageViewModel.updateG3(null)
-//                        }
-
 
                             var profileUpload = async {
                                 mImage?.let { uri ->
@@ -1335,29 +1280,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                                 } ?: true
                             }
 
-//                        mImage?.let { uri ->
-//                            Log.d("pppp1","afsfasfafsafa")
-//
-//                            imageViewModel.saveProfiletoSupabase(
-//                                context,
-//                                uri,
-//                                editProfileViewModel.id.value
-//                            )
-//                            imageViewModel.saveProfileImage(context, uri)
-//                            uri?.let {
-//                                val base64String = uriToBase64(context, uri)
-//                                val bm = base64String?.let { base64ToBitmap(it) }
-//                                imageViewModel.updateProfile(bm!!)
-//                                mainImageViewModel.updateProfile(bm!!)
-//                            }
-//
-//
-//                        }
-
-
                             var G1Upload = async {
-                                Log.d("ggggggg1", "afsfasfafsafa")
-
                                 fImage?.let { uri ->
                                     val success = imageViewModel.saveGallerytoSupabase(
                                         context,
@@ -1383,7 +1306,6 @@ fun SharedTransitionScope.ProfileEditScreen(
                             }
 
                             var G2Upload = async {
-                                Log.d("ggggggg2", "afsfasfafsafa")
                                 sImage?.let { uri ->
                                     val success = imageViewModel.saveGallerytoSupabase(
                                         context,
@@ -1409,7 +1331,6 @@ fun SharedTransitionScope.ProfileEditScreen(
                             }
 
                             var G3Upload = async {
-                                Log.d("ggggggg3", "afsfasfafsafa")
                                 tImage?.let { uri ->
                                     val success = imageViewModel.saveGallerytoSupabase(
                                         context,
@@ -1455,7 +1376,7 @@ fun SharedTransitionScope.ProfileEditScreen(
                             if (isG3Deleted) {
                                 results[3] = true
                             }
-                            results.map { Log.d("asdasdasd", it.toString()) }
+
                             var flag = true
 
                             for (r in results) {
@@ -1496,10 +1417,6 @@ fun SharedTransitionScope.ProfileEditScreen(
                                     g2img_url,
                                     g3img_url
                                 ).takeIf { it.isNotEmpty() }
-                                Log.d("hello", Pimg_url.toString())
-                                Log.d("hello", g1img_url.toString())
-                                Log.d("hello", g2img_url.toString())
-                                Log.d("hello", g3img_url.toString())
                                 val user = UserResponseEntity(
                                     imgUrl = Pimg_url,
                                     posts = galleryList,
@@ -1517,7 +1434,6 @@ fun SharedTransitionScope.ProfileEditScreen(
                                     interests = editProfileViewModel.interests.value,
                                 )
 
-                                Log.d("jwtinprofile", jwt.toString())
 
                                 event(UpdateUserEvent.UpdateUser(user, jwt.toString()))
                             } else {
@@ -1527,61 +1443,6 @@ fun SharedTransitionScope.ProfileEditScreen(
                                 )
                             }
 
-//
-//                        if (profileUpload.await() == true) {
-//                            Pimg_url = imageViewModel.getImageUrlSupabase("profile_images", "${editProfileViewModel.id.value}.jpg")
-//                        } else {
-//                            Log.e("UploadError", "Profile image upload failed. Skipping URL fetch.")
-//                        }
-//
-//                        if (G1Upload.await() == true) {
-//                            g1img_url = imageViewModel.getImageUrlSupabase("gallery_images", "${editProfileViewModel.id.value}_g1.jpg")
-//                        } else {
-//                            Log.e("UploadError", "Profile image upload failed. Skipping URL fetch.")
-//                        }
-//
-//                        if (G2Upload.await() == true) {
-//                            g2img_url = imageViewModel.getImageUrlSupabase("gallery_images", "${editProfileViewModel.id.value}_g2.jpg")
-//                        } else {
-//                            Log.e("UploadError", "Profile image upload failed. Skipping URL fetch.")
-//                        }
-//
-//                        if (G3Upload.await() == true) {
-//                            g3img_url = imageViewModel.getImageUrlSupabase("gallery_images", "${editProfileViewModel.id.value}_g3.jpg")
-//                        } else {
-//                            Log.e("UploadError", "Profile image upload failed. Skipping URL fetch.")
-//                        }
-//
-//
-//                        Log.d("iadsnmiasmdasd", Pimg_url.toString())
-//
-//                        galleryList = listOfNotNull(
-//                            g1img_url,
-//                            g2img_url,
-//                            g3img_url
-//                        ).takeIf { it.isNotEmpty() }
-////if(galleryList ==null){
-////    galleryList = editProfileViewModel.posts.value
-////}
-//                        Log.d("iadsnmiasmdasd", Pimg_url.toString())
-//                        val user = UserResponseEntity(
-//                            imgUrl = Pimg_url,
-//                            posts = galleryList,
-//                            id = editProfileViewModel.id.value,
-//                            ageGap = "${editProfileViewModel.preAgeFRange.value}-${editProfileViewModel.preAgeTRange.value}",
-//                            bio = editProfileViewModel.bio.value,
-//                            dob = editProfileViewModel.dob.value.toString(),
-//                            gender = editProfileViewModel.gender.value,
-//                            geoRadiusRange = editProfileViewModel.geoRadiusRange.value.toInt(),
-//                            latitude = editProfileViewModel.latitude.value,
-//                            longitude = editProfileViewModel.longitude.value,
-//                            pnumber = editProfileViewModel.pnumber.value,
-//                            preferredGender = editProfileViewModel.preGender.value,
-//                            username = editProfileViewModel.username.value,
-//                            interests = editProfileViewModel.interests.value,
-//                        )
-//                        Log.d("jwtinprofile", jwt.toString())
-//                        event(UpdateUserEvent.UpdateUser(user, jwt.toString()))
                         }
                     }
 
@@ -1605,7 +1466,6 @@ suspend fun uploadProfileImage(
     userId: String,
     contentResolver: ContentResolver
 ): Boolean {
-    Log.d("cominginside", "yes")
     return try {
         contentResolver.openInputStream(imageUri)?.use { inputStream ->
             val byteArray = inputStream.readBytes()
@@ -1650,7 +1510,6 @@ fun UploadingDialog(showDialog: Boolean) {
                     LottieAnimation(
                         composition,
                         iterations = 1,
-//                        modifier = Modifier.size(150.dp),
                         renderMode = RenderMode.HARDWARE
                     )
                 }

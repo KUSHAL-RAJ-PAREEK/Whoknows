@@ -71,16 +71,18 @@ import kotlin.math.log
 @SuppressLint("StateFlowValueCalledInComposition", "SuspiciousIndentation")
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun GreetingScreen(modifier: Modifier = Modifier,
-                   navController: NavController,
-                   greetingViewModel: GreetingViewModel,
-                   state : GetUserState,
-                   event : (GetUserEvent)-> Unit,
-                   profileDetailViewModel : ProfileDetailViewModel,
-                   editProfileViewModel : EditProfileViewModel,
-                   jwtViewModel: JWTViewModel,
-                   imageViewModel: ImageViewModel,
-                   mainImageViewModel: MainImageViewModel) {
+fun GreetingScreen(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    greetingViewModel: GreetingViewModel,
+    state: GetUserState,
+    event: (GetUserEvent) -> Unit,
+    profileDetailViewModel: ProfileDetailViewModel,
+    editProfileViewModel: EditProfileViewModel,
+    jwtViewModel: JWTViewModel,
+    imageViewModel: ImageViewModel,
+    mainImageViewModel: MainImageViewModel
+) {
 
     val jwtToken = jwtViewModel.jwtToken.value
 
@@ -92,7 +94,7 @@ fun GreetingScreen(modifier: Modifier = Modifier,
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    var animated by remember{ mutableStateOf(false) }
+    var animated by remember { mutableStateOf(false) }
 
 
     LaunchedEffect(user?.username) {
@@ -100,14 +102,12 @@ fun GreetingScreen(modifier: Modifier = Modifier,
         Log.d("maalagaya", user.toString())
         Log.d("tokenfsnasfasfa", fcmToken.toString())
         if (user != null) {
-//            delay(3000)
             profileDetailViewModel.updateFcm(fcmToken!!)
             navController.popBackStack()
             navController.navigate(HomeScreen)
         } else {
             val jwtToken = jwtViewModel.jwtToken
             jwtToken?.let { token ->
-                Log.d("tokenaagaya", token.value.toString())
                 event(GetUserEvent.GetUser(pNumber.toString(), token.value.toString()))
             }
         }
@@ -115,7 +115,7 @@ fun GreetingScreen(modifier: Modifier = Modifier,
 
     LaunchedEffect(state.isLoading) {
         Log.d("afkmaskfsmasfsa", state.isSuccess.toString())
-        if(state.isSuccess){
+        if (state.isSuccess) {
             val user = state.successMessage
             val data = UserResponseEntity(
                 id = user?.id ?: "",
@@ -134,8 +134,7 @@ fun GreetingScreen(modifier: Modifier = Modifier,
                 posts = user?.posts ?: emptyList()
             )
 
-//            withContext(Dispatchers.IO) {
-                val dobString = user?.dob ?: "2004-12-12"
+            val dobString = user?.dob ?: "2004-12-12"
             val localDate = LocalDate.parse(dobString, DateTimeFormatter.ISO_LOCAL_DATE)
             profileDetailViewModel.updateId(user?.id.toString())
             profileDetailViewModel.updateUsername(user?.username.toString())
@@ -146,17 +145,20 @@ fun GreetingScreen(modifier: Modifier = Modifier,
             profileDetailViewModel.updateDobs(calculateAge(localDate.toString()).toString())
             profileDetailViewModel.updateDOB(localDate)
             profileDetailViewModel.updatePreAgeRange(user?.ageGap.toString())
-            profileDetailViewModel.updateBio(user?.bio?:"hey, I am using whoknows.")
+            profileDetailViewModel.updateBio(user?.bio ?: "hey, I am using whoknows.")
             profileDetailViewModel.updateInterest(user?.interests ?: emptyList())
             profileDetailViewModel.updatePosts(user?.posts ?: emptyList())
-//        profileDetailViewModel.updateFPreAgeRange(parts[0].toString())
-//        profileDetailViewModel.updateTPreAgeRange(parts[1].toString())
             profileDetailViewModel.updateLatitude(user?.latitude.toString())
             profileDetailViewModel.updateLongitude(user?.longitude.toString())
             profileDetailViewModel.updatePnumber(user?.pnumber.toString())
             profileDetailViewModel.updateJwt(jwtViewModel.jwtToken.value.toString())
-            profileDetailViewModel.updateDefaultImg(drawableToBitmap(context, if(user?.gender.toString() == "MALE") R.drawable.bp_img_placeholder else  R.drawable.p_img_placeholder).asImageBitmap())
-            val  location = getLocationCityState(
+            profileDetailViewModel.updateDefaultImg(
+                drawableToBitmap(
+                    context,
+                    if (user?.gender.toString() == "MALE") R.drawable.bp_img_placeholder else R.drawable.p_img_placeholder
+                ).asImageBitmap()
+            )
+            val location = getLocationCityState(
                 user?.latitude?.toDouble() ?: 26.9124,
                 user?.longitude?.toDouble() ?: 75.7873,
                 context
@@ -186,26 +188,22 @@ fun GreetingScreen(modifier: Modifier = Modifier,
 
             }
 
-//            coroutineScope.launch {
-                mainImageViewModel.saveProfileImage(convertImageUrlToBase64(user?.imgUrl.toString()))
-                val size = user?.posts?.size ?: 0
-                for (i in 0 until size) {
-                    val imgUrl = user?.posts?.get(i) ?: continue
-                    val base64String = convertImageUrlToBase64(imgUrl)
-                    Log.d("imgusdasdsdrl",imgUrl)
-                    if (base64String != null) {
-                        Log.d("converted",i.toString())
-                        mainImageViewModel.saveGalleryImage("${user?.id}_g${i+1}",base64String)
-                    } else {
-                        Log.e("ProfileImage", "Failed to convert image to Base64")
-                    }
+            mainImageViewModel.saveProfileImage(convertImageUrlToBase64(user?.imgUrl.toString()))
+            val size = user?.posts?.size ?: 0
+            for (i in 0 until size) {
+                val imgUrl = user?.posts?.get(i) ?: continue
+                val base64String = convertImageUrlToBase64(imgUrl)
+                if (base64String != null) {
+                    Log.d("converted", i.toString())
+                    mainImageViewModel.saveGalleryImage("${user?.id}_g${i + 1}", base64String)
+                } else {
+                    Log.e("ProfileImage", "Failed to convert image to Base64")
                 }
-//            }
-//            }
+            }
 
             coroutineScope.launch {
                 val response = greetingViewModel.getToken(user?.id.toString())
-                if(response.statusCode == 200){
+                if (response.statusCode == 200) {
                     greetingViewModel.saveFcm(FcmEntity(id = 1, fcm_token = response.token!!))
                     profileDetailViewModel.updateFcm(response.token!!)
                 }
@@ -213,10 +211,7 @@ fun GreetingScreen(modifier: Modifier = Modifier,
             greetingViewModel.saveUser(data)
             delay(4000)
             navController.popBackStack()
-            Log.d("itiscomingthere","hello before")
-
             navController.navigate(HomeScreen)
-            Log.d("itiscomingthere","hello after")
         }
     }
 
@@ -235,11 +230,9 @@ fun GreetingScreen(modifier: Modifier = Modifier,
             profileDetailViewModel.updateDobs(calculateAge(localDate.toString()).toString())
             profileDetailViewModel.updateDOB(localDate)
             profileDetailViewModel.updatePreAgeRange(user?.ageGap.toString())
-            profileDetailViewModel.updateBio(user?.bio?:"hey, I am using whoknows.")
+            profileDetailViewModel.updateBio(user?.bio ?: "hey, I am using whoknows.")
             profileDetailViewModel.updateInterest(user?.interests ?: emptyList())
             profileDetailViewModel.updatePosts(user?.posts ?: emptyList())
-//        profileDetailViewModel.updateFPreAgeRange(parts[0].toString())
-//        profileDetailViewModel.updateTPreAgeRange(parts[1].toString())
             profileDetailViewModel.updateLatitude(user?.latitude.toString())
             profileDetailViewModel.updateLongitude(user?.longitude.toString())
             profileDetailViewModel.updatePnumber(user?.pnumber.toString())
@@ -249,7 +242,7 @@ fun GreetingScreen(modifier: Modifier = Modifier,
             val list = user?.posts ?: emptyList()
 
 
-            val  location = getLocationCityState(
+            val location = getLocationCityState(
                 user?.latitude?.toDouble() ?: 26.9124,
                 user?.longitude?.toDouble() ?: 75.7873,
                 context
@@ -275,25 +268,29 @@ fun GreetingScreen(modifier: Modifier = Modifier,
 
             }
 
-//        coroutineScope.launch {
             mainImageViewModel.saveProfileImage(convertImageUrlToBase64(user?.imgUrl.toString()))
             val size = user?.posts?.size ?: 0
             for (i in 0 until size) {
                 val imgUrl = user?.posts?.get(i) ?: continue
                 val base64String = convertImageUrlToBase64(imgUrl)
-                Log.d("imgusdasdsdrl",imgUrl)
+                Log.d("imgusdasdsdrl", imgUrl)
                 if (base64String != null) {
-                    Log.d("converted",i.toString())
-                    mainImageViewModel.saveGalleryImage("${user?.id}_g${i+1}",base64String)
+                    Log.d("converted", i.toString())
+                    mainImageViewModel.saveGalleryImage("${user?.id}_g${i + 1}", base64String)
                 } else {
                     Log.e("ProfileImage", "Failed to convert image to Base64")
                 }
-//            }
             }
-            profileDetailViewModel.updateDefaultImg(drawableToBitmap(context, if(user?.gender.toString() == "MALE") R.drawable.bp_img_placeholder else  R.drawable.p_img_placeholder).asImageBitmap())
+            profileDetailViewModel.updateDefaultImg(
+                drawableToBitmap(
+                    context,
+                    if (user?.gender.toString() == "MALE") R.drawable.bp_img_placeholder else R.drawable.p_img_placeholder
+                ).asImageBitmap()
+            )
 
             fun logValues() {
-                Log.d("ProfileViewModel", """
+                Log.d(
+                    "ProfileViewModel", """
         Username: ${profileDetailViewModel.username.value}
         Image URL: ${profileDetailViewModel.imgUrl.value}
         Geo Radius Range: ${profileDetailViewModel.geoRadiusRange.value}
@@ -305,12 +302,12 @@ fun GreetingScreen(modifier: Modifier = Modifier,
         Posts: ${profileDetailViewModel.posts.value}
         Latitude: ${profileDetailViewModel.latitude.value}
         Longitude: ${profileDetailViewModel.longitude.value}
-    """.trimIndent())
+    """.trimIndent()
+                )
             }
             logValues()
         }
     }
-
 
 
     val gradientColors = listOf(Cyan, LightBlue, Purple)
@@ -330,11 +327,13 @@ fun GreetingScreen(modifier: Modifier = Modifier,
                 .background(Color.White.copy(alpha = 0.5f))
                 .blur(170.dp),
             contentAlignment = Alignment.Center
-        ){
-            Image(painter = painterResource(R.drawable.gradient_background),
+        ) {
+            Image(
+                painter = painterResource(R.drawable.gradient_background),
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop)
+                contentScale = ContentScale.Crop
+            )
 
             TypewriteText(
                 text = "Welcome",
@@ -344,23 +343,12 @@ fun GreetingScreen(modifier: Modifier = Modifier,
                 ),
                 modifier = Modifier
             )
-//            LottieAnimation(modifier= Modifier.size(180.dp)
-//                .blur(500.dp)
-//                ,composition = composition,
-//                iterations = 1,
-//                renderMode = RenderMode.HARDWARE )
         }
-//        TypewriteText(
-//            text = "Welcome",
-//            spec = tween(
-//                durationMillis = textDuration,
-//                easing = LinearEasing
-//            ),
-//            modifier = Modifier
-//        )
-        LottieAnimation(modifier= Modifier.size(190.dp),composition = composition,
+        LottieAnimation(
+            modifier = Modifier.size(190.dp), composition = composition,
             iterations = 1,
-            renderMode = RenderMode.HARDWARE )
+            renderMode = RenderMode.HARDWARE
+        )
     }
 }
 

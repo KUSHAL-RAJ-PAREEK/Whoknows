@@ -59,7 +59,6 @@ class KtorClient : KoinComponent {
         }
 
         val statusCode = response.status.value
-        Log.d("KtorClient", "Status Code: $statusCode")
       if (statusCode == 200) {
             return response.body()
         } else {
@@ -74,8 +73,6 @@ class KtorClient : KoinComponent {
             setBody(sendOTP)
         }
         val statusCode = response.status.value
-
-        Log.d("KtorClientotp", response.bodyAsText())
 
         return when (statusCode) {
             404 -> {
@@ -97,23 +94,17 @@ class KtorClient : KoinComponent {
     suspend fun createUser(user: User,jwt : String): UserResponse {
         val jwtToken =
             "Bearer $jwt"
-        Log.d("jwtisthere", jwtToken)
-        Log.d("KtorClient", "Sending Authorization Header: ${user}")
 
         val response = client.post("/users/create-user") {
             contentType(ContentType.Application.Json)
-//            bearerAuth(jwtToken)
             header(HttpHeaders.Authorization, jwtToken)
             setBody(user)
         }
 
         val statusCode = response.status.value
-        Log.d("sstttsss", statusCode.toString())
 
-        Log.d("KtorClientotp", response.bodyAsText())
         return when (statusCode) {
             401 -> {
-                Log.d("dkasdadasd", response.toString())
                 response.body()
             }
             404 -> response.body()
@@ -125,7 +116,6 @@ class KtorClient : KoinComponent {
 
     suspend fun getUser(pnumber: String, jwt: String): UserResponse? {
         return try {
-            Log.d("iaminrequest","$pnumber $jwt")
             val response = client.get("/users/user-details") {
                 contentType(ContentType.Application.Json)
                   bearerAuth(jwt)
@@ -134,8 +124,6 @@ class KtorClient : KoinComponent {
                 }
             }
             val statusCode = response.status.value
-            Log.d("API_STATUS", "Status Code: $statusCode")
-            Log.d("API_RESPONSE", "Response Body: ${response.bodyAsText()}")
 
             return when (statusCode) {
                 in 200..299 -> response.body<UserResponse>()
@@ -160,29 +148,19 @@ class KtorClient : KoinComponent {
 
 
     suspend fun updateUser(user: UserResponseEntity,jwt : String): Int{
-        val jwtToken =
-            "Bearer $jwt"
-        Log.d("jwtisthere", jwtToken)
-        Log.d("KtorClient", "Sending Authorization Header: ${user}")
-
         val response = client.post("/users/update-user") {
             contentType(ContentType.Application.Json)
-//            bearerAuth(jwtToken)
-//            header(HttpHeaders.Authorization, jwtToken)
             bearerAuth(jwt)
             setBody(user)
         }
 
         val statusCode = response.status.value
-        Log.d("sstttsss", statusCode.toString())
-
         return statusCode
     }
 
 
 
     suspend fun updateMatch(id : String, jwt : String): Int{
-        Log.d("inupdate", "$id $jwt")
         val response = client.get("/match/check"){
             contentType(ContentType.Application.Json)
             bearerAuth(jwt)
@@ -193,13 +171,10 @@ class KtorClient : KoinComponent {
 
         val statusCode = response.status.value
 
-        Log.d("insideupdate",statusCode.toString())
-
         return statusCode
     }
 
     suspend fun checkMatch(id : String, jwt : String): checkMatchModel {
-        Log.d("inupdate", "$id $jwt")
         val response = client.get("/match/check"){
             contentType(ContentType.Application.Json)
             bearerAuth(jwt)
@@ -213,8 +188,6 @@ class KtorClient : KoinComponent {
 
         val res = checkMatchModel(statusCode = statusCode,user = user)
 
-        Log.d("insideupdatedddd",res.toString())
-
         return res
     }
 
@@ -226,7 +199,6 @@ class KtorClient : KoinComponent {
             setBody(user)
         }
         val statusCode = response.status.value
-        Log.d("create_Match", statusCode.toString())
         return statusCode
     }
 
@@ -238,12 +210,10 @@ class KtorClient : KoinComponent {
             setBody(user)
         }
         val statusCode = response.status.value
-        Log.d("cancel_Match", statusCode.toString())
         return statusCode
     }
 
     suspend fun removeMatch(id : String, jwt : String): Int{
-        Log.d("insideit","smdfaskmaksldmads")
 val response = client.get("/match/remove"){
     contentType(ContentType.Application.Json)
     bearerAuth(jwt)
@@ -252,7 +222,6 @@ val response = client.get("/match/remove"){
     }
 }
         val statusCode = response.status.value
-        Log.d("statuscoderemove",statusCode.toString())
         return statusCode
     }
 
@@ -268,22 +237,18 @@ val response = client.get("/match/remove"){
     }
 
      fun fetchMessage(chatRoomId: String): Flow<List<Message>> = flow {
-         Log.d("chatIdInFetchMessage",chatRoomId)
         try {
             val response = client.get {
                 url("https://whoknowschatbackendrailway-production.up.railway.app/message/$chatRoomId")
                 contentType(ContentType.Application.Json)
             }
-            Log.d("fetchmessage",response.body())
 
             if (response.status.isSuccess()) {
                 emit(response.body())
             } else {
-                Log.d("errorwhilefetch", "Error: ${response.status.value}")
                 emit(emptyList())
             }
         } catch (e: Exception) {
-            Log.d("errorwhilefetch", "Exception: ${e.message}")
             emit(emptyList())
         }
     }
@@ -298,14 +263,13 @@ val response = client.get("/match/remove"){
             return response.status.value
 
         } catch (e: Exception) {
-            Log.d("errorwhilefetch", "Exception: ${e.message}")
+            Log.e("error", "Exception: ${e.message}")
         }
         return 500
     }
 
 
     suspend fun updateAcceptation(id: String, count: Int, userId: String): CountResponse {
-        Log.d("asjdnasjkdnaskjndkjasndkjasndkjnaskjdnjasn","asdasd")
         try {
             val response = client.put {
                 url("https://whoknowschatbackendrailway-production.up.railway.app/accept/$id")
@@ -315,11 +279,9 @@ val response = client.get("/match/remove"){
             val responseBody = response.body<String>()
             val jsonObject = Json.parseToJsonElement(responseBody).jsonObject
             val countValue = jsonObject["count"]?.jsonPrimitive?.int ?: 0
-
-            Log.d("asdasdasdasdasdsadasd",response.body())
             return CountResponse(response.status.value,countValue)
         } catch (e: Exception) {
-            Log.d("errorinacceptaionaaaaaaaaaaaaaaddddd", "Exception: ${e.message}")
+            Log.e("error", "Exception: ${e.message}")
         }
         return CountResponse(500,0)
     }
@@ -334,14 +296,13 @@ val response = client.get("/match/remove"){
             if(response.status.value == 200){
                 val jsonObject = Json.parseToJsonElement(responseBody).jsonObject
                 val count = jsonObject["count"]?.jsonPrimitive?.int
-            Log.d("responseforAcceptance",jsonObject.toString())
                 return  AcceptationModel(response.status.value,count!!)
             }else{
-                Log.d("errorinacceptaionaaaaaaaaaaaaaa","Exception: ${response.status.value}")
+                Log.e("error","Exception: ${response.status.value}")
             }
 
         } catch (e : Exception){
-            Log.d("errorinacceptaionaaaaaaaaaaaaaa","Exception: ${e.message}")
+            Log.e("error","Exception: ${e.message}")
         }
         return AcceptationModel(500,-1)
     }
@@ -354,7 +315,7 @@ val response = client.get("/match/remove"){
             }
             return response.status.value
         } catch (e : Exception){
-            Log.d("errorinacceptaion","Exception: ${e.message}")
+            Log.e("error","Exception: ${e.message}")
         }
         return 500
     }
@@ -368,7 +329,7 @@ val response = client.get("/match/remove"){
 
             return response.status.value
         }catch(e : Exception){
-            Log.d("errorindeltechatroom","Exception: ${e.message}")
+            Log.e("error","Exception: ${e.message}")
         }
         return 500
     }
@@ -382,7 +343,7 @@ val response = client.get("/match/remove"){
             }
             return response.status.value
         }catch(e : Exception){
-            Log.d("errorInDelAcc","${e.message}")
+            Log.e("error","${e.message}")
         }
         return 500
     }
@@ -401,14 +362,13 @@ val response = client.get("/match/remove"){
                 return FcmModel(statusCode = response.status.value, token = token)
             }
         }catch (e : Exception){
-            Log.d("inFCMFetch","${e.message}")
+            Log.e("error","${e.message}")
         }
         return FcmModel(statusCode = 500, token = "")
     }
 
     suspend fun uploadToken(id : String, token : String): Int{
         try{
-            Log.d("adsssssssssssssssssssssssd","$id $token")
             val response = client.post{
                 url("https://whoknowschatbackendrailway-production.up.railway.app/fcm-token")
                 contentType(ContentType.Application.Json)
@@ -416,7 +376,7 @@ val response = client.get("/match/remove"){
             }
             return response.status.value
         }catch(e : Exception){
-            Log.d("inFCMUpload","${e.message}")
+            Log.e("error","${e.message}")
 
         }
         return 500
@@ -433,7 +393,7 @@ val response = client.get("/match/remove"){
                 return response.body()
             }
         }catch (e : Exception){
-            Log.d("inFCMFetch","${e.message}")
+            Log.e("error","${e.message}")
         }
         return 500
     }
@@ -450,7 +410,7 @@ val response = client.get("/match/remove"){
 
             return response.status.value
         }catch(e : Exception){
-            Log.d("notificationerror","${e.message}")
+            Log.e("error","${e.message}")
         }
         return 500
     }
@@ -465,7 +425,7 @@ val response = client.get("/match/remove"){
 
             return response.status.value
         }catch(e : Exception){
-            Log.d("isinswait","${e.message}")
+            Log.e("error","${e.message}")
 
         }
         return 500
@@ -481,7 +441,7 @@ val response = client.get("/match/remove"){
 
             return response.status.value
         }catch(e : Exception){
-            Log.d("isinswait","${e.message}")
+            Log.e("error","${e.message}")
 
         }
         return 500

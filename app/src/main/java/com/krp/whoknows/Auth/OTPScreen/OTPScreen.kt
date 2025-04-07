@@ -104,36 +104,36 @@ fun OTPScreen(
     modifier: Modifier = Modifier,
     event: (OTPVerificationEvent) -> Unit,
     state: OTPVerificationState,
-    jwtViewModel : JWTViewModel,
-    navController : NavController,
+    jwtViewModel: JWTViewModel,
+    navController: NavController,
     phoneNumber: String,
     onOTp: () -> Unit,
     profileDetailViewModel: ProfileDetailViewModel,
-    greetingViewModel: GreetingViewModel) {
+    greetingViewModel: GreetingViewModel
+) {
     var otp by remember { mutableStateOf("") }
     var counter by remember { mutableStateOf(30) }
     var enable by remember { mutableStateOf(false) }
-//    val user by greetingViewModel.userState.collectAsState()
 
     val context = LocalContext.current
-val coroutineScope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
     BackHandler {
-        navController.navigate(PhoneScreen){
+        navController.navigate(PhoneScreen) {
             popUpTo(0) { inclusive = true }
         }
     }
-    LaunchedEffect (enable) {
-            while (counter > 0) {
-                delay(1000L)
-                counter--
-            }
+    LaunchedEffect(enable) {
+        while (counter > 0) {
+            delay(1000L)
+            counter--
+        }
         enable = false
     }
     LaunchedEffect(state.isLoading) {
         if (state.isOtpVerified) {
             val jwt = state.successMessage.toString()
             jwtViewModel.savePhoneNumber(phoneNumber)
-            withContext(Dispatchers.IO){
+            withContext(Dispatchers.IO) {
                 jwtViewModel.saveToken(jwt)
                 greetingViewModel.saveToken(jwt)
                 greetingViewModel.savePnumber(phoneNumber)
@@ -151,14 +151,15 @@ val coroutineScope = rememberCoroutineScope()
                         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 val newToken = task.result
-                                Log.d("FCMssssssssssssdsdsdsssssssssssssssscd", "New Token: $newToken")
-
                                 GlobalScope.launch(Dispatchers.IO) {
                                     try {
                                         greetingViewModel.uploadToken(userId, newToken)
-                                        Log.d("FCMssssssssssssdsdsdsssssssssssssssscd", "Token updated in MongoDB")
+                                        Log.d("FCM", "Token updated in MongoDB")
                                     } catch (e: Exception) {
-                                        Log.e("FCMssssssssssssdsdsdsssssssssssssssscd", "Error updating token in MongoDB: ${e.message}")
+                                        Log.e(
+                                            "FCM",
+                                            "Error updating token in MongoDB: ${e.message}"
+                                        )
                                     }
                                 }
 
@@ -173,14 +174,14 @@ val coroutineScope = rememberCoroutineScope()
 
             }
 
-            if(state.statusCode == 200){
+            if (state.statusCode == 200) {
                 navController.navigate(GreetingScreen)
-            }else if(state.statusCode == 206){
+            } else if (state.statusCode == 206) {
 
                 navController.popBackStack()
                 navController.popBackStack()
                 navController.navigate(UserGender)
-            }else{
+            } else {
                 onOTp()
             }
 
@@ -189,13 +190,15 @@ val coroutineScope = rememberCoroutineScope()
 
     val imeHeight = WindowInsets.ime.getBottom(LocalDensity.current).toDp()
 
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .statusBarsPadding()
-        .background(Color.White)) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .background(Color.White)
+    ) {
 
         Column(
-            modifier = Modifier ,
+            modifier = Modifier,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
@@ -206,28 +209,33 @@ val coroutineScope = rememberCoroutineScope()
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack, contentDescription = "Back arrow",
-                    Modifier.size(35.dp).clickable{
-                        navController.navigate(PhoneScreen){
-                            popUpTo(0) { inclusive = true }
-                        }
-                    },
+                    Modifier
+                        .size(35.dp)
+                        .clickable {
+                            navController.navigate(PhoneScreen) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        },
                     tint = ordColor,
                 )
             }
 
 
-            Column( modifier = Modifier
-                .fillMaxWidth(),
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center) {
+                verticalArrangement = Arrangement.Center
+            ) {
 
-                Text(text = "OTP Verification",
+                Text(
+                    text = "OTP Verification",
                     fontFamily = FontFamily(Font(R.font.noto_sans_khanada)),
-                    fontSize = 20.sp)
-                //Spacer(modifier = Modifier.height(15.dp))
-
-                Text(text = "We Will send you a one time password on\n"+
-                        " this  Mobile Number",
+                    fontSize = 20.sp
+                )
+                Text(
+                    text = "We Will send you a one time password on\n" +
+                            " this  Mobile Number",
                     fontSize = 14.sp,
                     textAlign = TextAlign.Center,
                     fontFamily = FontFamily(Font(R.font.noto_sans_khanada))
@@ -235,49 +243,50 @@ val coroutineScope = rememberCoroutineScope()
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                    Text(text = "+91"+
+                Text(
+                    text = "+91" +
                             "-$phoneNumber",
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center,
+                    fontFamily = FontFamily(Font(R.font.outfit_semibold))
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+
+                OTPInputField(
+                    otpText = otp,
+                    onOtpTextChange = { newOtp ->
+                        otp = newOtp
+                    }
+                )
+                Spacer(modifier = Modifier.height(15.dp))
+
+                if (enable) {
+                    Text(
+                        text = "Resend OTP in $counter sec",
                         fontSize = 16.sp,
-                        textAlign = TextAlign.Center,
-                        fontFamily = FontFamily(Font(R.font.outfit_semibold))
+                        color = Color.Gray
                     )
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    OTPInputField(
-                        otpText = otp,
-                        onOtpTextChange = { newOtp ->
-                            otp = newOtp
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(15.dp))
-
-                    if (enable) {
-                        Text(
-                            text = "Resend OTP in $counter sec",
-                            fontSize = 16.sp,
-                            color = Color.Gray
-                        )
-                    } else {
-                        Text(
-                            text = "Resend OTP",
-                            fontSize = 14.sp,
-                            color = ordColor,
-                            modifier = Modifier
-                                .clickable {
-                                    event(
-                                        OTPVerificationEvent.ResendOtp(
-                                            otpSend = OtpDetail(
-                                                "+91",
-                                                pNumber = phoneNumber
-                                            )
+                } else {
+                    Text(
+                        text = "Resend OTP",
+                        fontSize = 14.sp,
+                        color = ordColor,
+                        modifier = Modifier
+                            .clickable {
+                                event(
+                                    OTPVerificationEvent.ResendOtp(
+                                        otpSend = OtpDetail(
+                                            "+91",
+                                            pNumber = phoneNumber
                                         )
                                     )
-                                    counter = 30
-                                    enable = true
-                                }
-                        )
-                    }
+                                )
+                                counter = 30
+                                enable = true
+                            }
+                    )
                 }
+            }
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -287,11 +296,16 @@ val coroutineScope = rememberCoroutineScope()
                 FloatingActionButton(
                     onClick = {
                         val notp = otp
-                        if(otp.length < 4){
-                            DynamicToast.make(context,"please enter 4-digit OTP",
-                                ContextCompat.getDrawable(context, R.drawable.warning)?.mutate(),lightOrdColor.toArgb(),light_red.toArgb()).show()
+                        if (otp.length < 4) {
+                            DynamicToast.make(
+                                context,
+                                "please enter 4-digit OTP",
+                                ContextCompat.getDrawable(context, R.drawable.warning)?.mutate(),
+                                lightOrdColor.toArgb(),
+                                light_red.toArgb()
+                            ).show()
 
-                        }else{
+                        } else {
                             if (!state.isLoading) {
                                 event(
                                     OTPVerificationEvent.VerifyOtp(
@@ -328,7 +342,7 @@ val coroutineScope = rememberCoroutineScope()
                     }
                 }
             }
-            }
+        }
     }
 }
 

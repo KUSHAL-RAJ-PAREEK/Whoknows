@@ -15,7 +15,7 @@ import org.koin.core.component.inject
  * Created by Kushal Raj Pareek on 23-03-2025 22:04
  */
 
-class CancelMatchViewModel : ViewModel(), KoinComponent{
+class CancelMatchViewModel : ViewModel(), KoinComponent {
     private val ktorClient: KtorClient by inject()
 
     private val _state = MutableStateFlow(CancelMatchState())
@@ -33,9 +33,9 @@ class CancelMatchViewModel : ViewModel(), KoinComponent{
             try {
                 val response = ktorClient.cancelMatch(user, jwt)
                 _state.value = CancelMatchState(isSuccess = true, statusCode = response)
-                Log.d("GKJADNKJGNDJGNDKJ", state.value.toString())
             } catch (e: Exception) {
-                _state.value = CancelMatchState(errorMessage = e.localizedMessage ?: "An error occurred")
+                _state.value =
+                    CancelMatchState(errorMessage = e.localizedMessage ?: "An error occurred")
             }
         }
     }

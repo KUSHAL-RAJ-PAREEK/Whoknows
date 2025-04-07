@@ -10,5 +10,5 @@ data class UpdateUserState(
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
     val errorMessage: String? = null,
-    val statusCode : Int?= null,
+    val statusCode: Int? = null,
 )

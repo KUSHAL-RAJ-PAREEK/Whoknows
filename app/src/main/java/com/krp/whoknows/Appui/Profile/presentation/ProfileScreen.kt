@@ -109,33 +109,31 @@ import java.time.temporal.TemporalQueries.localDate
  * Created by KUSHAL RAJ PAREEK on 05,March,2025
  */
 
-//@Preview(showSystemUi = true)
-//@Composable
-//private fun run() {
-//    var matrix by remember { mutableStateOf(ColorMatrix()) }
-//
-//    ProfileScreen(matrix = matrix)
-//}
-
 data class InterestItem(val name: String, val icon: ImageVector)
 
 
 @SuppressLint("StateFlowValueCalledInComposition", "UseCompatLoadingForDrawables")
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class,
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class,
     ExperimentalSharedTransitionApi::class
 )
 
 @Composable
-fun SharedTransitionScope.ProfileScreen(modifier: Modifier = Modifier, matrix: ColorMatrix
-                                        ,navController: NavController,onITemClick: (Int, String)-> Unit, animatedVisibilityScope: AnimatedVisibilityScope,
-                                        profileViewModel : ProfileViewModel,
-                                        profileDetailViewModel : ProfileDetailViewModel,
-                                        editProfileViewModel : EditProfileViewModel,
-                                        mainImageViewModel: MainImageViewModel,
-                                        imageViewModel: ImageViewModel) {
+fun SharedTransitionScope.ProfileScreen(
+    modifier: Modifier = Modifier,
+    matrix: ColorMatrix,
+    navController: NavController,
+    onITemClick: (Int, String) -> Unit,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    profileViewModel: ProfileViewModel,
+    profileDetailViewModel: ProfileDetailViewModel,
+    editProfileViewModel: EditProfileViewModel,
+    mainImageViewModel: MainImageViewModel,
+    imageViewModel: ImageViewModel
+) {
     val jwtViewModel: JWTViewModel = koinViewModel()
-    val context =LocalContext.current
+    val context = LocalContext.current
     val userDetails by jwtViewModel.userDetail.collectAsState(initial = null)
 
     LaunchedEffect(Unit) {
@@ -155,7 +153,6 @@ fun SharedTransitionScope.ProfileScreen(modifier: Modifier = Modifier, matrix: C
         editProfileViewModel.updateLatitude(profileDetailViewModel.latitude.value)
         editProfileViewModel.updateLongitude(profileDetailViewModel.longitude.value)
         val preferredAgeRange = editProfileViewModel.preAgeRange.value
-        Log.d("preferredAgeRange",preferredAgeRange.toString())
         val parts = preferredAgeRange.split("-").map { it.toInt() }
         editProfileViewModel.updateFPreAgeRange(parts[0].toString())
         editProfileViewModel.updateTPreAgeRange(parts[1].toString())
@@ -169,15 +166,7 @@ fun SharedTransitionScope.ProfileScreen(modifier: Modifier = Modifier, matrix: C
         editProfileViewModel.updatetImage(profileDetailViewModel.tImage.value)
 
     }
-//    val user = profileViewModel.user.collectAsState()
 
-
-
-//    LaunchedEffect(profileDetailViewModel.dob) {
-//        dob_num = (profileDetailViewModel.dob ?: "2004-12-12").toString()
-//
-//        dob = calculateAge(dob_num)
-//    }
     var ageGap by remember { mutableStateOf("20-30") }
     var location by remember { mutableStateOf("Jaipur") }
     var preferredGender by remember { mutableStateOf("Female") }
@@ -186,11 +175,12 @@ fun SharedTransitionScope.ProfileScreen(modifier: Modifier = Modifier, matrix: C
     var dob by remember { mutableStateOf("20") }
     var profileImg by remember { mutableStateOf<Bitmap?>(imageViewModel.profileImage.value) }
     var interestList by remember { mutableStateOf(mutableListOf<String?>()) }
-    var galleryImages by remember { mutableStateOf<List<Bitmap?>>(listOf(null,null,null)) }
+    var galleryImages by remember { mutableStateOf<List<Bitmap?>>(listOf(null, null, null)) }
 
 
     fun logValues() {
-        Log.d("ProfileViewModel", """
+        Log.d(
+            "ProfileViewModel", """
         Username: ${profileDetailViewModel.username.value}
         Image URL: ${profileDetailViewModel.imgUrl.value}
         Geo Radius Range: ${profileDetailViewModel.geoRadiusRange.value}
@@ -202,7 +192,8 @@ fun SharedTransitionScope.ProfileScreen(modifier: Modifier = Modifier, matrix: C
         Posts: ${profileDetailViewModel.posts.value}
         Latitude: ${profileDetailViewModel.latitude.value}
         Longitude: ${profileDetailViewModel.longitude.value}
-    """.trimIndent())
+    """.trimIndent()
+        )
     }
     logValues()
 
@@ -212,11 +203,10 @@ fun SharedTransitionScope.ProfileScreen(modifier: Modifier = Modifier, matrix: C
         ageGap = profileDetailViewModel.preAgeRange.value ?: "20-30"
         preferredGender = profileDetailViewModel.preGender.value ?: "Female"
         preferredRange = (profileDetailViewModel.geoRadiusRange.value ?: "Infinite").toString()
-//        interestList = profileDetailViewModel.interests.value as MutableList<String?>
         bio = profileDetailViewModel.bio.value
         interestList = profileDetailViewModel.interests.value?.toMutableList() ?: mutableListOf()
         dob = profileDetailViewModel.dobs.value.toString()
-        profileImg= mainImageViewModel.profileImage.value
+        profileImg = mainImageViewModel.profileImage.value
         galleryImages = listOf(
             mainImageViewModel.firstGalleryImage.value,
             mainImageViewModel.secondGalleryImage.value,
@@ -225,58 +215,12 @@ fun SharedTransitionScope.ProfileScreen(modifier: Modifier = Modifier, matrix: C
     }
 
 
-
-
-//    LaunchedEffect(user.value?.username) {
-//        val dobString = user.value?.dob ?: "2004-12-12"
-//        val localDate = LocalDate.parse(dobString, DateTimeFormatter.ISO_LOCAL_DATE)
-//        editProfileViewModel.updateGeoRadiusRange(user.value?.geoRadiusRange.toString())
-//        editProfileViewModel.updatePreGender(user.value?.preferredGender.toString())
-//        editProfileViewModel.updateDOB(localDate)
-//        editProfileViewModel.updatePreAgeRange(user.value?.ageGap.toString())
-//        editProfileViewModel.updateGeoRadiusRange(user.value?.geoRadiusRange.toString())
-//        editProfileViewModel.updateBio(user.value?.bio.toString())
-//        editProfileViewModel.updateInterest(user.value?.interests ?: emptyList())
-//        editProfileViewModel.updatePosts(user.value?.posts ?: emptyList())
-//        val preferredAgeRange = editProfileViewModel.preAgeRange.value
-//        val parts = preferredAgeRange.split("-").map { it.toInt() }
-//        editProfileViewModel.updateFPreAgeRange(parts[0].toString())
-//        editProfileViewModel.updateTPreAgeRange(parts[1].toString())
-//    }
-
-//    Log.d("inprofilescreen", user.value.toString())
-    val list = mutableListOf(
-//        InterestItem("Music", Icons.Default.MusicNote),
-//        InterestItem("Travel", Icons.Default.TravelExplore),
-//        InterestItem("Sports", Icons.Default.Sports),
-//        InterestItem("Cooking", Icons.Default.Cookie),
-//        InterestItem("Gaming", Icons.Default.Games),
-//        InterestItem("Photography", Icons.Default.Camera),
-        "Music",
-        "Travel",
-        "Sports",
-        "Cooking",
-        "Gaming",
-        "Photography"
-    )
-
-//    val images = remember {
-//        mutableListOf(
-//            "https://lastfm.freetls.fastly.net/i/u/770x0/95f578936a18db26a9a3d9ce7e62439c.jpg#95f578936a18db26a9a3d9ce7e62439c",
-//            "https://lastfm.freetls.fastly.net/i/u/770x0/eebfb655fdb21e3133d9fb82741128d0.jpg#eebfb655fdb21e3133d9fb82741128d0",
-//            "https://lastfm.freetls.fastly.net/i/u/770x0/46043eaa0841aa679e9398aee2e1cc7c.jpg#46043eaa0841aa679e9398aee2e1cc7c"
-//        )
-//    }
-
-
     val scrollState = rememberScrollState()
 
     val shouldCollapse by remember {
         derivedStateOf { scrollState.value > 0 }
     }
     val defaultIcon = Icons.Default.Star
-//    val bitmapImage = profileImg?.asImageBitmap()
-//        ?: drawableToBitmap(context, if(profileDetailViewModel.gender.value == "MALE") R.drawable.bp_img_placeholder else  R.drawable.p_img_placeholder).asImageBitmap()
 
     val placeholderImage = remember {
         val drawable = context.resources.getDrawable(
@@ -310,7 +254,14 @@ fun SharedTransitionScope.ProfileScreen(modifier: Modifier = Modifier, matrix: C
             )
 
     ) {
-        ProfileHeader(progress = progress,animatedVisibilityScope = animatedVisibilityScope,profileDetailViewModel =profileDetailViewModel, img = profileImg, gender = if(profileDetailViewModel.gender.value == "MALE") true else false, bitmapImage = bitmapImage!!)
+        ProfileHeader(
+            progress = progress,
+            animatedVisibilityScope = animatedVisibilityScope,
+            profileDetailViewModel = profileDetailViewModel,
+            img = profileImg,
+            gender = if (profileDetailViewModel.gender.value == "MALE") true else false,
+            bitmapImage = bitmapImage!!
+        )
 
 
         Column(
@@ -353,12 +304,20 @@ fun SharedTransitionScope.ProfileScreen(modifier: Modifier = Modifier, matrix: C
                         )
                     }
 
-                    Row(verticalAlignment  = Alignment.CenterVertically){
-                        MatchItem(icon = ImageVector.vectorResource(R.drawable.heart), status = profileDetailViewModel.isMatch.value)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        MatchItem(
+                            icon = ImageVector.vectorResource(R.drawable.heart),
+                            status = profileDetailViewModel.isMatch.value
+                        )
                         Spacer(Modifier.width(5.dp))
-                        Icon(modifier = Modifier.clickable{
-                            onITemClick(R.drawable.p_image,"Sabrina Carpainter")
-                        },imageVector = Icons.Default.Edit, contentDescription = "edit", tint = ordColor)
+                        Icon(
+                            modifier = Modifier.clickable {
+                                onITemClick(R.drawable.p_image, "Sabrina Carpainter")
+                            },
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "edit",
+                            tint = ordColor
+                        )
                     }
                 }
                 Spacer(modifier.height(20.dp))
@@ -372,16 +331,10 @@ fun SharedTransitionScope.ProfileScreen(modifier: Modifier = Modifier, matrix: C
                 Spacer(modifier.height(15.dp))
 
                 ExpandableText(
-                    text = (if(bio != "")bio else "Hey, I am using WhoKnows. You never know who you might meet today!" + ".").toString(),
+                    text = (if (bio != "") bio else "Hey, I am using WhoKnows. You never know who you might meet today!" + ".").toString(),
                     fontSize = 15.sp,
-                    font =  FontFamily(Font(R.font.hellix_medium))
-                    )
-
-//                Text(
-//                    text = (if(bio != "")bio else "Hey, I am using WhoKnows. You never know who you might meet today!" + ".").toString(),
-//                    color = Color.Black,
-//                    fontFamily = FontFamily(Font(R.font.hellix_medium))
-//                )
+                    font = FontFamily(Font(R.font.hellix_medium))
+                )
 
                 Spacer(modifier.height(20.dp))
 
@@ -395,19 +348,22 @@ fun SharedTransitionScope.ProfileScreen(modifier: Modifier = Modifier, matrix: C
                 Box(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    if(interestList.isEmpty()){
+                    if (interestList.isEmpty()) {
                         InterestItemImg(
                             modifier = Modifier.padding(4.dp),
-                            interest = InterestItem("Whoknows",defaultIcon)
+                            interest = InterestItem("Whoknows", defaultIcon)
                         )
-                    }else{
+                    } else {
                         FlowRow(
                             modifier = Modifier.fillMaxWidth(),
                         ) {
                             interestList.forEach { interest ->
                                 InterestItemImg(
                                     modifier = Modifier.padding(4.dp),
-                                    interest = InterestItem(interest.toString(),interestIcons[interest.toString()]?:defaultIcon)
+                                    interest = InterestItem(
+                                        interest.toString(),
+                                        interestIcons[interest.toString()] ?: defaultIcon
+                                    )
                                 )
                             }
                         }
@@ -474,24 +430,24 @@ fun SharedTransitionScope.ProfileScreen(modifier: Modifier = Modifier, matrix: C
 
                 Spacer(modifier.height(15.dp))
 
-                val g1 = if (profileDetailViewModel.gender.value  == "MALE") {
+                val g1 = if (profileDetailViewModel.gender.value == "MALE") {
                     R.drawable.boy_g1
                 } else {
                     R.drawable.girl_g1
                 }
 
-                val g2 =  if (profileDetailViewModel.gender.value  == "MALE") {
-                R.drawable.boy_g2
-            } else {
-                R.drawable.girl_g2
-            }
+                val g2 = if (profileDetailViewModel.gender.value == "MALE") {
+                    R.drawable.boy_g2
+                } else {
+                    R.drawable.girl_g2
+                }
 
-                val g3 = if (profileDetailViewModel.gender.value  == "MALE") {
+                val g3 = if (profileDetailViewModel.gender.value == "MALE") {
                     R.drawable.boy_g3
                 } else {
                     R.drawable.girl_g3
                 }
-                ImageSlider(images = galleryImages, matrix = matrix,g1 = g1, g2 = g2, g3 = g3)
+                ImageSlider(images = galleryImages, matrix = matrix, g1 = g1, g2 = g2, g3 = g3)
 
 
                 Spacer(modifier.height(50.dp))
@@ -526,11 +482,13 @@ fun SharedTransitionScope.ProfileScreen(modifier: Modifier = Modifier, matrix: C
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMotionApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.ProfileHeader(progress: Float,animatedVisibilityScope : AnimatedVisibilityScope,
-                                        profileDetailViewModel : ProfileDetailViewModel,
-                                        img : Bitmap?,
-                                        gender : Boolean,
-                                        bitmapImage: ImageBitmap) {
+fun SharedTransitionScope.ProfileHeader(
+    progress: Float, animatedVisibilityScope: AnimatedVisibilityScope,
+    profileDetailViewModel: ProfileDetailViewModel,
+    img: Bitmap?,
+    gender: Boolean,
+    bitmapImage: ImageBitmap
+) {
 
 
     val gender = gender
@@ -542,28 +500,11 @@ fun SharedTransitionScope.ProfileHeader(progress: Float,animatedVisibilityScope 
     }
 
 
-
-
     var username by remember { mutableStateOf("Whoknows") }
 
     LaunchedEffect(Unit) {
         username = (profileDetailViewModel.username.value ?: "Whoknows").toString()
     }
-
-//    var profileImage by remember { mutableStateOf<Any>(R.drawable.p_image) }
-//
-//    LaunchedEffect(user) {
-//        user?.imgUrl?.let { url ->
-//            val request = ImageRequest.Builder(context)
-//                .data(url)
-//                .memoryCacheKey(url) // Enables faster retrieval
-//                .diskCacheKey(url)
-//                .crossfade(true)
-//                .build()
-//            profileImage = request
-//        }
-//    }
-
 
     MotionLayout(
         motionScene = MotionScene(motionScene),
@@ -625,7 +566,14 @@ fun SharedTransitionScope.ProfileHeader(progress: Float,animatedVisibilityScope 
 }
 
 @Composable
-fun ImageSlider(modifier: Modifier = Modifier, images: List<Bitmap?>, matrix: ColorMatrix,g1 : Int, g2 : Int, g3 : Int) {
+fun ImageSlider(
+    modifier: Modifier = Modifier,
+    images: List<Bitmap?>,
+    matrix: ColorMatrix,
+    g1: Int,
+    g2: Int,
+    g3: Int
+) {
     val pagerState = rememberPagerState { 3 }
     val context = LocalContext.current
 
@@ -648,7 +596,8 @@ fun ImageSlider(modifier: Modifier = Modifier, images: List<Bitmap?>, matrix: Co
             animationSpec = tween(durationMillis = 300)
         )
 
-        val bitmapImage = images.getOrNull(index)?.asImageBitmap() ?: defaultBitmaps[index] ?: defaultBitmaps[2]
+        val bitmapImage =
+            images.getOrNull(index)?.asImageBitmap() ?: defaultBitmaps[index] ?: defaultBitmaps[2]
 
 
         Image(
@@ -662,7 +611,7 @@ fun ImageSlider(modifier: Modifier = Modifier, images: List<Bitmap?>, matrix: Co
                     shape = RoundedCornerShape(16.dp)
                     clip = true
                 },
-            bitmap =bitmapImage as ImageBitmap, contentDescription = "image",
+            bitmap = bitmapImage as ImageBitmap, contentDescription = "image",
             contentScale = ContentScale.Crop,
             colorFilter = ColorFilter.colorMatrix(matrix)
         )

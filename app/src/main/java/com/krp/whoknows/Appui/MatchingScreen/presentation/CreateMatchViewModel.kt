@@ -35,9 +35,9 @@ class CreateMatchViewModel : ViewModel(), KoinComponent {
             try {
                 val response = ktorClient.createMatch(user, jwt)
                 _state.value = CreateMatchState(isSuccess = true, statusCode = response)
-                Log.d("GKJADNKJGNDJGNDKJ", state.value.toString())
             } catch (e: Exception) {
-                _state.value = CreateMatchState(errorMessage = e.localizedMessage ?: "An error occurred")
+                _state.value =
+                    CreateMatchState(errorMessage = e.localizedMessage ?: "An error occurred")
             }
         }
     }

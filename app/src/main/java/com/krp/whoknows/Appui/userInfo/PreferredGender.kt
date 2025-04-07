@@ -65,21 +65,22 @@ import kotlin.math.log
  */
 
 
-
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PreferredGender(viewModel: InfoViewModel,
-                    navController: NavController) {
+fun PreferredGender(
+    viewModel: InfoViewModel,
+    navController: NavController
+) {
     val context = LocalContext.current
     var text by remember { mutableStateOf(TextFieldValue("")) }
 
     val imeHeight = WindowInsets.ime.getBottom(LocalDensity.current).toDp()
-LaunchedEffect(Unit) {
-    text = TextFieldValue(viewModel.preGender.value)
-}
+    LaunchedEffect(Unit) {
+        text = TextFieldValue(viewModel.preGender.value)
+    }
     BackHandler {
-        navController.navigate(UserGender){
+        navController.navigate(UserGender) {
             popUpTo(0) { inclusive = true }
         }
     }
@@ -96,28 +97,33 @@ LaunchedEffect(Unit) {
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack, contentDescription = "Back arrow",
-                Modifier.size(35.dp).clickable{
-                    navController.navigate(UserGender){
-                        popUpTo(0) { inclusive = true }
-                    }
-                },
+                Modifier
+                    .size(35.dp)
+                    .clickable {
+                        navController.navigate(UserGender) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    },
                 tint = ordColor
             )
         }
 
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 15.dp)
-            .padding(top = 10.dp)){
-            Text(text = "What's your preferred Gender ?",
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 15.dp)
+                .padding(top = 10.dp)
+        ) {
+            Text(
+                text = "What's your preferred Gender ?",
                 fontFamily = FontFamily(Font(R.font.noto_sans_khanada)),
-                fontSize = 20.sp)
+                fontSize = 20.sp
+            )
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // dropdown
-            DropDownMenu(listOf("MALE","FEMALE"),viewModel.preGender.value, flag = false){
-                if(viewModel.preGender.value.isBlank()){
+            DropDownMenu(listOf("MALE", "FEMALE"), viewModel.preGender.value, flag = false) {
+                if (viewModel.preGender.value.isBlank()) {
                     viewModel.updatePreGender(it)
                 }
                 text = TextFieldValue(viewModel.preGender.value)
@@ -133,18 +139,23 @@ LaunchedEffect(Unit) {
             FloatingActionButton(
                 onClick = {
                     if (text.text.isBlank()) {
-                        val lightOrdColor = null
-                        DynamicToast.make(context,"Please enter your Preferred Gender",
+                        DynamicToast.make(
+                            context, "Please enter your Preferred Gender",
                             ContextCompat.getDrawable(context, R.drawable.warning)?.mutate(),
-                            com.krp.whoknows.ui.theme.lightOrdColor.toArgb(),light_red.toArgb()).show()
+                            com.krp.whoknows.ui.theme.lightOrdColor.toArgb(), light_red.toArgb()
+                        ).show()
 
-                } else if (text.text.toIntOrNull() != null && text.text.toInt() < 18) {
-                        DynamicToast.make(context,"You must be at least 18 years old",
-                            ContextCompat.getDrawable(context, R.drawable.age_logo)?.mutate(),lightOrdColor.toArgb(),
-                            light_yellow.toArgb()).show()
-                } else {
-                    navController.navigate(com.krp.whoknows.Navigation.DOBScreen)
-                }
+                    } else if (text.text.toIntOrNull() != null && text.text.toInt() < 18) {
+                        DynamicToast.make(
+                            context,
+                            "You must be at least 18 years old",
+                            ContextCompat.getDrawable(context, R.drawable.age_logo)?.mutate(),
+                            lightOrdColor.toArgb(),
+                            light_yellow.toArgb()
+                        ).show()
+                    } else {
+                        navController.navigate(com.krp.whoknows.Navigation.DOBScreen)
+                    }
                 },
                 shape = CircleShape,
                 containerColor = ordColor,

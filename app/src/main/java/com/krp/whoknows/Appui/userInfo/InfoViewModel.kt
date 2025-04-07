@@ -8,7 +8,7 @@ import java.time.LocalDate
 /**
  * Created by KUSHAL RAJ PAREEK on 07,February,2025
  */
-class InfoViewModel: ViewModel() {
+class InfoViewModel : ViewModel() {
 
 
     private val _dob = MutableStateFlow(LocalDate.now())
@@ -31,7 +31,7 @@ class InfoViewModel: ViewModel() {
     val interests: StateFlow<List<String>?> = _interests
 
 
-    fun updateInterest(interests : List<String>) {
+    fun updateInterest(interests: List<String>) {
         _interests.value = interests
     }
 
@@ -46,7 +46,7 @@ class InfoViewModel: ViewModel() {
 
     fun updateDOB(dob: LocalDate) {
         _dob.value = dob
-}
+    }
 
     fun updateGender(gender: String) {
         _gender.value = gender
@@ -55,9 +55,11 @@ class InfoViewModel: ViewModel() {
     fun updatePreGender(preGender: String) {
         _preGender.value = preGender
     }
+
     fun updatePreAgeRange(preAgeRange: String) {
         _preAgeRange.value = preAgeRange
     }
+
     fun updateGeoRadiusRange(geoRadiusRange: String) {
         _geoRadiusRange.value = geoRadiusRange
     }

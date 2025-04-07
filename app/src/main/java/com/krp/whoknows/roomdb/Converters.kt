@@ -18,7 +18,6 @@ class Converters {
     }
     @TypeConverter
     fun toList(value: String?): List<String> {
-        Log.d("asdddddddddddddddddddd",value.toString())
         return if (value.isNullOrEmpty()) {
             emptyList()
         } else {

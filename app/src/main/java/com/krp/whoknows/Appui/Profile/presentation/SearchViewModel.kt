@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.update
  * Created by KUSHAL RAJ PAREEK on 13,March,2025
  */
 
-class SearchViewModel : ViewModel(){
+class SearchViewModel : ViewModel() {
 
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
@@ -30,26 +30,27 @@ class SearchViewModel : ViewModel(){
     val selectedStates = _selectedStates.asStateFlow()
 
     private val _interest = MutableStateFlow(allInterest)
+
     @OptIn(FlowPreview::class)
     val interest = searchText
         .debounce(500L)
         .onEach { _isSearching.update { true } }
         .combine(_interest) { text, interest ->
-        if(text.isBlank()){
-            interest
-        }else{
-            interest.filter {
-                it.doesMatchSearchQuery(text)
+            if (text.isBlank()) {
+                interest
+            } else {
+                interest.filter {
+                    it.doesMatchSearchQuery(text)
+                }
             }
-        }
-    }.onEach { _isSearching.update { false } }
-            .stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
-        _interest.value
-    )
+        }.onEach { _isSearching.update { false } }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            _interest.value
+        )
 
-    fun onSearchTextChange(text : String){
+    fun onSearchTextChange(text: String) {
         _searchText.value = text
     }
 
@@ -65,7 +66,7 @@ class SearchViewModel : ViewModel(){
 
 data class Interest(
     val interest: String
-){
+) {
     fun doesMatchSearchQuery(query: String): Boolean {
         return interest.contains(query, ignoreCase = true)
     }

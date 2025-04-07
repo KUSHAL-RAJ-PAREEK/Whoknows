@@ -23,9 +23,10 @@ class UpdateMatchViewModel : ViewModel(), KoinComponent {
     private val _called = MutableStateFlow(false)
     val called = _called
 
-    fun updateCalled(flag : Boolean){
+    fun updateCalled(flag: Boolean) {
         called.value = flag
     }
+
     fun onEvent(event: UpdateMatchEvent) {
         when (event) {
             is UpdateMatchEvent.UpdateMatch -> updateMatch(event.id, event.jwt)
@@ -33,13 +34,17 @@ class UpdateMatchViewModel : ViewModel(), KoinComponent {
     }
 
     private fun updateMatch(id: String, jwt: String) {
-        Log.d("afsdsffs","$id $jwt")
         viewModelScope.launch {
             _state.value = UpdateMatchState(isLoading = true)
             try {
                 val response = ktorClient.checkMatch(id, jwt)
                 state.value =
-                    UpdateMatchState(isSuccess = true, statusCode = response.statusCode,user = response.user, isLoading = false)
+                    UpdateMatchState(
+                        isSuccess = true,
+                        statusCode = response.statusCode,
+                        user = response.user,
+                        isLoading = false
+                    )
             } catch (e: Exception) {
                 _state.value =
                     UpdateMatchState(errorMessage = e.localizedMessage ?: "An error occurred")

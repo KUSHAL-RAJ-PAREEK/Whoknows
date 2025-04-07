@@ -8,9 +8,9 @@ import com.krp.whoknows.roomdb.entity.UserResponseEntity
  */
 
 data class CheckMatchState(
-    var isLoading:Boolean = false,
+    var isLoading: Boolean = false,
     var isSuccess: Boolean = false,
     var errorMessage: String? = null,
-    var statusCode : Int?= null,
-    var user : MatchUserEntity? = null
+    var statusCode: Int? = null,
+    var user: MatchUserEntity? = null
 )

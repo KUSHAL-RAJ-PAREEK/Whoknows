@@ -215,8 +215,6 @@ fun SetUpNavGraph(modifier: Modifier = Modifier, startDest: Any) {
 
             composable<HomeScreen> {
                 val state by updateMatchViewModel.state.collectAsStateWithLifecycle()
-
-//                    val greetingViewModel: GreetingViewModel = koinViewModel()
                 HomeScreen(
                     videoUri = getVideoUri(),
                     navController = navController, animatedVisibilityScope = this, onFabClick = {
@@ -466,7 +464,6 @@ fun SetUpNavGraph(modifier: Modifier = Modifier, startDest: Any) {
 fun onLandingButtonClick(navController: NavController) {
     navController.popBackStack()
     navController.navigate(LoginScreen)
-//    navController.navigate(DOBScreen)
 }
 
 fun onPhoneSlide(navController: NavController) {

@@ -30,18 +30,17 @@ class CheckMatchViewModel : ViewModel(), KoinComponent {
     }
 
     private fun checkMatch(id: String, jwt: String) {
-        Log.d("afsdsffs", "$id $jwt")
-
         viewModelScope.launch {
             _state.value = CheckMatchState(isLoading = true)
             try {
                 val response = ktorClient.checkMatch(id, jwt)
-                Log.d("sdadasdasdasd",response.toString())
-                _state.value = CheckMatchState(isSuccess = true, statusCode = response.statusCode, isLoading = false, user = response.user)
-                Log.d("sdadasdasdasd",state.value.toString())
+                _state.value = CheckMatchState(
+                    isSuccess = true,
+                    statusCode = response.statusCode,
+                    isLoading = false,
+                    user = response.user
+                )
             } catch (e: Exception) {
-                Log.d("eroorinside",e.toString())
-
                 _state.value =
                     CheckMatchState(errorMessage = e.localizedMessage ?: "An error occurred")
             }

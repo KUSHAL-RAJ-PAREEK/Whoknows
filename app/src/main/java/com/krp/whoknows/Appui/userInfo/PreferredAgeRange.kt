@@ -71,25 +71,26 @@ import java.time.LocalDate
  */
 
 
-@Preview
 @Composable
 private fun Run() {
     PreferredAgeRange(viewModel = viewModel(), navController = rememberNavController())
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PreferredAgeRange(viewModel: InfoViewModel,
-                      navController: NavController
+fun PreferredAgeRange(
+    viewModel: InfoViewModel,
+    navController: NavController
 ) {
     val context = LocalContext.current
 
-    var text by remember { mutableStateOf("")}
+    var text by remember { mutableStateOf("") }
     var text1 by remember { mutableStateOf(TextFieldValue("")) }
     var text2 by remember { mutableStateOf(TextFieldValue("")) }
     var isFocused by remember { mutableStateOf(false) }
     val imeHeight = WindowInsets.ime.getBottom(LocalDensity.current).toDp()
     BackHandler {
-        navController.navigate(com.krp.whoknows.Navigation.InterestScreen){
+        navController.navigate(com.krp.whoknows.Navigation.InterestScreen) {
             popUpTo(0) { inclusive = true }
         }
     }
@@ -110,35 +111,45 @@ fun PreferredAgeRange(viewModel: InfoViewModel,
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack, contentDescription = "Back arrow",
-                Modifier.size(35.dp).clickable{
-                    navController.navigate(com.krp.whoknows.Navigation.InterestScreen){
-                        popUpTo(0) { inclusive = true }
-                    }
-                },
+                Modifier
+                    .size(35.dp)
+                    .clickable {
+                        navController.navigate(com.krp.whoknows.Navigation.InterestScreen) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    },
                 tint = ordColor
             )
         }
 
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 15.dp)
-            .padding(top = 10.dp)){
-            Text(text = "What's your Preferred Age ?",
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 15.dp)
+                .padding(top = 10.dp)
+        ) {
+            Text(
+                text = "What's your Preferred Age ?",
                 fontFamily = FontFamily(Font(R.font.noto_sans_khanada)),
-                fontSize = 20.sp)
+                fontSize = 20.sp
+            )
 
             Spacer(modifier = Modifier.height(20.dp))
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween){
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 OutlinedTextField(
                     value = text1,
-                    onValueChange = { text1 = it
-                        viewModel.updatePreAgeRange(it.toString())},
+                    onValueChange = {
+                        text1 = it
+                        viewModel.updatePreAgeRange(it.toString())
+                    },
                     modifier = Modifier
                         .clickable {}
                         .weight(1f)
                         .onFocusChanged { isFocused = it.isFocused },
-                    textStyle = LocalTextStyle.current.copy(fontSize = 18.sp,color = Color.Black),
+                    textStyle = LocalTextStyle.current.copy(fontSize = 18.sp, color = Color.Black),
                     placeholder = { Text("Min") },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = ordColor,
@@ -148,18 +159,21 @@ fun PreferredAgeRange(viewModel: InfoViewModel,
                     shape = RoundedCornerShape(20.dp),
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done)
+                        imeAction = ImeAction.Done
+                    )
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 OutlinedTextField(
                     value = text2,
-                    onValueChange = { text2 = it
-                        viewModel.updatePreAgeRange(it.toString())},
+                    onValueChange = {
+                        text2 = it
+                        viewModel.updatePreAgeRange(it.toString())
+                    },
                     modifier = Modifier
                         .clickable {}
                         .weight(1f)
                         .onFocusChanged { isFocused = it.isFocused },
-                    textStyle = LocalTextStyle.current.copy(fontSize = 18.sp,color = Color.Black),
+                    textStyle = LocalTextStyle.current.copy(fontSize = 18.sp, color = Color.Black),
                     placeholder = { Text("Max") },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = ordColor,
@@ -169,7 +183,8 @@ fun PreferredAgeRange(viewModel: InfoViewModel,
                     shape = RoundedCornerShape(20.dp),
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done)
+                        imeAction = ImeAction.Done
+                    )
                 )
             }
         }
@@ -181,22 +196,28 @@ fun PreferredAgeRange(viewModel: InfoViewModel,
         ) {
             FloatingActionButton(
                 onClick = {
-                    text ="${text1.text}-${text2.text}"
-                    Log.d("textiti",text)
-                    if(text1.text > text2.text){
-                        DynamicToast.make(context,"min range should be small from max range",
-                            ContextCompat.getDrawable(context, R.drawable.calender_logo)?.mutate(),lightOrdColor.toArgb(),
-                            light_yellow.toArgb()).show()
-                    }
-                   else if (text1.text.isBlank() || text2.text.isBlank()) {
-                        DynamicToast.make(context,"Please enter min and max range",
-                            ContextCompat.getDrawable(context, R.drawable.calender_logo)?.mutate(),lightOrdColor.toArgb(),
-                            light_yellow.toArgb()).show()
+                    text = "${text1.text}-${text2.text}"
+                    if (text1.text > text2.text) {
+                        DynamicToast.make(
+                            context,
+                            "min range should be small from max range",
+                            ContextCompat.getDrawable(context, R.drawable.calender_logo)?.mutate(),
+                            lightOrdColor.toArgb(),
+                            light_yellow.toArgb()
+                        ).show()
+                    } else if (text1.text.isBlank() || text2.text.isBlank()) {
+                        DynamicToast.make(
+                            context,
+                            "Please enter min and max range",
+                            ContextCompat.getDrawable(context, R.drawable.calender_logo)?.mutate(),
+                            lightOrdColor.toArgb(),
+                            light_yellow.toArgb()
+                        ).show()
                     } else {
                         viewModel.updatePreAgeRange(text)
                         navController.navigate(com.krp.whoknows.Navigation.GeoRadiusRange)
                     }
-                           },
+                },
                 shape = CircleShape,
                 containerColor = ordColor,
                 modifier = Modifier

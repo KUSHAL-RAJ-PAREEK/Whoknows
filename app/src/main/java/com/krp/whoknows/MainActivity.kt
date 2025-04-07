@@ -46,12 +46,12 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.KoinApplication.Companion.init
 import kotlin.math.log
+
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val splashScreen = installSplashScreen()
-//        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         MyFirebaseMessagingService.ringtone?.stop()
 
@@ -61,8 +61,6 @@ class MainActivity : ComponentActivity() {
             val p by greetingViewModel.userState.collectAsState()
 
             val p1 by jwtViewModel.userDetail.collectAsState(initial = null)
-            Log.d("userishere1111", p.toString())
-            Log.d("userishere1111", p1.toString())
 
             var startDest by remember { mutableStateOf<Any?>(null) }
             var timeoutReached by remember { mutableStateOf(false) }
@@ -96,30 +94,11 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .background(color = colorResource(id = R.color.splashScreenColor))
                     ) {
-                            SetUpNavGraph(startDest = startDest!!)
+                        SetUpNavGraph(startDest = startDest!!)
 
                     }
                 }
             }
-        }
-    }
-
-
-    @Composable
-    fun SplashScreenUI(content: @Composable () -> Unit) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = colorResource(id = R.color.splashScreenColor))
-        ) {
-            content()
-            Text(
-                text = "Whoknows",
-                fontSize = 17.sp,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 32.dp)
-            )
         }
     }
 }

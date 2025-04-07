@@ -59,7 +59,7 @@ import kotlin.math.roundToInt
 @Composable
 private fun prev() {
     var isLoading by remember { mutableStateOf(false) }
-    SlideToUnlock(false,  onUnlockRequested = { isLoading = true })
+    SlideToUnlock(false, onUnlockRequested = { isLoading = true })
 }
 
 @OptIn(ExperimentalWearMaterialApi::class)

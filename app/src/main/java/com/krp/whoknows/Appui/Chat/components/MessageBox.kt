@@ -49,26 +49,10 @@ import java.time.format.TextStyle
  * Created by Kushal Raj Pareek on 24-03-2025 00:14
  */
 
-@Preview
-@Composable
-private fun run() {
-    MessageBox(
-        padding = 2.dp,
-        Message(
-            senderId = "DADSASD",
-            receiverId = "dasdasdas",
-            timeStamp = "22:30",
-            message = "",
-            imgStr ="dsadasd",
-            imgUrl = null
-        ), profileDetailViewModel = ProfileDetailViewModel()
-    )
-}
-
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun MessageBox(
-    padding : Dp,
+    padding: Dp,
     message: Message,
     profileDetailViewModel: ProfileDetailViewModel
 ) {
@@ -79,7 +63,7 @@ fun MessageBox(
             start = if (isCurrentUser) 16.dp else 8.dp,
             end = if (isCurrentUser) 8.dp else 16.dp,
             top = 3.dp,
-            bottom = 3.dp+padding
+            bottom = 3.dp + padding
         )
         .defaultMinSize(minHeight = 40.dp)
         .clip(
@@ -91,18 +75,17 @@ fun MessageBox(
             )
         )
         .background(
-//            brush = Brush.linearGradient(
             if (isCurrentUser) {
 
-                if(message.message != "deleted"){
+                if (message.message != "deleted") {
                     chat_dark
-                }else{
+                } else {
                     chat_dark.copy(alpha = 0.2f)
                 }
             } else {
-                if(message.message != "deleted"){
+                if (message.message != "deleted") {
                     chat_light
-                }else{
+                } else {
                     chat_light.copy(alpha = 0.2f)
                 }
             }
@@ -137,9 +120,9 @@ fun MessageBox(
                     }
 
 
-              Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
 
-                    if(message.message != "") {
+                    if (message.message != "") {
                         Text(
                             modifier = Modifier.widthIn(max = 250.dp),
                             text = message.message!!,
@@ -152,7 +135,7 @@ fun MessageBox(
                         )
                     }
 
-                        Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
 
 
                     message.timeStamp?.let {

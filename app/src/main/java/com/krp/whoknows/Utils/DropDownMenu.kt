@@ -60,8 +60,8 @@ import kotlin.math.log
 @Composable
 fun DropDownMenu(
     list: List<String>,
-    value : String,
-    flag : Boolean,
+    value: String,
+    flag: Boolean,
     onItemSelected: (String) -> Unit,
 ) {
     Log.d("insidedropdown", value)
@@ -70,7 +70,6 @@ fun DropDownMenu(
     var expanded by remember { mutableStateOf(false) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
-//    Log.d("kdsnfdsnklfd", "DropDownMenu: $selectedItem")
     val icon = if (expanded) {
         Icons.Filled.KeyboardArrowUp
     } else {
@@ -94,8 +93,8 @@ fun DropDownMenu(
                     isFocused = expanded
                 })
             },
-            textStyle = LocalTextStyle.current.copy(fontSize = 18.sp,color = Color.Black),
-            placeholder = { if(flag) Text("Enter your Gender") else Text("Enter preferred Gender") },
+            textStyle = LocalTextStyle.current.copy(fontSize = 18.sp, color = Color.Black),
+            placeholder = { if (flag) Text("Enter your Gender") else Text("Enter preferred Gender") },
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = if (isFocused) ordColor else Color.Gray,
                 unfocusedBorderColor = Color.Gray
@@ -112,37 +111,31 @@ fun DropDownMenu(
             },
             modifier = Modifier
                 .background(background_white)
-//                .clip(RoundedCornerShape(20.dp))
-//                .border(1.dp, ordColor,RoundedCornerShape(1.dp))
                 .width(
                     with(LocalDensity.current) { textFieldSize.width.toDp() },
                 )
         ) {
             list.forEach { label ->
-                MaterialTheme(shapes = MaterialTheme.shapes.copy(extraSmall  = RoundedCornerShape(40.dp))) {
+                MaterialTheme(shapes = MaterialTheme.shapes.copy(extraSmall = RoundedCornerShape(40.dp))) {
 
-                DropdownMenuItem(
-                    modifier = Modifier
-//                        .clip(RoundedCornerShape(20.dp))
-//                            .background(Color.White)
-                            ,
-                    text = {
-                        Text(text = label, color = Color.Black)
-                    },
-                    onClick = {
-                        selectedItem = label
-                        onItemSelected(label)
-                        expanded = false
-                        isFocused = false
-                    },
-                )
+                    DropdownMenuItem(
+                        modifier = Modifier,
+                        text = {
+                            Text(text = label, color = Color.Black)
+                        },
+                        onClick = {
+                            selectedItem = label
+                            onItemSelected(label)
+                            expanded = false
+                            isFocused = false
+                        },
+                    )
+                }
             }
         }
-            }
 
     }
 }
-
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -150,22 +143,20 @@ fun DropDownMenu(
 @Composable
 fun RemDropDownMenu(
     list: List<String>,
-    value : String,
+    value: String,
     onItemSelected: (String) -> Unit
 ) {
-    Log.d("insidedropdown", value)
     var selectedItem by remember { mutableStateOf(value) }
     var isFocused by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
-//    Log.d("kdsnfdsnklfd", "DropDownMenu: $selectedItem")
     val icon = if (expanded) {
         Icons.Filled.KeyboardArrowUp
     } else {
         Icons.Filled.KeyboardArrowDown
     }
-    LaunchedEffect(value){
+    LaunchedEffect(value) {
         selectedItem = value
     }
     Column(
@@ -185,7 +176,7 @@ fun RemDropDownMenu(
                     isFocused = expanded
                 })
             },
-            textStyle = LocalTextStyle.current.copy(fontSize = 18.sp,color = Color.Black),
+            textStyle = LocalTextStyle.current.copy(fontSize = 18.sp, color = Color.Black),
             placeholder = { Text("Enter preferred Gender") },
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = if (isFocused) ordColor else Color.Gray,
@@ -203,20 +194,15 @@ fun RemDropDownMenu(
             },
             modifier = Modifier
                 .background(background_white)
-//                .clip(RoundedCornerShape(20.dp))
-//                .border(1.dp, ordColor,RoundedCornerShape(1.dp))
                 .width(
                     with(LocalDensity.current) { textFieldSize.width.toDp() },
                 )
         ) {
             list.forEach { label ->
-                MaterialTheme(shapes = MaterialTheme.shapes.copy(extraSmall  = RoundedCornerShape(40.dp))) {
+                MaterialTheme(shapes = MaterialTheme.shapes.copy(extraSmall = RoundedCornerShape(40.dp))) {
 
                     DropdownMenuItem(
-                        modifier = Modifier
-//                        .clip(RoundedCornerShape(20.dp))
-//                            .background(Color.White)
-                        ,
+                        modifier = Modifier,
                         text = {
                             Text(text = label, color = Color.Black)
                         },

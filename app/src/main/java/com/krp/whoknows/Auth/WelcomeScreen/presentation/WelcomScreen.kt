@@ -50,77 +50,65 @@ import org.koin.java.KoinJavaComponent.inject
  * Created by KUSHAL RAJ PAREEK on 27,January,2025
  */
 
-
-@Preview
-@Composable
-private fun run() {
-    WelcomeScreen {  }
-}
-
 @SuppressLint("ResourceAsColor", "StateFlowValueCalledInComposition")
 @Composable
-fun WelcomeScreen(modifier: Modifier = Modifier,
-                  onClick:()-> Unit) {
-//    val jwtViewModel : JWTViewModel by inject(JWTViewModel::class.java)
-//    val pNumber: StateFlow<String?> = jwtViewModel.phoneNumber
-//    Log.d("numbereeeeee",pNumber.value.toString())
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(splashScreenColor)) {
-       Canvas(modifier = Modifier.size(1400.dp), onDraw = {
-           translate(left = 1130f, top = -900f) {
-               drawCircle(color = ordColor, radius = 1200f)
-           }
-       })
+fun WelcomeScreen(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(splashScreenColor)
+    ) {
+        Canvas(modifier = Modifier.size(1400.dp), onDraw = {
+            translate(left = 1130f, top = -900f) {
+                drawCircle(color = ordColor, radius = 1200f)
+            }
+        })
 
-       Column(
-           modifier = Modifier
-               .fillMaxSize()
-               .padding(top = 25.dp),
-       ) {
-           Row(modifier = Modifier
-               .padding(start = 8.dp,top = 30.dp)) {
-               Text(
-                   text = "Who",
-                   color = Color.Black,
-                   fontWeight = FontWeight.Normal,
-                   fontFamily = FontFamily(Font(R.font.pompiere)),
-                   fontSize = 70.sp,
-                   modifier = Modifier.padding(start = 0.dp)
-               )
-               Spacer(modifier = Modifier.width(2.dp))
-               Text(
-                   text = "Knows",
-                   color = Color.Black,
-                   fontWeight = FontWeight.Normal,
-                   fontFamily = FontFamily(Font(R.font.pompiere)),
-                   fontSize = 70.sp,
-                   modifier = Modifier.padding(start = 0.dp, top = 60.dp)
-               )
-           }
-//               Image(
-//                   painter = painterResource(id = R.drawable.landing_image),
-//                   contentDescription = "Landing Image",
-//                   modifier = Modifier
-//                       .size(500.dp)
-//                       .fillMaxSize()
-//                       .graphicsLayer {
-//                           translationX = -200f
-//                           translationY = 50f
-//                       }
-//               )
-
-           Button(modifier = modifier
-               .padding(top = 50.dp)
-               .align(Alignment.CenterHorizontally),
-               colors = ButtonDefaults.buttonColors(
-                   containerColor = ordColor
-               ),onClick = {onClick()},
-               shape = RoundedCornerShape(10.dp)) {
-               Text(text = "Welcome",
-                   fontSize = 25.sp,
-                   color = Color.Black)
-           }
-       }
-   }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 25.dp),
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(start = 8.dp, top = 30.dp)
+            ) {
+                Text(
+                    text = "Who",
+                    color = Color.Black,
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = FontFamily(Font(R.font.pompiere)),
+                    fontSize = 70.sp,
+                    modifier = Modifier.padding(start = 0.dp)
+                )
+                Spacer(modifier = Modifier.width(2.dp))
+                Text(
+                    text = "Knows",
+                    color = Color.Black,
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = FontFamily(Font(R.font.pompiere)),
+                    fontSize = 70.sp,
+                    modifier = Modifier.padding(start = 0.dp, top = 60.dp)
+                )
+            }
+            Button(
+                modifier = modifier
+                    .padding(top = 50.dp)
+                    .align(Alignment.CenterHorizontally),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = ordColor
+                ), onClick = { onClick() },
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Text(
+                    text = "Welcome",
+                    fontSize = 25.sp,
+                    color = Color.Black
+                )
+            }
+        }
+    }
 }

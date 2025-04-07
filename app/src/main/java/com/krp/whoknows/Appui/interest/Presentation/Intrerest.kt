@@ -41,47 +41,47 @@ import io.ktor.websocket.Frame
  * Created by KUSHAL RAJ PAREEK on 04,February,2025
  */
 
-@Preview
 @Composable
 fun Interest(modifier: Modifier = Modifier) {
     val list = mutableListOf<String>()
 
-    list.add("hello")
-    list.add("hellowdwe")
-    list.add("hello")
-    list.add("helldeedeo")
-    list.add("hello")
-    list.add("heledelo")
-    list.add("hello")
-    val selectedStates = remember { mutableStateListOf<Boolean>().apply { repeat(list.size) { add(false) } } }
+    list.add("Test")
+    val selectedStates =
+        remember { mutableStateListOf<Boolean>().apply { repeat(list.size) { add(false) } } }
 
-   Column(modifier = Modifier.background(Color.White)) {
-       Row(
-           modifier = Modifier
-               .fillMaxWidth()
-               .padding(top = 25.dp, start = 5.dp,bottom = 16.dp),
-           verticalAlignment = Alignment.CenterVertically
-       ) {
-           Icon(imageVector = Icons.Default.ArrowBack
-               , contentDescription = "Back arrow",
-               Modifier.size(30.dp),
-               tint = Color.Black)
-           Spacer(modifier = modifier.width(12.dp))
-           Text(text = "Choose Your Interest",
-               fontSize = 25.sp,
-               fontFamily = FontFamily(Font(R.font.outfit_semibold)))
-       }
+    Column(modifier = Modifier.background(Color.White)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 25.dp, start = 5.dp, bottom = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack, contentDescription = "Back arrow",
+                Modifier.size(30.dp),
+                tint = Color.Black
+            )
+            Spacer(modifier = modifier.width(12.dp))
+            Text(
+                text = "Choose Your Interest",
+                fontSize = 25.sp,
+                fontFamily = FontFamily(Font(R.font.outfit_semibold))
+            )
+        }
 
-       LazyVerticalGrid(columns = GridCells.Fixed(3),
-       ) {
-           items(list.size){i ->
-               InterestItem( modifier = Modifier.padding(6.dp),
-                   name = list[i], filled = selectedStates[i]) {
-                   selectedStates[i] = !selectedStates[i]
-               }
-           }
-       }
-   }
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+        ) {
+            items(list.size) { i ->
+                InterestItem(
+                    modifier = Modifier.padding(6.dp),
+                    name = list[i], filled = selectedStates[i]
+                ) {
+                    selectedStates[i] = !selectedStates[i]
+                }
+            }
+        }
+    }
 }
 
 

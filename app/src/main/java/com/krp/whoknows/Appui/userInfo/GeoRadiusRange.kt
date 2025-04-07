@@ -67,15 +67,16 @@ import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GeoRadiusRange(viewModel: InfoViewModel,
-                   navController: NavController
+fun GeoRadiusRange(
+    viewModel: InfoViewModel,
+    navController: NavController
 ) {
     val context = LocalContext.current
     var text by remember { mutableStateOf(TextFieldValue("")) }
     var isFocused by remember { mutableStateOf(false) }
     val imeHeight = WindowInsets.ime.getBottom(LocalDensity.current).toDp()
     BackHandler {
-        navController.navigate(com.krp.whoknows.Navigation.PreferredAgeRange){
+        navController.navigate(com.krp.whoknows.Navigation.PreferredAgeRange) {
             popUpTo(0) { inclusive = true }
         }
     }
@@ -97,34 +98,42 @@ fun GeoRadiusRange(viewModel: InfoViewModel,
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack, contentDescription = "Back arrow",
-                Modifier.size(35.dp).clickable{
-                    navController.navigate(com.krp.whoknows.Navigation.PreferredAgeRange){
-                        popUpTo(0) { inclusive = true }
-                    }
-                },
+                Modifier
+                    .size(35.dp)
+                    .clickable {
+                        navController.navigate(com.krp.whoknows.Navigation.PreferredAgeRange) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    },
                 tint = ordColor,
             )
         }
 
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 15.dp)
-            .padding(top = 10.dp)){
-            Text(text = "What's your Preferred Range ?",
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 15.dp)
+                .padding(top = 10.dp)
+        ) {
+            Text(
+                text = "What's your Preferred Range ?",
                 fontFamily = FontFamily(Font(R.font.noto_sans_khanada)),
-                fontSize = 20.sp)
+                fontSize = 20.sp
+            )
 
             Spacer(modifier = Modifier.height(20.dp))
 
             OutlinedTextField(
                 value = text,
-                onValueChange = { text = it
-                                viewModel.updateGeoRadiusRange(it.toString())},
+                onValueChange = {
+                    text = it
+                    viewModel.updateGeoRadiusRange(it.toString())
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {}
                     .onFocusChanged { isFocused = it.isFocused },
-                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp,color = Color.Black),
+                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp, color = Color.Black),
                 placeholder = { Text("Enter range in KM") },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = ordColor,
@@ -134,13 +143,16 @@ fun GeoRadiusRange(viewModel: InfoViewModel,
                 shape = RoundedCornerShape(20.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done)
+                    imeAction = ImeAction.Done
+                )
             )
 
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "Don't write any thing for Infinite Range",
+            Text(
+                text = "Don't write any thing for Infinite Range",
                 fontFamily = FontFamily(Font(R.font.noto_sans_khanada)),
-                fontSize = 12.sp)
+                fontSize = 12.sp
+            )
         }
         Box(
             modifier = Modifier
@@ -155,7 +167,7 @@ fun GeoRadiusRange(viewModel: InfoViewModel,
                     } else {
                         viewModel.updateGeoRadiusRange(text.text)
                     }
-                    navController.navigate(LatLong(null,null))
+                    navController.navigate(LatLong(null, null))
                 },
                 shape = CircleShape,
                 containerColor = ordColor,

@@ -8,10 +8,10 @@ import com.krp.whoknows.roomdb.entity.MatchUserEntity
 
 
 data class UpdateMatchState(
-    val isLoading:Boolean = false,
+    val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
     val errorMessage: String? = null,
-    val statusCode : Int?= null,
-    var user : MatchUserEntity? = null
+    val statusCode: Int? = null,
+    var user: MatchUserEntity? = null
 
 )

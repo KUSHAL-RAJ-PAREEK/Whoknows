@@ -71,13 +71,18 @@ fun OTPInputField(
             ) {
                 repeat(4) { index ->
                     val digit = if (index < otpText.length) otpText[index].toString() else ""
-                    val borderColor = if (isFieldFocused && otpText.length == index) Color.Blue else Color.Gray
+                    val borderColor =
+                        if (isFieldFocused && otpText.length == index) Color.Blue else Color.Gray
                     Box(
                         modifier = Modifier
                             .width(40.dp)
                             .height(40.dp)
                             .background(Color.Transparent, shape = RoundedCornerShape(7.dp))
-                            .border(width = 1.dp, color = borderColor, shape = RoundedCornerShape(7.dp)),
+                            .border(
+                                width = 1.dp,
+                                color = borderColor,
+                                shape = RoundedCornerShape(7.dp)
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(

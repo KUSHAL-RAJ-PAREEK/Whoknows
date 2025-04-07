@@ -10,7 +10,7 @@ import java.time.LocalDate
  * Created by KUSHAL RAJ PAREEK on 12,March,2025
  */
 
-class EditProfileViewModel: ViewModel() {
+class EditProfileViewModel : ViewModel() {
 
     private val _id = MutableStateFlow("")
     val id: StateFlow<String> = _id
@@ -24,14 +24,14 @@ class EditProfileViewModel: ViewModel() {
     private val _mImage = MutableStateFlow("")
     val mImage: StateFlow<String> = _mImage
 
-    private  val _fImage = MutableStateFlow("")
-    val fImage : StateFlow<String> = _fImage
+    private val _fImage = MutableStateFlow("")
+    val fImage: StateFlow<String> = _fImage
 
-    private  val _sImage = MutableStateFlow("")
-    val sImage : StateFlow<String> = _sImage
+    private val _sImage = MutableStateFlow("")
+    val sImage: StateFlow<String> = _sImage
 
-    private  val _tImage = MutableStateFlow("")
-    val tImage : StateFlow<String> = _tImage
+    private val _tImage = MutableStateFlow("")
+    val tImage: StateFlow<String> = _tImage
 
     private val _pnumber = MutableStateFlow("")
     val pnumber: StateFlow<String> = _pnumber
@@ -76,14 +76,14 @@ class EditProfileViewModel: ViewModel() {
     val interests: StateFlow<List<String>?> = _interests
 
 
-    private val _posts =  MutableStateFlow<List<String>?>(null)
+    private val _posts = MutableStateFlow<List<String>?>(null)
     val posts: StateFlow<List<String>?> = _posts
 
-    fun updateInterest(interests : List<String>) {
+    fun updateInterest(interests: List<String>) {
         _interests.value = interests.toList()
     }
 
-    fun updatePosts(posts : List<String>) {
+    fun updatePosts(posts: List<String>) {
         _posts.value = posts
     }
 
@@ -122,6 +122,7 @@ class EditProfileViewModel: ViewModel() {
     fun updateLocation(location: String) {
         _location.value = location
     }
+
     fun updateId(id: String) {
         _id.value = id
     }
@@ -141,12 +142,15 @@ class EditProfileViewModel: ViewModel() {
     fun updatemImage(img: String) {
         _mImage.value = img
     }
+
     fun updatefImage(img: String) {
         _fImage.value = img
     }
+
     fun updatesImage(img: String) {
         _sImage.value = img
     }
+
     fun updatetImage(img: String) {
         _tImage.value = img
     }
@@ -155,12 +159,15 @@ class EditProfileViewModel: ViewModel() {
     fun updatePreAgeRange(preAgeRange: String) {
         _preAgeRange.value = preAgeRange
     }
+
     fun updateFPreAgeRange(preAgeFRange: String) {
         _preAgeFRange.value = preAgeFRange
     }
+
     fun updateTPreAgeRange(preAgeTRange: String) {
         _preAgeTRange.value = preAgeTRange
     }
+
     fun updateGeoRadiusRange(geoRadiusRange: String) {
         _geoRadiusRange.value = geoRadiusRange
     }

@@ -67,21 +67,22 @@ import kotlin.math.log
 /**
  * Created by Kushal Raj Pareek on 24-03-2025 00:15
  */
-//
-//@Preview
-//@Composable
-//private fun run() {
-//    MessageInputField { }
-//}
 
 @Composable
 fun MessageInputField(
-    chatId : String, userId: String,chatViewModel : ChatViewModel, cimage : Uri?, setBimage: (Bitmap?) -> Unit, setUri : (Uri?)-> Unit, onSend: (String) -> Unit) {
+    chatId: String,
+    userId: String,
+    chatViewModel: ChatViewModel,
+    cimage: Uri?,
+    setBimage: (Bitmap?) -> Unit,
+    setUri: (Uri?) -> Unit,
+    onSend: (String) -> Unit
+) {
 
 
     val context = LocalContext.current
     var cImage by remember { mutableStateOf<Uri?>(null) }
-val coroutineScope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
 
     var lastTypedTime by remember { mutableStateOf(System.currentTimeMillis()) }
     var cPhotoPickerLauncher = rememberLauncherForActivityResult(
@@ -102,16 +103,16 @@ val coroutineScope = rememberCoroutineScope()
         mutableStateOf("")
     }
     val containerColor = chat_light
-var cam = remember { mutableStateOf(true) }
+    var cam = remember { mutableStateOf(true) }
 
     LaunchedEffect(message.value, cimage) {
         if (message.value.isNotEmpty()) {
             cam.value = false
         } else if (cimage != null) {
             cam.value = false
-        }else if(cimage == null){
+        } else if (cimage == null) {
             cam.value = true
-        }else{
+        } else {
             cam.value = true
         }
     }
@@ -135,12 +136,9 @@ var cam = remember { mutableStateOf(true) }
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 7.dp)
-            .padding( horizontal = 4.dp)
+            .padding(horizontal = 4.dp)
             .navigationBarsPadding()
-            .animateContentSize()
-
-//            .imePadding()
-        ,
+            .animateContentSize(),
         textStyle = TextStyle(
             color = Color.Black,
             fontSize = 16.sp,
@@ -152,28 +150,27 @@ var cam = remember { mutableStateOf(true) }
                 style = androidx.compose.ui.text.TextStyle(
                     color = Color(0xFFCCCCCC),
                     fontSize = 16.sp,
-//                    fontFamily = FontFamily(Font(R.font.pompiere))
                 )
             )
         },
         trailingIcon = {
             Icon(
                 modifier = Modifier.clickable {
-                   if(cam.value){
-                       try {
-                           cPhotoPickerLauncher.launch(
-                               PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                           )
-                       } catch (e: Exception) {
-                           Toast.makeText(context, "$e", Toast.LENGTH_LONG)
-                               .show()
-                       }
-                   }else{
-                       onSend(message.value)
-                       message.value = ""
-                   }
+                    if (cam.value) {
+                        try {
+                            cPhotoPickerLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        } catch (e: Exception) {
+                            Toast.makeText(context, "$e", Toast.LENGTH_LONG)
+                                .show()
+                        }
+                    } else {
+                        onSend(message.value)
+                        message.value = ""
+                    }
                 },
-                imageVector =if(cam.value) Icons.Default.CameraEnhance else  Icons.AutoMirrored.Outlined.Send,
+                imageVector = if (cam.value) Icons.Default.CameraEnhance else Icons.AutoMirrored.Outlined.Send,
                 contentDescription = null,
                 tint = ordColor
             )

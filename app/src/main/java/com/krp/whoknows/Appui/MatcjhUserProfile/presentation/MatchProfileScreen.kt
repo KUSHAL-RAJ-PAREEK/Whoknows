@@ -105,24 +105,18 @@ import org.koin.androidx.compose.koinViewModel
 )
 
 @Composable
-fun SharedTransitionScope.MatchProfileScreen(modifier: Modifier = Modifier, matrix: ColorMatrix
-                                             , animatedVisibilityScope: AnimatedVisibilityScope,
-                                             matchUserViewModel : MatchUserViewModel,
-                                             mainImageViewModel: MainImageViewModel,
-                                             imageViewModel: ImageViewModel
+fun SharedTransitionScope.MatchProfileScreen(
+    modifier: Modifier = Modifier,
+    matrix: ColorMatrix,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    matchUserViewModel: MatchUserViewModel,
+    mainImageViewModel: MainImageViewModel,
+    imageViewModel: ImageViewModel
 ) {
     val jwtViewModel: JWTViewModel = koinViewModel()
     val context = LocalContext.current
     val userDetails by jwtViewModel.userDetail.collectAsState(initial = null)
-//    val user = profileViewModel.user.collectAsState()
 
-
-
-//    LaunchedEffect(profileDetailViewModel.dob) {
-//        dob_num = (profileDetailViewModel.dob ?: "2004-12-12").toString()
-//
-//        dob = calculateAge(dob_num)
-//    }
     var ageGap by remember { mutableStateOf("20-30") }
     var location by remember { mutableStateOf("Jaipur") }
     var preferredGender by remember { mutableStateOf("Female") }
@@ -131,7 +125,7 @@ fun SharedTransitionScope.MatchProfileScreen(modifier: Modifier = Modifier, matr
     var dob by remember { mutableStateOf("20") }
     var profileImg by remember { mutableStateOf<Bitmap?>(mainImageViewModel.matchprofileImage.value) }
     var interestList by remember { mutableStateOf(mutableListOf<String?>()) }
-    var galleryImages by remember { mutableStateOf<List<Bitmap?>>(listOf(null,null,null)) }
+    var galleryImages by remember { mutableStateOf<List<Bitmap?>>(listOf(null, null, null)) }
 
 
 
@@ -142,62 +136,16 @@ fun SharedTransitionScope.MatchProfileScreen(modifier: Modifier = Modifier, matr
         ageGap = matchUserViewModel.preAgeRange.value ?: "20-30"
         preferredGender = matchUserViewModel.preGender.value ?: "Female"
         preferredRange = (matchUserViewModel.geoRadiusRange.value ?: "Infinite").toString()
-//        interestList = profileDetailViewModel.interests.value as MutableList<String?>
         bio = matchUserViewModel.bio.value
         interestList = matchUserViewModel.interests.value?.toMutableList() ?: mutableListOf()
         dob = matchUserViewModel.dobs.value.toString()
-        profileImg= mainImageViewModel.matchprofileImage.value
+        profileImg = mainImageViewModel.matchprofileImage.value
         galleryImages = listOf(
             mainImageViewModel.matchfirstGalleryImage.value,
             mainImageViewModel.matchsecondGalleryImage.value,
             mainImageViewModel.matchthirdGalleryImage.value
         )
     }
-
-
-
-
-//    LaunchedEffect(user.value?.username) {
-//        val dobString = user.value?.dob ?: "2004-12-12"
-//        val localDate = LocalDate.parse(dobString, DateTimeFormatter.ISO_LOCAL_DATE)
-//        editProfileViewModel.updateGeoRadiusRange(user.value?.geoRadiusRange.toString())
-//        editProfileViewModel.updatePreGender(user.value?.preferredGender.toString())
-//        editProfileViewModel.updateDOB(localDate)
-//        editProfileViewModel.updatePreAgeRange(user.value?.ageGap.toString())
-//        editProfileViewModel.updateGeoRadiusRange(user.value?.geoRadiusRange.toString())
-//        editProfileViewModel.updateBio(user.value?.bio.toString())
-//        editProfileViewModel.updateInterest(user.value?.interests ?: emptyList())
-//        editProfileViewModel.updatePosts(user.value?.posts ?: emptyList())
-//        val preferredAgeRange = editProfileViewModel.preAgeRange.value
-//        val parts = preferredAgeRange.split("-").map { it.toInt() }
-//        editProfileViewModel.updateFPreAgeRange(parts[0].toString())
-//        editProfileViewModel.updateTPreAgeRange(parts[1].toString())
-//    }
-
-//    Log.d("inprofilescreen", user.value.toString())
-    val list = mutableListOf(
-//        InterestItem("Music", Icons.Default.MusicNote),
-//        InterestItem("Travel", Icons.Default.TravelExplore),
-//        InterestItem("Sports", Icons.Default.Sports),
-//        InterestItem("Cooking", Icons.Default.Cookie),
-//        InterestItem("Gaming", Icons.Default.Games),
-//        InterestItem("Photography", Icons.Default.Camera),
-        "Music",
-        "Travel",
-        "Sports",
-        "Cooking",
-        "Gaming",
-        "Photography"
-    )
-
-//    val images = remember {
-//        mutableListOf(
-//            "https://lastfm.freetls.fastly.net/i/u/770x0/95f578936a18db26a9a3d9ce7e62439c.jpg#95f578936a18db26a9a3d9ce7e62439c",
-//            "https://lastfm.freetls.fastly.net/i/u/770x0/eebfb655fdb21e3133d9fb82741128d0.jpg#eebfb655fdb21e3133d9fb82741128d0",
-//            "https://lastfm.freetls.fastly.net/i/u/770x0/46043eaa0841aa679e9398aee2e1cc7c.jpg#46043eaa0841aa679e9398aee2e1cc7c"
-//        )
-//    }
-
 
     val scrollState = rememberScrollState()
 
@@ -225,7 +173,13 @@ fun SharedTransitionScope.MatchProfileScreen(modifier: Modifier = Modifier, matr
             )
 
     ) {
-        ProfileHeader(progress = progress,animatedVisibilityScope = animatedVisibilityScope,matchUserViewModel =matchUserViewModel, img = profileImg, gender = if(matchUserViewModel.gender.value == "MALE") true else false )
+        ProfileHeader(
+            progress = progress,
+            animatedVisibilityScope = animatedVisibilityScope,
+            matchUserViewModel = matchUserViewModel,
+            img = profileImg,
+            gender = if (matchUserViewModel.gender.value == "MALE") true else false
+        )
 
 
         Column(
@@ -269,7 +223,7 @@ fun SharedTransitionScope.MatchProfileScreen(modifier: Modifier = Modifier, matr
                     }
 
 
-                        MatchItem(icon = ImageVector.vectorResource(R.drawable.heart), status = true)
+                    MatchItem(icon = ImageVector.vectorResource(R.drawable.heart), status = true)
 
                 }
                 Spacer(modifier.height(20.dp))
@@ -283,17 +237,10 @@ fun SharedTransitionScope.MatchProfileScreen(modifier: Modifier = Modifier, matr
                 Spacer(modifier.height(15.dp))
 
                 ExpandableText(
-                    text = (if(bio != "")bio else "Hey, I am using WhoKnows. You never know who you might meet today!" + ".").toString(),
+                    text = (if (bio != "") bio else "Hey, I am using WhoKnows. You never know who you might meet today!" + ".").toString(),
                     fontSize = 15.sp,
-                    font =  FontFamily(Font(R.font.hellix_medium))
+                    font = FontFamily(Font(R.font.hellix_medium))
                 )
-
-//                Text(
-//                    text = (if(bio != "")bio else "Hey, I am using WhoKnows. You never know who you might meet today!" + ".").toString(),
-//                    color = Color.Black,
-//                    fontFamily = FontFamily(Font(R.font.hellix_medium))
-//                )
-
                 Spacer(modifier.height(20.dp))
 
                 Text(
@@ -306,20 +253,22 @@ fun SharedTransitionScope.MatchProfileScreen(modifier: Modifier = Modifier, matr
                 Box(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    if(interestList.isEmpty()){
+                    if (interestList.isEmpty()) {
                         InterestItemImg(
                             modifier = Modifier.padding(4.dp),
-                            interest = InterestItem("Whoknows",defaultIcon)
+                            interest = InterestItem("Whoknows", defaultIcon)
                         )
-                    }else{
+                    } else {
                         FlowRow(
                             modifier = Modifier.fillMaxWidth(),
                         ) {
                             interestList.forEach { interest ->
                                 InterestItemImg(
                                     modifier = Modifier.padding(4.dp),
-                                    interest = InterestItem(interest.toString(),
-                                        interestIcons[interest.toString()]?:defaultIcon)
+                                    interest = InterestItem(
+                                        interest.toString(),
+                                        interestIcons[interest.toString()] ?: defaultIcon
+                                    )
                                 )
                             }
                         }
@@ -385,25 +334,25 @@ fun SharedTransitionScope.MatchProfileScreen(modifier: Modifier = Modifier, matr
                 )
 
                 Spacer(modifier.height(15.dp))
-                val g1 = if (matchUserViewModel.gender.value  == "MALE") {
+                val g1 = if (matchUserViewModel.gender.value == "MALE") {
                     R.drawable.boy_g1
                 } else {
                     R.drawable.girl_g1
                 }
 
-                val g2 =  if (matchUserViewModel.gender.value  == "MALE") {
+                val g2 = if (matchUserViewModel.gender.value == "MALE") {
                     R.drawable.boy_g2
                 } else {
                     R.drawable.girl_g2
                 }
 
-                val g3 = if (matchUserViewModel.gender.value  == "MALE") {
+                val g3 = if (matchUserViewModel.gender.value == "MALE") {
                     R.drawable.boy_g3
                 } else {
                     R.drawable.girl_g3
                 }
 
-                ImageSlider(images = galleryImages, matrix = matrix,g1 = g1, g2 = g2, g3 = g3)
+                ImageSlider(images = galleryImages, matrix = matrix, g1 = g1, g2 = g2, g3 = g3)
 
 
                 Spacer(modifier.height(50.dp))
@@ -438,10 +387,12 @@ fun SharedTransitionScope.MatchProfileScreen(modifier: Modifier = Modifier, matr
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMotionApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.ProfileHeader(progress: Float, animatedVisibilityScope : AnimatedVisibilityScope,
-                                        matchUserViewModel : MatchUserViewModel,
-                                        img : Bitmap?,
-                                        gender : Boolean) {
+fun SharedTransitionScope.ProfileHeader(
+    progress: Float, animatedVisibilityScope: AnimatedVisibilityScope,
+    matchUserViewModel: MatchUserViewModel,
+    img: Bitmap?,
+    gender: Boolean
+) {
 
     val gender = gender
     val context = LocalContext.current
@@ -456,23 +407,6 @@ fun SharedTransitionScope.ProfileHeader(progress: Float, animatedVisibilityScope
     LaunchedEffect(Unit) {
         username = (matchUserViewModel.username.value ?: "Whoknows").toString()
     }
-
-
-
-//    var profileImage by remember { mutableStateOf<Any>(R.drawable.p_image) }
-//
-//    LaunchedEffect(user) {
-//        user?.imgUrl?.let { url ->
-//            val request = ImageRequest.Builder(context)
-//                .data(url)
-//                .memoryCacheKey(url) // Enables faster retrieval
-//                .diskCacheKey(url)
-//                .crossfade(true)
-//                .build()
-//            profileImage = request
-//        }
-//    }
-
 
     MotionLayout(
         motionScene = MotionScene(motionScene),
@@ -498,7 +432,10 @@ fun SharedTransitionScope.ProfileHeader(progress: Float, animatedVisibilityScope
         )
 
         val bitmapImage = img?.asImageBitmap()
-            ?: drawableToBitmap(context, if(gender) R.drawable.bp_img_placeholder else  R.drawable.p_img_placeholder).asImageBitmap()
+            ?: drawableToBitmap(
+                context,
+                if (gender) R.drawable.bp_img_placeholder else R.drawable.p_img_placeholder
+            ).asImageBitmap()
         Image(
             bitmap = bitmapImage,
             contentDescription = null,
@@ -536,7 +473,14 @@ fun SharedTransitionScope.ProfileHeader(progress: Float, animatedVisibilityScope
 }
 
 @Composable
-fun ImageSlider(modifier: Modifier = Modifier, images: List<Bitmap?>, matrix: ColorMatrix, g1 : Int, g2 : Int, g3: Int) {
+fun ImageSlider(
+    modifier: Modifier = Modifier,
+    images: List<Bitmap?>,
+    matrix: ColorMatrix,
+    g1: Int,
+    g2: Int,
+    g3: Int
+) {
     val pagerState = rememberPagerState { 3 }
     val context = LocalContext.current
 
@@ -560,7 +504,8 @@ fun ImageSlider(modifier: Modifier = Modifier, images: List<Bitmap?>, matrix: Co
         )
 
 
-        val bitmapImage = images.getOrNull(index)?.asImageBitmap() ?: defaultBitmaps[index] ?: defaultBitmaps[2]
+        val bitmapImage =
+            images.getOrNull(index)?.asImageBitmap() ?: defaultBitmaps[index] ?: defaultBitmaps[2]
 
         Image(
             modifier = Modifier
@@ -573,7 +518,7 @@ fun ImageSlider(modifier: Modifier = Modifier, images: List<Bitmap?>, matrix: Co
                     shape = RoundedCornerShape(16.dp)
                     clip = true
                 },
-            bitmap =bitmapImage as ImageBitmap, contentDescription = "image",
+            bitmap = bitmapImage as ImageBitmap, contentDescription = "image",
             contentScale = ContentScale.Crop,
             colorFilter = ColorFilter.colorMatrix(matrix)
         )

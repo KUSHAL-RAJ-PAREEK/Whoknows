@@ -15,13 +15,12 @@ import org.koin.core.context.startKoin
 class App : Application() {
 
 
-
     override fun onCreate() {
         super.onCreate()
 
         DynamicToast.Config.getInstance()
-            .setDisableIcon(false)  // Ensure icons are not disabled
-            .setErrorIcon(null)  // Prevent default tinting behavior
+            .setDisableIcon(false)
+            .setErrorIcon(null)
             .setSuccessIcon(null)
             .setWarningIcon(null)
             .setTintIcon(false)

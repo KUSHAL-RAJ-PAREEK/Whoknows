@@ -66,95 +66,99 @@ import kotlin.math.log
 @Preview
 @Composable
 private fun run() {
-UserGender(InfoViewModel(),
+    UserGender(
+        InfoViewModel(),
         rememberNavController()
-        )
+    )
+}
+
+@SuppressLint("StateFlowValueCalledInComposition")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun UserGender(
+    viewModel: InfoViewModel,
+    navController: NavController
+) {
+
+    val context = LocalContext.current
+    var text by remember { mutableStateOf(TextFieldValue("")) }
+    LaunchedEffect(Unit) {
+        text = TextFieldValue(viewModel.gender.value)
     }
+    val imeHeight = WindowInsets.ime.getBottom(LocalDensity.current).toDp()
+    BackHandler {
+        navController.popBackStack()
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
 
-        @SuppressLint("StateFlowValueCalledInComposition")
-        @OptIn(ExperimentalMaterial3Api::class)
-        @Composable
-        fun UserGender(
-            viewModel: InfoViewModel,
-            navController: NavController
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 25.dp, start = 10.dp, bottom = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            Spacer(modifier = Modifier.height(35.dp))
+        }
 
-            val context = LocalContext.current
-            var text by remember { mutableStateOf(TextFieldValue("")) }
-            LaunchedEffect(Unit) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 15.dp)
+                .padding(top = 10.dp)
+        ) {
+            Text(
+                text = "What's your Gender ?",
+                fontFamily = FontFamily(Font(R.font.noto_sans_khanada)),
+                fontSize = 20.sp
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            DropDownMenu(listOf("MALE", "FEMALE"), viewModel.gender.value, flag = true) {
+                if (viewModel.gender.value.isBlank()) {
+                    viewModel.updateGender(it)
+                }
                 text = TextFieldValue(viewModel.gender.value)
             }
-            val imeHeight = WindowInsets.ime.getBottom(LocalDensity.current).toDp()
-            BackHandler {
-                navController.popBackStack()
-            }
-            Column(
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(20.dp),
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            FloatingActionButton(
+                onClick = {
+                    if (text.text.isBlank()) {
+                        DynamicToast.make(
+                            context,
+                            "Please enter your Gender",
+                            ContextCompat.getDrawable(context, R.drawable.warning)?.mutate(),
+                            lightOrdColor.toArgb(),
+                            light_red.toArgb()
+                        ).show()
+                    } else {
+                        navController.navigate(PreferredGender)
+                    }
+                },
+                shape = CircleShape,
+                containerColor = ordColor,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
+
+                    .padding(bottom = if (imeHeight > 0.dp) imeHeight + 20.dp else 40.dp)
+                    .size(56.dp)
+                    .shadow(8.dp, CircleShape)
             ) {
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 25.dp, start = 10.dp, bottom = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Spacer(modifier = Modifier.height(35.dp))
-                }
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 15.dp)
-                        .padding(top = 10.dp)
-                ) {
-                    Text(
-                        text = "What's your Gender ?",
-                        fontFamily = FontFamily(Font(R.font.noto_sans_khanada)),
-                        fontSize = 20.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    // dropdown
-                    DropDownMenu(listOf("MALE", "FEMALE"), viewModel.gender.value, flag = true) {
-                        if (viewModel.gender.value.isBlank()) {
-                            viewModel.updateGender(it)
-                        }
-                        text = TextFieldValue(viewModel.gender.value)
-                    }
-                }
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(20.dp),
-                    contentAlignment = Alignment.BottomEnd
-                ) {
-                    FloatingActionButton(
-                        onClick = {
-                            if (text.text.isBlank()) {
-                                DynamicToast.make(context,"Please enter your Gender",
-                                    ContextCompat.getDrawable(context, R.drawable.warning)?.mutate(),lightOrdColor.toArgb(),
-                                    light_red.toArgb()).show()
-                            } else {
-                                navController.navigate(PreferredGender)
-                            }
-                        },
-                        shape = CircleShape,
-                        containerColor = ordColor,
-                        modifier = Modifier
-
-                            .padding(bottom = if (imeHeight > 0.dp) imeHeight + 20.dp else 40.dp)
-                            .size(56.dp)
-                            .shadow(8.dp, CircleShape)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowForward,
-                            contentDescription = "Next",
-                            tint = Color.White
-                        )
-                    }
-                }
+                Icon(
+                    imageVector = Icons.Default.ArrowForward,
+                    contentDescription = "Next",
+                    tint = Color.White
+                )
             }
         }
+    }
+}

@@ -12,15 +12,15 @@ import java.util.Locale
 class Dialogs {
 
     fun openDatePicker(
-        context : Context,
-        onDateSetListener : DatePickerDialog.OnDateSetListener,
-        date : LocalDate
-    ){
+        context: Context,
+        onDateSetListener: DatePickerDialog.OnDateSetListener,
+        date: LocalDate
+    ) {
         Locale.setDefault(Locale.ENGLISH)
         val datePickerDialog = DatePickerDialog(
-           context,
+            context,
             R.style.DatePickerTheme,
-        onDateSetListener,
+            onDateSetListener,
             date.year,
             date.monthValue,
             date.dayOfMonth

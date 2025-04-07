@@ -46,9 +46,9 @@ class ImageViewModel(private val repository: ImageRepository) : ViewModel() {
         }
     }
 
-    fun saveProfileImage(context: Context, uri: Uri?){
+    fun saveProfileImage(context: Context, uri: Uri?) {
         viewModelScope.launch {
-         repository.saveProfileImage(context, uri)
+            repository.saveProfileImage(context, uri)
             fetchProfileImage()
         }
     }
@@ -57,45 +57,44 @@ class ImageViewModel(private val repository: ImageRepository) : ViewModel() {
         return repository.saveProfileImageToSupabase(context, uri, id)
     }
 
-    suspend fun saveGallerytoSupabase(context: Context, uri: Uri?, id: String):Boolean {
-        Log.d("afdasfafasfasfsf",uri.toString())
-           return repository.saveGalleryImageToSupabase(context, uri, id)
+    suspend fun saveGallerytoSupabase(context: Context, uri: Uri?, id: String): Boolean {
+        return repository.saveGalleryImageToSupabase(context, uri, id)
     }
 
-     suspend fun saveChatImagetoSupabase(context: Context, uri: Uri?, id: String):Boolean {
-        Log.d("afdasfafasfasfsf",uri.toString())
+    suspend fun saveChatImagetoSupabase(context: Context, uri: Uri?, id: String): Boolean {
         return repository.saveChatImageToSupabase(context, uri, id)
     }
 
-    fun deleteProfile(){
+    fun deleteProfile() {
         viewModelScope.launch {
             repository.deleteProfileImage()
         }
     }
 
-    fun deleteGalleryImage(id : String){
+    fun deleteGalleryImage(id: String) {
         viewModelScope.launch {
             repository.deleteGalleryImage(id)
         }
     }
+
     fun deleteProfileSupabase(id: String) {
         viewModelScope.launch {
             repository.deleteProfileImageFromSupabase(id)
         }
     }
 
-    suspend fun deleteImageSupabase(bucket : String, id: String): Boolean {
-   return withContext(Dispatchers.IO) {
-       repository.deleteImageFromSupabase(bucket,id)
-   }
-
-    }
-
-
-    suspend fun getImageUrlSupabase(bucket:String, imagePath: String) :String {
+    suspend fun deleteImageSupabase(bucket: String, id: String): Boolean {
         return withContext(Dispatchers.IO) {
-        repository.getSupabasePublicImageUrl(bucket, imagePath)
+            repository.deleteImageFromSupabase(bucket, id)
+        }
+
     }
+
+
+    suspend fun getImageUrlSupabase(bucket: String, imagePath: String): String {
+        return withContext(Dispatchers.IO) {
+            repository.getSupabasePublicImageUrl(bucket, imagePath)
+        }
     }
 
 
@@ -116,12 +115,15 @@ class ImageViewModel(private val repository: ImageRepository) : ViewModel() {
     fun updateProfile(bitmap: Bitmap?) {
         _profileImage.value = bitmap
     }
+
     fun updateG1(bitmap: Bitmap?) {
         _firstGalleryImage.value = bitmap
     }
+
     fun updateG2(bitmap: Bitmap?) {
         _secondGalleryImage.value = bitmap
     }
+
     fun updateG3(bitmap: Bitmap?) {
         _thirdGalleryImage.value = bitmap
     }
@@ -130,7 +132,8 @@ class ImageViewModel(private val repository: ImageRepository) : ViewModel() {
     private fun fetchGalleryImages() {
         viewModelScope.launch {
             val images = repository.getGalleryImages()
-            val imageWithIds = images.mapNotNull { it.imageString.toBitmap()?.let { bitmap -> it.id to bitmap } }
+            val imageWithIds =
+                images.mapNotNull { it.imageString.toBitmap()?.let { bitmap -> it.id to bitmap } }
 
             _firstGalleryImage.value = imageWithIds.find { it.first.takeLast(2) == "g1" }?.second
             _secondGalleryImage.value = imageWithIds.find { it.first.takeLast(2) == "g2" }?.second

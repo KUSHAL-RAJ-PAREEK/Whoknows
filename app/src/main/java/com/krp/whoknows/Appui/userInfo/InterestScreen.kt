@@ -73,19 +73,19 @@ import java.time.LocalDate
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun InterestScreen(modifier: Modifier = Modifier,
-                   infoViewModel: InfoViewModel,
-                   navController: NavController) {
+fun InterestScreen(
+    modifier: Modifier = Modifier,
+    infoViewModel: InfoViewModel,
+    navController: NavController
+) {
 
     val viewModel = viewModel<SearchViewModel>()
-    var searchisfocused by remember{ mutableStateOf(false) }
+    var searchisfocused by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
-        val searchText by viewModel.searchText.collectAsState()
-        val interestSea by viewModel.interest.collectAsState()
-        val isSearch by viewModel.isSearching.collectAsState()
-//        val selectedStates by viewModel.selectedStates.collectAsState()
-
+    val searchText by viewModel.searchText.collectAsState()
+    val interestSea by viewModel.interest.collectAsState()
+    val isSearch by viewModel.isSearching.collectAsState()
 
     val imeHeight = WindowInsets.ime.getBottom(LocalDensity.current).toDp()
 
@@ -100,11 +100,17 @@ fun InterestScreen(modifier: Modifier = Modifier,
     }
 
 
-    Box(modifier = Modifier.fillMaxSize()
-        .background(Color.White)){
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
 
-        Column (modifier = Modifier.fillMaxSize()
-            .padding(top = 5.dp)){
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 5.dp)
+        ) {
 
             Row(
                 modifier = Modifier
@@ -114,18 +120,23 @@ fun InterestScreen(modifier: Modifier = Modifier,
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack, contentDescription = "Back arrow",
-                    Modifier.size(35.dp).clickable{
-                        navController.navigate(com.krp.whoknows.Navigation.DOBScreen){
-                            popUpTo(0) { inclusive = true }
-                        }
-                    },
+                    Modifier
+                        .size(35.dp)
+                        .clickable {
+                            navController.navigate(com.krp.whoknows.Navigation.DOBScreen) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        },
                     tint = ordColor
                 )
             }
 
-            Row(modifier = Modifier.fillMaxWidth()
-                .padding(horizontal = 15.dp),
-                verticalAlignment = Alignment.CenterVertically){
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 15.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
                 Text(
                     text = "What's your Intreset?",
@@ -142,16 +153,19 @@ fun InterestScreen(modifier: Modifier = Modifier,
                     .padding(16.dp)
                     .fillMaxWidth()
                     .onFocusChanged { searchisfocused = !searchisfocused },
-                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp,color = Color.Black),
+                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp, color = Color.Black),
                 placeholder = { Text("Search") },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = ordColor,
                     unfocusedBorderColor = Color.Gray
                 ),
-                trailingIcon = {  Icon(
-                    imageVector = Icons.Filled.Search,
-                    tint = ordColor,
-                    contentDescription = "Search Icon")},
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.Search,
+                        tint = ordColor,
+                        contentDescription = "Search Icon"
+                    )
+                },
                 maxLines = 1,
                 shape = RoundedCornerShape(20.dp),
             )
@@ -162,13 +176,6 @@ fun InterestScreen(modifier: Modifier = Modifier,
                     .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-//                TextField(
-//                    value = searchText,
-//                    onValueChange = viewModel::onSearchTextChange,
-//                    modifier = Modifier.fillMaxWidth(),
-//                    placeholder = { Text(text = "Search") }
-//                )
-//                Spacer(modifier = Modifier.height(16.dp))
                 FlowRow(
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -199,12 +206,16 @@ fun InterestScreen(modifier: Modifier = Modifier,
         ) {
             FloatingActionButton(
                 onClick = {
-                    if(infoViewModel.interests.value == null || infoViewModel.interests.value!!.size < 3){
+                    if (infoViewModel.interests.value == null || infoViewModel.interests.value!!.size < 3) {
 
-                        DynamicToast.make(context,"You need to select at least three interests.",
-                            ContextCompat.getDrawable(context, R.drawable.warning)?.mutate(),lightOrdColor.toArgb(),light_red.toArgb()).show()
-                    }else{
-                        Log.d("intrersetsfasfas",infoViewModel.interests.value.toString())
+                        DynamicToast.make(
+                            context,
+                            "You need to select at least three interests.",
+                            ContextCompat.getDrawable(context, R.drawable.warning)?.mutate(),
+                            lightOrdColor.toArgb(),
+                            light_red.toArgb()
+                        ).show()
+                    } else {
                         navController.navigate(com.krp.whoknows.Navigation.PreferredAgeRange)
                     }
                 },

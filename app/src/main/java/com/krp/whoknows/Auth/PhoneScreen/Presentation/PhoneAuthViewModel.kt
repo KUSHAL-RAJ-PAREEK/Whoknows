@@ -32,10 +32,11 @@ class PhoneAuthViewModel : ViewModel(), KoinComponent {
         viewModelScope.launch {
             _state.value = PhoneAuthState(isLoading = true)
             try {
-                ktorClient.sendOtp(OtpDetail(otpDetail.countryCode,otpDetail.pNumber))
-                _state.value = PhoneAuthState(isOtpSent = true, phoneNumber =otpDetail.pNumber)
+                ktorClient.sendOtp(OtpDetail(otpDetail.countryCode, otpDetail.pNumber))
+                _state.value = PhoneAuthState(isOtpSent = true, phoneNumber = otpDetail.pNumber)
             } catch (e: Exception) {
-                _state.value = PhoneAuthState(errorMessage = e.localizedMessage ?: "An error occurred")
+                _state.value =
+                    PhoneAuthState(errorMessage = e.localizedMessage ?: "An error occurred")
             }
         }
     }

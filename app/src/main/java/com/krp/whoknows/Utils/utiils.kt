@@ -279,8 +279,6 @@ import java.util.UUID
  */
 
 
-
-
 fun checkForPermission(context: Context): Boolean {
     return !(ActivityCompat.checkSelfPermission(
         context,
@@ -297,7 +295,7 @@ fun calculateDistance(latlngList: List<LatLng>): Double {
     var totalDistance = 0.0
 
     for (i in 0 until latlngList.size - 1) {
-        totalDistance += SphericalUtil.computeDistanceBetween(latlngList[i],latlngList[i + 1])
+        totalDistance += SphericalUtil.computeDistanceBetween(latlngList[i], latlngList[i + 1])
 
     }
 
@@ -311,8 +309,7 @@ fun calculateSurfaceArea(latlngList: List<LatLng>): Double {
     return SphericalUtil.computeArea(latlngList)
 }
 
-fun formattedValue(value: Double) = String.format("%.2f",value)
-
+fun formattedValue(value: Double) = String.format("%.2f", value)
 
 
 @SuppressLint("MissingPermission")
@@ -322,17 +319,17 @@ fun getCurrentLocation(context: Context, onLocationFetched: (location: LatLng) -
 
     fusedLocationClient.lastLocation
         .addOnSuccessListener { location: Location? ->
-            
+
             if (location != null) {
 
                 val latitude = location.latitude
                 val longitude = location.longitude
-                loc = LatLng(latitude,longitude)
+                loc = LatLng(latitude, longitude)
                 onLocationFetched(loc)
             }
         }
         .addOnFailureListener { exception: Exception ->
-            Log.d("MAP-EXCEPTION",exception.message.toString())
+            Log.d("MAP-EXCEPTION", exception.message.toString())
         }
 
 }
@@ -354,21 +351,11 @@ fun bitmapDescriptor(
     drawable.draw(canvas)
     return BitmapDescriptorFactory.fromBitmap(bm)
 }
- @RequiresApi(Build.VERSION_CODES.TIRAMISU)
- fun getLocationName(latitude: Double, longitude: Double, context: Context): String {
+
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+fun getLocationName(latitude: Double, longitude: Double, context: Context): String {
     val geocoder = Geocoder(context)
     try {
-//        geocoder.getFromLocation(latitude,longitude,1,object : Geocoder.GeocodeListener{
-//            override fun onGeocode(addresses: MutableList<Address>) {
-//
-//                // code
-//            }
-//            override fun onError(errorMessage: String?) {
-//                super.onError(errorMessage)
-//
-//            }
-//
-//        })
         val addresses: MutableList<Address>? = geocoder.getFromLocation(latitude, longitude, 1)
         if (addresses?.isNotEmpty()!!) {
             val address = addresses[0]
@@ -392,7 +379,6 @@ fun bitmapDescriptor(
                 if (postalCode.isNotBlank()) append("$postalCode")
             }
 
-            Log.d("nameaddress", fullAddress)
             return fullAddress
         }
     } catch (e: IOException) {
@@ -408,7 +394,6 @@ fun getLocationCityState(latitude: Double, longitude: Double, context: Context):
         val addresses: List<Address>? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             geocoder.getFromLocation(latitude, longitude, 1)
         } else {
-            // Suppress warning for older API usage
             @Suppress("DEPRECATION")
             geocoder.getFromLocation(latitude, longitude, 1)
         }
@@ -430,14 +415,15 @@ fun getLocationCityState(latitude: Double, longitude: Double, context: Context):
 object LocalDateSerializer : KSerializer<LocalDate> {
     private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("LocalDate", PrimitiveKind.STRING)
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor("LocalDate", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: LocalDate) {
-        encoder.encodeString(value.format(formatter)) // Serialize to "yyyy-MM-dd"
+        encoder.encodeString(value.format(formatter))
     }
 
     override fun deserialize(decoder: Decoder): LocalDate {
-        return LocalDate.parse(decoder.decodeString(), formatter) // Deserialize from "yyyy-MM-dd"
+        return LocalDate.parse(decoder.decodeString(), formatter)
     }
 }
 
@@ -454,24 +440,27 @@ fun Easing.transform(from: Float, to: Float, value: Float): Float {
 }
 
 @Composable
-fun CustomMultilineHintTextField(modifier: Modifier = Modifier,
-                                 value : String,
-                                 onValueChanged:(String)-> Unit,
-                                 hintText : String = "",
-                                 maxLines:Int = 4) {
-BasicTextField(value = value, onValueChange = onValueChanged,
-    maxLines = maxLines,
-    decorationBox = {innerTextField ->
-        Box(modifier = modifier){
-            if(value.isEmpty()){
-                Text(
-                    text = hintText,
-                    color = LocalContentColor.current.copy(alpha = ContentAlpha.medium)
-                )
+fun CustomMultilineHintTextField(
+    modifier: Modifier = Modifier,
+    value: String,
+    onValueChanged: (String) -> Unit,
+    hintText: String = "",
+    maxLines: Int = 4
+) {
+    BasicTextField(
+        value = value, onValueChange = onValueChanged,
+        maxLines = maxLines,
+        decorationBox = { innerTextField ->
+            Box(modifier = modifier) {
+                if (value.isEmpty()) {
+                    Text(
+                        text = hintText,
+                        color = LocalContentColor.current.copy(alpha = ContentAlpha.medium)
+                    )
+                }
+                innerTextField()
             }
-            innerTextField()
         }
-    }
     )
 
 }
@@ -656,7 +645,7 @@ val interestIcons = mapOf(
     "Music" to Icons.Default.MusicNote,
     "Sports" to Icons.Default.Sports,
     "Cooking" to Icons.Default.Cookie,
-    "Gaming" to  Icons.Default.Games,
+    "Gaming" to Icons.Default.Games,
     "Photography" to Icons.Default.Camera,
 
     // Communication & Media
@@ -762,28 +751,26 @@ fun getProfileImageUrl(userId: String): String {
 
 fun String.toBitmap(): Bitmap? {
     return try {
-        Log.d("insidebitmap",this)
         val byteArray = ImageConverter.base64ToByteArray(this)
         val inputStream = ByteArrayInputStream(byteArray)
-      BitmapFactory.decodeStream(inputStream)
-        } catch (e: Exception) {
+        BitmapFactory.decodeStream(inputStream)
+    } catch (e: Exception) {
         e.printStackTrace()
-        Log.d("exceptioninside",e.toString())
         null
     }
 }
 
 @Composable
-fun getImageBitmapOrPlaceholder(image: Bitmap?, gender :String? = null): ImageBitmap {
+fun getImageBitmapOrPlaceholder(image: Bitmap?, gender: String? = null): ImageBitmap {
     return image?.asImageBitmap() ?: run {
         val context = LocalContext.current
-var placeholder: Int? = null
+        var placeholder: Int? = null
 
-        if(gender == "MALE"){
+        if (gender == "MALE") {
             placeholder = R.drawable.bp_img_placeholder
-        }else if(gender == "FEMALE"){
+        } else if (gender == "FEMALE") {
             placeholder = R.drawable.p_img_placeholder
-        }else{
+        } else {
             placeholder = R.drawable.add_file_button
         }
         val drawable = ContextCompat.getDrawable(context, placeholder)
@@ -799,14 +786,6 @@ var placeholder: Int? = null
         }
     }
 }
-
-//fun drawableToBitmap(drawable: Drawable): Bitmap {
-//    val bitmap = createBitmap(drawable!!.intrinsicWidth, drawable.intrinsicHeight)
-//    val canvas = Canvas(bitmap)
-//    drawable.setBounds(0, 0, canvas.width, canvas.height)
-//    drawable.draw(canvas)
-//    return bitmap
-//}
 
 suspend fun convertImageUrlToBase64(imageUrl: String): String? {
     return withContext(Dispatchers.IO) {
@@ -860,15 +839,14 @@ fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
     )
 }
 
-fun createChatRoomId(id1: String, id2: String): String{
-    val ids = listOf(id1,id2).sorted()
-//    Log.d("askfjaslkfjakls",ids.toString())
+fun createChatRoomId(id1: String, id2: String): String {
+    val ids = listOf(id1, id2).sorted()
     return ids.joinToString(separator = "_")
 }
 
 
 @Composable
-fun ShinyText(text : String) {
+fun ShinyText(text: String) {
     val shimmerColors = listOf(
         Cyan.copy(alpha = 0.4f),
         ordColor,
@@ -905,7 +883,6 @@ fun generateUniqueFileName(): String {
 }
 
 
-
 fun downloadImageFromUrl(context: Context, imageUrl: String) {
     try {
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault()).format(
@@ -925,8 +902,6 @@ fun downloadImageFromUrl(context: Context, imageUrl: String) {
         val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         downloadManager.enqueue(request)
 
-        Log.d("DownloadManager", "Download started for: $imageUrl with filename: $fileName")
-
     } catch (e: Exception) {
         e.printStackTrace()
         Log.e("DownloadManager", "Error downloading image: ${e.message}")
@@ -944,7 +919,6 @@ fun DotsWaveAnimation(dotColor: androidx.compose.ui.graphics.Color) {
             top = 0.dp,
             bottom = 0.dp
         )
-//        .defaultMinSize(minHeight = .dp)
         .clip(
             RoundedCornerShape(
                 bottomEnd = 10.dp,
@@ -987,7 +961,6 @@ fun DotsWaveAnimation(dotColor: androidx.compose.ui.graphics.Color) {
                 Row(
                     modifier = Modifier.padding(horizontal = 2.dp),
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
-//                    verticalAlignment = Alignment.Bottom
                 ) {
                     dotOffsets.forEach { offset ->
                         Text(
@@ -1001,7 +974,7 @@ fun DotsWaveAnimation(dotColor: androidx.compose.ui.graphics.Color) {
                 }
             }
         }
-        }
+    }
 
 }
 
@@ -1016,11 +989,12 @@ fun formatDate(date: String): String {
 }
 
 
-
 @Composable
-fun MyAlertDialog(onDismiss: () -> Unit, isDownload: Boolean,onConfirmD: () -> Unit,
-                  onConfirmDe: () -> Unit) {
-    if(isDownload){
+fun MyAlertDialog(
+    onDismiss: () -> Unit, isDownload: Boolean, onConfirmD: () -> Unit,
+    onConfirmDe: () -> Unit
+) {
+    if (isDownload) {
         AlertDialog(
             modifier = Modifier,
             containerColor = colorResource(R.color.ordColor),
@@ -1028,45 +1002,54 @@ fun MyAlertDialog(onDismiss: () -> Unit, isDownload: Boolean,onConfirmD: () -> U
             confirmButton = {
                 TextButton(onClick = {
                     onConfirmD()
-                    onDismiss()}) {
-                    Text("download",color = t_color)
+                    onDismiss()
+                }) {
+                    Text("download", color = t_color)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { onDismiss() }) {
-                    Text("Cancel",color = t_color)
+                    Text("Cancel", color = t_color)
                 }
             },
-//            title = { Text("Alert") },
-            text = { Text("Do you want to download?",color = androidx.compose.ui.graphics.Color.Black) }
+            text = {
+                Text(
+                    "Do you want to download?",
+                    color = androidx.compose.ui.graphics.Color.Black
+                )
+            }
         )
-    }else{
+    } else {
         AlertDialog(
             containerColor = colorResource(R.color.ordColor),
             onDismissRequest = { onDismiss() },
             confirmButton = {
                 TextButton(onClick = {
                     onConfirmDe()
-                    onDismiss()}) {
-                    Text("Delete",color = t_color)
+                    onDismiss()
+                }) {
+                    Text("Delete", color = t_color)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { onDismiss() }) {
-                    Text("Cancel",color = t_color)
+                    Text("Cancel", color = t_color)
                 }
             },
-//            title = { Text("Alert") },
-            text = { Text("Do you want to delete?",color = androidx.compose.ui.graphics.Color.Black) }
+            text = {
+                Text(
+                    "Do you want to delete?",
+                    color = androidx.compose.ui.graphics.Color.Black
+                )
+            }
         )
     }
 
 }
 
 
-
 @Composable
-fun MyAlertDialogAcc(onDismiss: () -> Unit, onConfirm :() -> Unit){
+fun MyAlertDialogAcc(onDismiss: () -> Unit, onConfirm: () -> Unit) {
 
     AlertDialog(
         modifier = Modifier,
@@ -1075,17 +1058,22 @@ fun MyAlertDialogAcc(onDismiss: () -> Unit, onConfirm :() -> Unit){
         confirmButton = {
             TextButton(onClick = {
                 onConfirm()
-                onDismiss()}) {
-                Text("yes",color = t_color)
+                onDismiss()
+            }) {
+                Text("yes", color = t_color)
             }
         },
         dismissButton = {
             TextButton(onClick = { onDismiss() }) {
-                Text("no",color = t_color)
+                Text("no", color = t_color)
             }
         },
-//            title = { Text("Alert") },
-        text = { Text("Do you want to take your relationship to the next level?",color = androidx.compose.ui.graphics.Color.Black) }
+        text = {
+            Text(
+                "Do you want to take your relationship to the next level?",
+                color = androidx.compose.ui.graphics.Color.Black
+            )
+        }
     )
 
 
@@ -1093,7 +1081,7 @@ fun MyAlertDialogAcc(onDismiss: () -> Unit, onConfirm :() -> Unit){
 
 
 @Composable
-fun MyAlertDialogDel(onDismiss: () -> Unit, onConfirm :() -> Unit){
+fun MyAlertDialogDel(onDismiss: () -> Unit, onConfirm: () -> Unit) {
 
     AlertDialog(
         modifier = Modifier,
@@ -1102,26 +1090,32 @@ fun MyAlertDialogDel(onDismiss: () -> Unit, onConfirm :() -> Unit){
         confirmButton = {
             TextButton(onClick = {
                 onConfirm()
-                onDismiss()}) {
-                Text("yes",
-                    color = t_color)
+                onDismiss()
+            }) {
+                Text(
+                    "yes",
+                    color = t_color
+                )
             }
         },
         dismissButton = {
             TextButton(onClick = { onDismiss() }) {
-                Text("no",color = t_color)
+                Text("no", color = t_color)
             }
         },
-//            title = { Text("Alert") },
-        text = { Text("Do you want to go over it?",
-            color = androidx.compose.ui.graphics.Color.Black) }
+        text = {
+            Text(
+                "Do you want to go over it?",
+                color = androidx.compose.ui.graphics.Color.Black
+            )
+        }
     )
 
 
 }
 
 @Composable
-fun MyAlertDialogWait(onDismiss: () -> Unit, onConfirm :() -> Unit){
+fun MyAlertDialogWait(onDismiss: () -> Unit, onConfirm: () -> Unit) {
 
     AlertDialog(
         modifier = Modifier,
@@ -1130,19 +1124,25 @@ fun MyAlertDialogWait(onDismiss: () -> Unit, onConfirm :() -> Unit){
         confirmButton = {
             TextButton(onClick = {
                 onConfirm()
-                onDismiss()}) {
-                Text("yes",
-                    color = t_color)
+                onDismiss()
+            }) {
+                Text(
+                    "yes",
+                    color = t_color
+                )
             }
         },
         dismissButton = {
             TextButton(onClick = { onDismiss() }) {
-                Text("no",color = t_color)
+                Text("no", color = t_color)
             }
         },
-//            title = { Text("Alert") },
-        text = { Text("Do you want to notify?",
-            color = androidx.compose.ui.graphics.Color.Black) }
+        text = {
+            Text(
+                "Do you want to notify?",
+                color = androidx.compose.ui.graphics.Color.Black
+            )
+        }
     )
 
 
@@ -1189,7 +1189,11 @@ fun ExpandableLogoutFAB(onLogout: () -> Unit) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Are you sure you want to logout?", color = androidx.compose.ui.graphics.Color.White, fontSize = 20.sp)
+                Text(
+                    "Are you sure you want to logout?",
+                    color = androidx.compose.ui.graphics.Color.White,
+                    fontSize = 20.sp
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -1198,7 +1202,10 @@ fun ExpandableLogoutFAB(onLogout: () -> Unit) {
                         Text("Cancel")
                     }
                     Spacer(modifier = Modifier.width(16.dp))
-                    Button(onClick = onLogout, colors = ButtonDefaults.buttonColors(androidx.compose.ui.graphics.Color.White)) {
+                    Button(
+                        onClick = onLogout,
+                        colors = ButtonDefaults.buttonColors(androidx.compose.ui.graphics.Color.White)
+                    ) {
                         Text("Logout", color = ordColor)
                     }
                 }
@@ -1208,11 +1215,6 @@ fun ExpandableLogoutFAB(onLogout: () -> Unit) {
 }
 
 
-@Preview
-@Composable
-private fun run() {
-    ShowToastExample()
-}
 @Composable
 fun ShowToastExample() {
     var showToast by remember { mutableStateOf(false) }
@@ -1238,7 +1240,12 @@ fun ShowToastExample() {
 
 
 @Composable
-fun CustomToast(message: String, icon: ImageVector, backgroundColor: androidx.compose.ui.graphics.Color, duration: Long = 2000L) {
+fun CustomToast(
+    message: String,
+    icon: ImageVector,
+    backgroundColor: androidx.compose.ui.graphics.Color,
+    duration: Long = 2000L
+) {
     val context = LocalContext.current
     var isVisible by remember { mutableStateOf(true) }
 
@@ -1267,7 +1274,11 @@ fun CustomToast(message: String, icon: ImageVector, backgroundColor: androidx.co
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = message, color =  androidx.compose.ui.graphics.Color.White, fontSize = 16.sp)
+                Text(
+                    text = message,
+                    color = androidx.compose.ui.graphics.Color.White,
+                    fontSize = 16.sp
+                )
             }
         }
     }

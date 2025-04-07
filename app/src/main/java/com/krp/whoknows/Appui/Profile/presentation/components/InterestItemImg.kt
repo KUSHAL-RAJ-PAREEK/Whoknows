@@ -31,17 +31,11 @@ import com.krp.whoknows.ui.theme.ordColor
  * Created by KUSHAL RAJ PAREEK on 07,March,2025
  */
 
-//@Preview
-//@Composable
-//private fun Run() {
-//    InterestItemImg(name = "singing", imageRes = R.drawable.)
-//}
-
 @Composable
-fun InterestItemImg(modifier: Modifier = Modifier, interest: InterestItem,color: Color?= null) {
+fun InterestItemImg(modifier: Modifier = Modifier, interest: InterestItem, color: Color? = null) {
     Box(
         modifier = modifier
-            .border(1.dp,  color ?: ordColor, RoundedCornerShape(13.dp))
+            .border(1.dp, color ?: ordColor, RoundedCornerShape(13.dp))
             .clip(RoundedCornerShape(13.dp))
             .background(Color.Transparent)
             .padding(6.dp),
@@ -57,7 +51,7 @@ fun InterestItemImg(modifier: Modifier = Modifier, interest: InterestItem,color:
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = interest.name,
-                color =  color ?: ordColor,
+                color = color ?: ordColor,
                 maxLines = 1
             )
         }

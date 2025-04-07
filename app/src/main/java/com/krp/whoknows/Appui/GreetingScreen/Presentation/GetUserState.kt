@@ -10,5 +10,5 @@ data class GetUserState(
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
     val errorMessage: String? = null,
-    val successMessage: UserResponse?= null,
+    val successMessage: UserResponse? = null,
 )

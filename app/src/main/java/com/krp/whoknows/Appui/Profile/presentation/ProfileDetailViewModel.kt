@@ -19,7 +19,7 @@ import kotlin.getValue
  */
 
 
-class ProfileDetailViewModel: ViewModel(), KoinComponent {
+class ProfileDetailViewModel : ViewModel(), KoinComponent {
 
     private val ktorClient: KtorClient by inject()
 
@@ -29,7 +29,7 @@ class ProfileDetailViewModel: ViewModel(), KoinComponent {
     private val _dobs = MutableStateFlow("")
     val dobs: StateFlow<String> = _dobs
 
-    private val _fcmToken= MutableStateFlow("")
+    private val _fcmToken = MutableStateFlow("")
     val fcmToken: StateFlow<String> = _fcmToken
 
     private val _isMatch = MutableStateFlow(false)
@@ -45,14 +45,14 @@ class ProfileDetailViewModel: ViewModel(), KoinComponent {
     private val _mImage = MutableStateFlow("")
     val mImage: StateFlow<String> = _mImage
 
-private  val _fImage = MutableStateFlow("")
-val fImage : StateFlow<String> = _fImage
+    private val _fImage = MutableStateFlow("")
+    val fImage: StateFlow<String> = _fImage
 
-    private  val _sImage = MutableStateFlow("")
-    val sImage : StateFlow<String> = _sImage
+    private val _sImage = MutableStateFlow("")
+    val sImage: StateFlow<String> = _sImage
 
-    private  val _tImage = MutableStateFlow("")
-    val tImage : StateFlow<String> = _tImage
+    private val _tImage = MutableStateFlow("")
+    val tImage: StateFlow<String> = _tImage
 
     private val _pnumber = MutableStateFlow("")
     val pnumber: StateFlow<String> = _pnumber
@@ -96,21 +96,21 @@ val fImage : StateFlow<String> = _fImage
     private val _bio = MutableStateFlow("")
     val bio: StateFlow<String> = _bio
 
-    private  val _defaultImg = MutableStateFlow<ImageBitmap?>(null)
-    val  defaultImg: StateFlow<ImageBitmap?> = _defaultImg
+    private val _defaultImg = MutableStateFlow<ImageBitmap?>(null)
+    val defaultImg: StateFlow<ImageBitmap?> = _defaultImg
 
     private val _interests = MutableStateFlow<List<String>?>(null)
     val interests: StateFlow<List<String>?> = _interests
 
 
-    private val _posts =  MutableStateFlow<List<String>?>(null)
+    private val _posts = MutableStateFlow<List<String>?>(null)
     val posts: StateFlow<List<String>?> = _posts
 
-    fun updateInterest(interests : List<String>) {
+    fun updateInterest(interests: List<String>) {
         _interests.value = interests
     }
 
-    fun updatePosts(posts : List<String>) {
+    fun updatePosts(posts: List<String>) {
         _posts.value = posts
     }
 
@@ -123,9 +123,10 @@ val fImage : StateFlow<String> = _fImage
     }
 
 
-    fun updateDefaultImg(bitmap : ImageBitmap?){
+    fun updateDefaultImg(bitmap: ImageBitmap?) {
         _defaultImg.value = bitmap
     }
+
     fun updatePnumber(pno: String) {
         _pnumber.value = pno
     }
@@ -155,20 +156,22 @@ val fImage : StateFlow<String> = _fImage
         _longitude.value = long
     }
 
-    fun updateMatch(flag : Boolean) {
+    fun updateMatch(flag: Boolean) {
         _isMatch.value = flag
     }
 
-    fun updateFcm(fcm: String){
+    fun updateFcm(fcm: String) {
         _fcmToken.value = fcm
     }
 
-    fun updateJwt(jwt : String){
+    fun updateJwt(jwt: String) {
         _jwt.value = jwt
     }
+
     fun updateLocation(location: String) {
         _location.value = location
     }
+
     fun updateId(id: String) {
         _id.value = id
     }
@@ -176,58 +179,58 @@ val fImage : StateFlow<String> = _fImage
     fun updatemImage(img: String) {
         _mImage.value = img
     }
+
     fun updatefImage(img: String) {
         _fImage.value = img
     }
+
     fun updatesImage(img: String) {
         _sImage.value = img
     }
+
     fun updatetImage(img: String) {
         _tImage.value = img
     }
 
-    fun updateInWaitInternal(flag : Boolean){
+    fun updateInWaitInternal(flag: Boolean) {
         _inWait.value = flag
     }
 
     fun updatePreGender(preGender: String) {
         _preGender.value = preGender
     }
+
     fun updatePreAgeRange(preAgeRange: String) {
-        Log.d("prefreefe",preAgeRange)
+        Log.d("prefreefe", preAgeRange)
         _preAgeRange.value = preAgeRange
     }
+
     fun updateFPreAgeRange(preAgeFRange: String) {
         _preAgeFRange.value = preAgeFRange
     }
+
     fun updateTPreAgeRange(preAgeTRange: String) {
         _preAgeTRange.value = preAgeTRange
     }
+
     fun updateGeoRadiusRange(geoRadiusRange: String) {
         _geoRadiusRange.value = geoRadiusRange
     }
 
 
-    suspend fun getInWait(id : String): Int{
+    suspend fun getInWait(id: String): Int {
 
-            return try{
-                val response = ktorClient.getWait(id)
+        return try {
+            val response = ktorClient.getWait(id)
 
-                if(response == 200){
-                    _inWait.value = true
-                }else if(response == 404){
-                    _inWait.value = false
-                }
-                response
-            }catch (e : Exception){
-                Log.d("postit","${e.message}")
-                500
+            if (response == 200) {
+                _inWait.value = true
+            } else if (response == 404) {
+                _inWait.value = false
             }
-
+            response
+        } catch (e: Exception) {
+            500
+        }
     }
-
-
-
-
-
 }

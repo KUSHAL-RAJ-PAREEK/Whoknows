@@ -34,7 +34,6 @@ class CreateUserViewModel : ViewModel(), KoinComponent {
             try {
                 val response = ktorClient.createUser(user, jwt)
                     _state.value = CreateUserState(isSuccess = true, successMessage = response)
-                Log.d("GKJADNKJGNDJGNDKJ", state.value.successMessage.toString())
             } catch (e: Exception) {
                 _state.value = CreateUserState(errorMessage = e.localizedMessage ?: "An error occurred")
             }

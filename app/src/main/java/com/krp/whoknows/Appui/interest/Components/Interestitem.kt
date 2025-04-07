@@ -29,7 +29,12 @@ import com.krp.whoknows.ui.theme.ordColor
 
 
 @Composable
-fun InterestItem(modifier: Modifier = Modifier, name: String, filled: Boolean, onClick: () -> Unit) {
+fun InterestItem(
+    modifier: Modifier = Modifier,
+    name: String,
+    filled: Boolean,
+    onClick: () -> Unit
+) {
 
     Box(
         modifier = modifier
@@ -37,14 +42,15 @@ fun InterestItem(modifier: Modifier = Modifier, name: String, filled: Boolean, o
             .clip(RoundedCornerShape(13.dp))
             .background(if (filled) ordColor else Color.Transparent)
             .padding(10.dp)
-//            .aspectRatio(3f)
             .clickable {
                 onClick()
             },
         contentAlignment = Alignment.Center
     ) {
-Text(text = name,
-    color = if(filled) Color.White else ordColor)
+        Text(
+            text = name,
+            color = if (filled) Color.White else ordColor
+        )
     }
 }
 
