@@ -845,7 +845,7 @@ fun SharedTransitionScope.ChatScreen(
                                         senderId = userDetailViewModel.id.value,
                                         receiverId = matchUserViewModel.id.value,
                                         message = message,
-                                        imgUrl = if (cimage != null) "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/chat-images//${id}.jpg" else null,
+                                        imgUrl = if (cimage != null) "BUCKET_URL//${id}.jpg" else null,
                                         imgStr = imgStr
                                     )
 
@@ -857,7 +857,7 @@ fun SharedTransitionScope.ChatScreen(
                                     title = matchUserViewModel.username.value,
                                     body = message.toString(),
                                     type = "chat",
-                                    imgUrl = "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/chat-images//${id}.jpg"
+                                    imgUrl = "BUCKET_URL//${id}.jpg"
                                         ?: "no"
                                 )
 
