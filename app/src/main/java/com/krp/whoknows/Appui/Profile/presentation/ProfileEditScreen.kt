@@ -1391,25 +1391,25 @@ fun SharedTransitionScope.ProfileEditScreen(
                                     Pimg_url = null
                                 } else {
                                     Pimg_url =
-                                        "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/profile_images//${editProfileViewModel.id.value}.jpg"
+                                        "BUCKET_URL//${editProfileViewModel.id.value}.jpg"
                                 }
                                 if (isG1Deleted) {
                                     g1img_url = null
                                 } else {
                                     g1img_url =
-                                        "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/gallery_images//${editProfileViewModel.id.value}_g1.jpg"
+                                        "BUCKET_URL//${editProfileViewModel.id.value}_g1.jpg"
                                 }
                                 if (isG2Deleted) {
                                     g2img_url = null
                                 } else {
                                     g2img_url =
-                                        "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/gallery_images//${editProfileViewModel.id.value}_g2.jpg"
+                                        "BUCKET_URL//${editProfileViewModel.id.value}_g2.jpg"
                                 }
                                 if (isG3Deleted) {
                                     g3img_url = null
                                 } else {
                                     g3img_url =
-                                        "https://dtgatrenwhgxvicpbxre.supabase.co/storage/v1/object/public/gallery_images//${editProfileViewModel.id.value}_g3.jpg"
+                                        "BUCKET_URL//${editProfileViewModel.id.value}_g3.jpg"
                                 }
 
                                 galleryList = listOfNotNull(
