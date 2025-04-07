@@ -7,8 +7,7 @@
 ## 🎥 Demo Video
 
 📽️ Check out the app in action:  
-![Image](https://github.com/KUSHAL-RAJ-PAREEK/Whoknows/blob/master/demo_video.mp4)
-![Image](https://github.com/user-attachments/assets/51625672-9d0b-4721-93a5-a2ff02aa9910)
+https://github.com/user-attachments/assets/5bb887af-4425-43d1-97fe-69cb30aa739f
 ---
 
 ## 🛠️ Tech Stack 💻
