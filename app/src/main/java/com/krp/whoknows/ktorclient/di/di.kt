@@ -104,7 +104,7 @@ fun provideHttpClient(): HttpClient {
 
         install(DefaultRequest) {
             url {
-                host = "java-spring-boot-production-d806.up.railway.app"
+                host = "MAIN_URL_AFTER_HTTPS"
                 protocol = URLProtocol.HTTPS
             }
         }
