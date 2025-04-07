@@ -8,7 +8,7 @@
 
 📽️ Check out the app in action:  
 https://github.com/KUSHAL-RAJ-PAREEK/Whoknows/blob/master/demo_video.mp4
-
+![Image](https://github.com/user-attachments/assets/51625672-9d0b-4721-93a5-a2ff02aa9910)
 ---
 
 ## 🛠️ Tech Stack 💻
