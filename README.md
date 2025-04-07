@@ -5,9 +5,10 @@
 ---
 
 ## 🎥 Demo Video
+📽️ Check out the app in action:
 
-📽️ Check out the app in action:  
 https://github.com/user-attachments/assets/5bb887af-4425-43d1-97fe-69cb30aa739f
+
 ---
 
 ## 🛠️ Tech Stack 💻
