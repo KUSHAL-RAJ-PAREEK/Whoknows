@@ -1,6 +1,6 @@
 # 🕵️‍♂️ WhoKnows - Anonymous Dating App ❤️
 
-**WhoKnows** is a fully functional anonymous dating app where users connect based on preferences like age, gender, and location — but with a twist ❤️: even after matching, profiles stay hidden until **both users agree** to reveal themselves.
+**WhoKnows** is a fully functional anonymous dating app where users connect based on preferences like age, gender, and location - but with a twist ❤️: even after matching, profiles stay hidden until **both users agree** to reveal themselves.
 
 ---
 
